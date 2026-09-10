@@ -1,0 +1,332 @@
+/*
+ * server.c
+ *
+ *  Created on: Jan 28, 2025
+ *      Author: niraj
+ */
+
+
+#include<stdio.h>
+#include<sys/types.h>
+#include<sys/socket.h>
+#include<arpa/inet.h>
+
+#include<unistd.h>
+#include<stdlib.h>
+#include<stdint.h>
+
+#include <sys/mman.h>
+#include <sys/stat.h>
+#include <semaphore.h>
+#include <fcntl.h>
+#include <string.h>
+
+#define SHM_NAME "/beagleplay_shm"
+#define SEM_EMPTY "/sem_empty"
+#define SEM_FULL "/sem_full"
+#define SHM_SIZE 1024
+
+struct shared_data {
+    char message[256];
+};
+
+
+
+#include<string.h>
+
+//#include<errono.h>
+#include<sys/types.h>
+#include<fcntl.h>
+#include"html_resp_header.h"
+char buf[1024];
+char temp[1024];
+
+char response[1024];
+char client_ip[INET_ADDRSTRLEN];
+char ip_address[]="HOST IP Address=";
+
+#define SERIAL_PORT "/dev/ttyS0"
+
+
+
+int main()
+{
+
+  //char a[]="thanku\r";
+   char b[1000];
+
+   char buffer[1000];
+   // char sys_gpio_export44[]="/sys/class/gpio/export/";
+	//char sys_gpio_path_d[]="/sys/class/gpio/gpio44/direction";
+	//char sys_gpio_path_v[]="/sys/class/gpio/gpio44/value";
+
+  int serial_fd = open(SERIAL_PORT, O_RDWR | O_NOCTTY | O_SYNC);
+       if (serial_fd == -1) {
+           perror("Error opening serial port");
+           return 1;
+       }
+
+       printf("Serial port %s opened successfully.\n", SERIAL_PORT);
+
+
+/*
+  FILE *resp_html,*recvfile;
+  resp_html=fopen("index.html","r");
+  if(resp_html==NULL)
+  		{
+  			printf("cannot open html file index.html !\n");
+             return 0;
+  		}
+  while(fgets(temp,sizeof(temp),resp_html)!=NULL)
+  {
+  	strcat(buf,temp);
+
+  }
+
+fclose(resp_html);
+*/
+int sfd,cfd;
+unsigned int len;
+struct sockaddr_in server,client;
+sfd=socket(AF_INET,SOCK_STREAM,0);
+if(sfd<0)
+{
+	perror("socket");
+	return 0;
+}
+else
+{
+	printf("socket is created..\n");
+	server.sin_family=AF_INET;
+	server.sin_port=htons(2000);
+	server.sin_addr.s_addr=inet_addr("0.0.0.0");
+if((bind(sfd,(struct sockaddr*)&server,sizeof(server)))<0)
+{
+	perror("bind");
+	return 0;
+}
+listen(sfd,1);
+len=sizeof(client);
+//cfd=accept(sfd,(struct sockaddr*)&client,&len);
+/*
+int fd;
+fd=open(sys_gpio_path_d,O_WRONLY);
+		if(fd<=0)
+		{
+			printf("cannot open direction file fd = %d\n",fd);
+
+		}
+		write(fd,"out",4);
+		close(fd);
+
+
+		fd=open(sys_gpio_path_v,O_WRONLY);
+				if(fd<=0)
+				{
+					printf("cannot open value file fd = %d\n",fd);
+
+				}
+*/
+
+
+memset(b,0,sizeof(b));
+
+
+int fd = shm_open(SHM_NAME, O_CREAT | O_RDWR, 0666);
+   if (fd == -1) {
+       perror("shm_open failed");
+       return 1;
+   }
+   ftruncate(fd, SHM_SIZE);
+
+   // Map shared memory
+   struct shared_data *shm_ptr = mmap(0, SHM_SIZE, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
+   if (shm_ptr == MAP_FAILED) {
+       perror("mmap failed");
+       return 1;
+   }
+
+   // Open semaphores
+   sem_t *sem_empty = sem_open(SEM_EMPTY, O_CREAT, 0666, 1);
+   sem_t *sem_full = sem_open(SEM_FULL, O_CREAT, 0666, 0);
+   if (sem_empty == SEM_FAILED || sem_full == SEM_FAILED) {
+       perror("sem_open failed");
+       return 1;
+   }
+
+
+
+
+
+
+   cfd=accept(sfd,(struct sockaddr*)&client,&len);
+
+while(1)
+{
+
+
+	 pid_t pid = fork();
+	 if(pid ==0)     // chld
+	 {
+		 while(1)
+		 {
+		 read(cfd,b,1000);
+
+		 write(serial_fd, b, strlen(b));
+		 memset(b,0,sizeof(b));
+
+		 }
+		 /*
+
+	   	 sem_wait(sem_empty); // Wait for empty space
+
+				        // Write data
+	   	 snprintf(shm_ptr->message, sizeof(shm_ptr->message),  b);
+				    //    printf("Writer: Wrote '%s'\n", shm_ptr->message);
+
+         sem_post(sem_full); // Signal data is available
+		 */
+	 }
+	 else if (pid > 0)  // parent
+	 {
+		 while(1)
+		 {
+		 int bytes_read = read(serial_fd, buffer, sizeof(buffer) - 1);
+		     if (bytes_read > 0) {
+
+
+		   write(cfd,buffer,strlen(buffer));
+
+		     }
+		 }
+
+	 }
+	 else                // error
+	 {
+		perror("fork faild");
+	 }
+
+	//           read(cfd,b,1000);
+//	if(b[1]=='n')
+//	{
+
+		//printf("%s",b);
+		//write(fd,"1",2);
+			//usleep(1000000);
+//	}
+	//if(b[1]=='f')
+		//{
+			//write(fd,"0",2);
+				//usleep(1000000);
+		//}
+//	printf("%s\n",b);
+/*
+
+	           sem_wait(sem_empty); // Wait for empty space
+
+		        // Write data
+		        snprintf(shm_ptr->message, sizeof(shm_ptr->message),  b);
+		    //    printf("Writer: Wrote '%s'\n", shm_ptr->message);
+
+		        sem_post(sem_full); // Signal data is available
+*/
+
+
+
+
+
+
+
+	//...............write(serial_fd, b, strlen(b));
+//	printf("%s\n",a);
+  //printf("enter the data\n");
+	//scanf(" %s",a);
+/*
+	if(strstr(b,"GET")!=NULL)
+	{
+
+		inet_ntop(AF_INET,&client.sin_addr,client_ip,INET_ADDRSTRLEN);
+
+		printf("clint family= %d\n",client.sin_family);
+		printf("clint port= %d\n",(client.sin_port));
+		printf("clint port= %d\n",ntohs(client.sin_port));
+		printf("clint IP= %s\n",client_ip);
+
+
+
+		recvfile=fopen("inputhtml.txt","w");
+		  if(recvfile==NULL)
+		  		{
+		  			printf("cannot open html file inputhtml.txt !\n");
+		             return 0;
+		  		}
+		  int i;
+		  for(i=0;b[i]!='\0';i++)
+		  {
+			  fputc(b[i],recvfile);
+		  }
+
+		  fputs(ip_address,recvfile);
+		  fputs(client_ip,recvfile);
+
+		  fclose(recvfile);
+
+		strcpy(response,htmlheader);
+		strcat(response,buf);
+
+		write(cfd,response,strlen(response));
+		//write(cfd,a,sizeof(a)+1);
+	    //write(fd,"0",2);
+		//usleep(1000000);
+	}
+
+	if(strstr(b,"POST")!=NULL)
+		{
+
+			inet_ntop(AF_INET,&client.sin_addr,client_ip,INET_ADDRSTRLEN);
+
+			printf("clint family= %d\n",client.sin_family);
+			printf("clint port= %d\n",client.sin_port);
+			printf("clint IP= %s\n",client_ip);
+
+
+
+			recvfile=fopen("inputhtml.txt","w");
+			  if(recvfile==NULL)
+			  		{
+			  			printf("cannot open html file inputhtml.txt !\n");
+			             return 0;
+			  		}
+			  int i;
+			  for(i=0;b[i]!='\0';i++)
+			  {
+				  fputc(b[i],recvfile);
+			  }
+
+			  fputs(ip_address,recvfile);
+			  fputs(client_ip,recvfile);
+
+			  fclose(recvfile);
+
+			strcpy(response,htmlheader);
+			strcat(response,buf);
+
+			write(cfd,response,strlen(response));
+			//write(cfd,a,sizeof(a)+1);
+		    //write(fd,"0",2);
+			//usleep(1000000);
+
+	}	*/
+
+
+
+
+		close(cfd);
+		memset(b,0,sizeof(b));
+}
+
+}
+
+}
+
+

@@ -1,0 +1,7 @@
+13:41:16 **** Incremental Build of configuration Debug for project server_simplex ****
+Info: Internal Builder is used for build
+aarch64-linux-gnu-gcc -O0 -g3 -Wall -c -fmessage-length=0 -o server.o ../server.c 
+aarch64-linux-gnu-gcc -o server_simplex server.o 
+
+13:41:17 Build Finished. 0 errors, 0 warnings. (took 1s.289ms)
+

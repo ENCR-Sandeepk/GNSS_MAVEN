@@ -1,0 +1,560 @@
+/*
+ * gnss_gpio_main.c
+ *
+ *  Created on: Nov 10, 2025
+ *      Author: niraj
+ */
+
+
+
+#include <gpiod.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <stdbool.h>
+#include <pthread.h>
+
+#include <string.h>
+#include <fcntl.h>
+#include <termios.h>
+
+#define SERIAL_PORT "/dev/ttyUSB3"
+#define BAUDRATE B115200
+
+#define PING_IP "8.8.8.8"
+#define ENABLE 			1
+#define DISABLE 		0
+#define HIGH 			1
+#define LOW				0
+#define ON 				1
+#define OFF				0
+#define I2C_SDA		    23
+#define I2C_SCK         22
+#define INT				9
+#define PWM				11
+#define AN              10
+#define RST				12
+#define CS				13
+#define SCK 			14
+#define CIPO 			7
+#define CIPI			8
+
+
+#define PB_OFF 			0
+#define PB_OK 		1
+#define PB_STATUS_CODE	2
+#define PB_ERROR_CODE	3
+#define PB_ANMT 		4
+
+#define  PWR_OFF			0
+#define  PWR_INIT 			1
+#define  PWR_IN_PROG		2
+#define  PWR_INTERNET_OK	3
+
+
+#define  SC_NONE  	0
+#define  SC_INTERNET_NOT_AVAILABLE  	1
+
+
+//errors code
+#define  SC_INT_NOT_AVL_SINCE_LONG  	2
+
+int led_state_pb 	     = 	PB_OFF;
+int led_state_pwr		 = 	PWR_OFF;
+int led_state_status	 = 	SC_NONE;
+bool was_internet_ok =false;
+
+
+
+    volatile bool network_ok = false;
+    struct gpiod_chip *chip;
+
+    struct gpiod_line *sw_led_red;
+    struct gpiod_line *sw_led_green;
+
+    struct gpiod_line *gnss_pw_en;
+    struct gpiod_line *gsm_pw_en;
+    struct gpiod_line *gsm_IGT;
+
+    struct gpiod_line *pb_led_red;
+    struct gpiod_line *pb_led_green;
+    struct gpiod_line *error;
+    struct gpiod_line *pb_in;
+    int ret;
+
+bool is_intrnet_available() {
+    char cmd[128];
+    snprintf(cmd, sizeof(cmd), "ping -c 1 -W 3 %s > /dev/null 2>&1", PING_IP);
+
+    int result = system(cmd);
+
+    if (result == 0)
+        return true;
+    else
+        return false;
+}
+
+
+void* led_thread(void *arg) {
+	//  int fd;
+	// char buffer[256];
+	// int n = 0;
+	int ms = 0;
+	int anmt=0;
+	bool dir=false;
+
+	while (1) {
+
+
+		switch (led_state_pwr) {
+		case PWR_OFF:
+			gpiod_line_set_value(sw_led_red, OFF);
+			gpiod_line_set_value(sw_led_green, OFF);
+			break;
+
+		case PWR_INIT:
+			gpiod_line_set_value(sw_led_red, ON);
+			gpiod_line_set_value(sw_led_green, OFF);
+			break;
+
+		case PWR_INTERNET_OK:
+			gpiod_line_set_value(sw_led_red, OFF);
+			gpiod_line_set_value(sw_led_green, ON);
+			break;
+
+		case PWR_IN_PROG:
+			if (ms == 0 || ms == 400 || ms == 800 || ms == 1200 || ms == 1600|| ms == 2000 || ms == 2400 || ms == 2800 || ms == 3200) //||ms==3600)
+							{
+				gpiod_line_set_value(sw_led_red, ON);
+				gpiod_line_set_value(sw_led_green, OFF);
+			} else if (ms == 200 || ms == 600 || ms == 1000 || ms == 1400|| ms == 1800 || ms == 2200 || ms == 2600 || ms == 3000|| ms == 3400) //||ms==3800)
+							{
+				gpiod_line_set_value(sw_led_red, OFF);
+				gpiod_line_set_value(sw_led_green, OFF);
+			}
+			break;
+
+
+		}
+
+		switch (led_state_status) {
+		case 0:
+			gpiod_line_set_value(error, OFF);
+			break;
+
+		case 1:
+			if (ms == 0) //||ms==400||ms==800||ms==1200||ms==1600||ms==2000||ms==2400||ms==2800||ms==3200) //||ms==3600)
+					{
+				gpiod_line_set_value(error, ON);
+			} else if (ms == 200) //||ms==600||ms==1000||ms==1400||ms==1800||ms==2200||ms==2600||ms==3000||ms==3400) //||ms==3800)
+					{
+				gpiod_line_set_value(error, OFF);
+			}
+			break;
+
+		case 2:
+			if (ms == 0 || ms == 400) //||ms==800||ms==1200||ms==1600||ms==2000||ms==2400||ms==2800||ms==3200) //||ms==3600)
+					{
+				gpiod_line_set_value(error, ON);
+			} else if (ms == 200 || ms == 600) //||ms==1000||ms==1400||ms==1800||ms==2200||ms==2600||ms==3000||ms==3400) //||ms==3800)
+					{
+				gpiod_line_set_value(error, OFF);
+			}
+			break;
+		case 3:
+			if (ms == 0 || ms == 400 || ms == 800) //||ms==1200||ms==1600||ms==2000||ms==2400||ms==2800||ms==3200) //||ms==3600)
+					{
+				gpiod_line_set_value(error, ON);
+			} else if (ms == 200 || ms == 600 || ms == 1000) //||ms==1400||ms==1800||ms==2200||ms==2600||ms==3000||ms==3400) //||ms==3800)
+					{
+				gpiod_line_set_value(error, OFF);
+			}
+			break;
+		case 4:
+			if (ms == 0 || ms == 400 || ms == 800 || ms == 1200) //||ms==1600||ms==2000||ms==2400||ms==2800||ms==3200) //||ms==3600)
+					{
+				gpiod_line_set_value(error, ON);
+			} else if (ms == 200 || ms == 600 || ms == 1000 || ms == 1400) //||ms==1800||ms==2200||ms==2600||ms==3000||ms==3400) //||ms==3800)
+					{
+				gpiod_line_set_value(error, OFF);
+			}
+			break;
+		case 5:
+			if (ms == 0 || ms == 400 || ms == 800 || ms == 1200 || ms == 1600) //||ms==2000||ms==2400||ms==2800||ms==3200) //||ms==3600)
+					{
+				gpiod_line_set_value(error, ON);
+			} else if (ms == 200 || ms == 600 || ms == 1000 || ms == 1400|| ms == 1800) //||ms==2200||ms==2600||ms==3000||ms==3400) //||ms==3800)
+							{
+				gpiod_line_set_value(error, OFF);
+			}
+			break;
+
+		case 6:
+			if (ms == 0 || ms == 400 || ms == 800 || ms == 1200 || ms == 1600|| ms == 2000) //||ms==2400||ms==2800||ms==3200) //||ms==3600)
+							{
+				gpiod_line_set_value(error, ON);
+			} else if (ms == 200 || ms == 600 || ms == 1000 || ms == 1400|| ms == 1800 || ms == 2200) //||ms==2600||ms==3000||ms==3400) //||ms==3800)
+							{
+				gpiod_line_set_value(error, OFF);
+			}
+			break;
+
+		case 7:
+			if (ms == 0 || ms == 400 || ms == 800 || ms == 1200 || ms == 1600|| ms == 2000 || ms == 2400) //||ms==2800) //||ms==3200) //||ms==3600)
+							{
+				gpiod_line_set_value(error, ON);
+			} else if (ms == 200 || ms == 600 || ms == 1000 || ms == 1400|| ms == 1800 || ms == 2200 || ms == 2600) //||ms==3000) //||ms==3400) //||ms==3800)
+							{
+				gpiod_line_set_value(error, OFF);
+			}
+			break;
+		case 8:
+			if (ms == 0 || ms == 400 || ms == 800 || ms == 1200 || ms == 1600|| ms == 2000 || ms == 2400 || ms == 2800) //||ms==3200) //||ms==3600)
+							{
+				gpiod_line_set_value(error, ON);
+			} else if (ms == 200 || ms == 600 || ms == 1000 || ms == 1400|| ms == 1800 || ms == 2200 || ms == 2600 || ms == 3000) //||ms==3400) //||ms==3800)
+							{
+				gpiod_line_set_value(error, OFF);
+			}
+			break;
+
+		case 9:
+			if (ms == 0 || ms == 400 || ms == 800 || ms == 1200 || ms == 1600|| ms == 2000 || ms == 2400 || ms == 2800 || ms == 3200) //||ms==3600)
+							{
+				gpiod_line_set_value(error, ON);
+			} else if (ms == 200 || ms == 600 || ms == 1000 || ms == 1400|| ms == 1800 || ms == 2200 || ms == 2600 || ms == 3000|| ms == 3400) //||ms==3800)
+							{
+				gpiod_line_set_value(error, OFF);
+			}
+			break;
+
+		}
+
+
+		switch (led_state_pb) {
+		case PB_OFF:
+			gpiod_line_set_value(pb_led_red, OFF);
+			gpiod_line_set_value(pb_led_green, OFF);
+			break;
+
+		case PB_OK:
+			gpiod_line_set_value(pb_led_red, OFF);
+			gpiod_line_set_value(pb_led_green, ON);
+			break;
+
+		case PB_STATUS_CODE:
+			if (ms == 0 || ms == 800 || ms == 1600 || ms == 2400|| ms == 3200) {
+				gpiod_line_set_value(pb_led_red, OFF);
+				gpiod_line_set_value(pb_led_green, ON);
+			} else if (ms == 400 || ms == 1200 || ms == 2000 || ms == 2800|| ms == 3600) {
+				gpiod_line_set_value(pb_led_red, OFF);
+				gpiod_line_set_value(pb_led_green, OFF);
+			}
+			break;
+
+		case PB_ERROR_CODE:
+			if (ms == 0 || ms == 800 || ms == 1600 || ms == 2400|| ms == 3200) {
+				gpiod_line_set_value(pb_led_red, ON);
+				gpiod_line_set_value(pb_led_green, OFF);
+			} else if (ms == 400 || ms == 1200 || ms == 2000 || ms == 2800|| ms == 3600) {
+				gpiod_line_set_value(pb_led_red, OFF);
+				gpiod_line_set_value(pb_led_green, OFF);
+			}
+			break;
+		case PB_ANMT:
+			if (ms % 20 == 0) {
+				if (dir) {
+					gpiod_line_set_value(pb_led_red, ON);
+					gpiod_line_set_value(pb_led_green, OFF);
+				} else {
+					gpiod_line_set_value(pb_led_red, OFF);
+					gpiod_line_set_value(pb_led_green, ON);
+				}
+			}
+			if (anmt == (ms % 20)) {
+				if (dir) {
+					gpiod_line_set_value(pb_led_red, OFF);
+					gpiod_line_set_value(pb_led_green, ON);
+				} else {
+					gpiod_line_set_value(pb_led_red, ON);
+					gpiod_line_set_value(pb_led_green, OFF);
+				}
+			}
+
+			break;
+		}
+		usleep(1000);
+		ms++;
+		if (ms >= 4000) {
+			ms = 0;
+		}
+
+		if (ms %500==0) {
+					anmt++;
+					if (anmt >= 20) {
+						anmt = 0;
+						dir=(!dir);
+							}
+				}
+	}
+
+	/*    while (1) {
+	 if (network_ok) {
+	 gpiod_line_set_value(sw_led_red, OFF);
+	 gpiod_line_set_value(sw_led_green, ON);
+	 usleep(200000);
+	 }else {
+	 gpiod_line_set_value(sw_led_green, OFF);
+	 usleep(200000);
+	 gpiod_line_set_value(sw_led_green, ON);
+	 usleep(200000);
+
+	 }*/
+	/*
+	 printf("Opening modem: %s\n", SERIAL_PORT);
+
+	 fd = open(SERIAL_PORT, O_RDWR | O_NOCTTY | O_NDELAY);
+	 if (fd == -1) {
+	 perror("Unable to open serial port");
+
+	 }
+
+	 char cmd[] = "AT+CPIN?\r";
+	 write(fd, cmd, strlen(cmd));
+	 usleep(300000);
+	 memset(buffer, 0, sizeof(buffer));
+	 //    n = read(fd, buffer, sizeof(buffer));
+	 while ((n = read(fd, buffer, sizeof(buffer) - 1)) > 0) {
+	 buffer[n] = '\0';
+	 printf("%s", buffer);
+
+	 if (strstr(buffer, "OK") || strstr(buffer, "ERROR"))
+	 break;
+
+	 usleep(100000);
+	 }
+
+	 if (strstr(buffer, "READY")) {
+	 printf("\n SIM inserted ready\n");
+	 }
+
+	 close(fd);
+	 //             }
+	 */
+
+//}
+return NULL;
+}
+
+void* ping_thread(void *arg) {
+	int retry=0;
+	int pwr_cycle_count =0 ;
+	while (1) {
+		network_ok = is_intrnet_available();
+
+		if (network_ok) {
+			printf(" Network OK\n");
+			led_state_pwr = PWR_INTERNET_OK;
+			led_state_pb = PB_ANMT; //PB_OK;
+			led_state_status = SC_NONE;
+			was_internet_ok = true;
+			retry=0;
+			pwr_cycle_count =0 ;
+			sleep(55);
+		} else {
+			printf("Network FAIL\n");
+			if (was_internet_ok) {
+				led_state_pb = PB_STATUS_CODE;
+			} else {
+				led_state_pb = PB_ERROR_CODE;
+			}
+			led_state_status = SC_INTERNET_NOT_AVAILABLE;
+			if (pwr_cycle_count>=5)  {
+							led_state_pb = PB_ERROR_CODE;
+
+							led_state_status = SC_INT_NOT_AVL_SINCE_LONG;
+						}
+                          printf("retry=%d \n",retry);
+			retry++;
+			if(retry >= 10)
+			{
+                                    gsm_pw_en            =       gpiod_chip_get_line(chip, CIPI);
+                                    gsm_IGT              =       gpiod_chip_get_line(chip, SCK);
+
+                                    gpiod_line_request_output(gsm_pw_en, "beagleplay", OFF);
+                                    gpiod_line_request_output(gsm_IGT, "beagleplay", OFF);
+
+				    printf("gsm power off\n",retry);
+                                            gpiod_line_set_value(gsm_pw_en, DISABLE);
+					    sleep(10);  //ps settlement time 100 mS
+                                    printf("gsm power on\n");
+					    gpiod_line_set_value(gsm_pw_en, ENABLE);
+					    usleep(500000);  //ps settlement time 100 mS
+					    gpiod_line_set_value(gsm_IGT, HIGH);
+                                    printf("gsm IGT on\n");
+					    sleep(1); // IGT pulse
+					    gpiod_line_set_value(gsm_IGT, LOW);
+                                     printf("gsm IGT off\n");
+
+                                      printf("pwr_cycle_count=%d, off\n",pwr_cycle_count);
+					    if(pwr_cycle_count+1!=0)
+					    {
+					    	pwr_cycle_count++;
+					    }
+                                         retry=0;
+                                   gpiod_line_release (gsm_pw_en);
+                                   gpiod_line_release (gsm_IGT);
+
+			}
+		}
+		sleep(5);
+	}
+	return NULL;
+}
+
+
+void* gpio_init_thread(void *arg)
+{
+//while(1)
+
+	{
+		//led_state_pwr		 = 	PWR_INIT;
+		led_state_pwr		 = 	PWR_IN_PROG;
+
+	    gpiod_line_set_value(gnss_pw_en, ENABLE);
+	    gpiod_line_set_value(gsm_pw_en, ENABLE);
+	    usleep(500000);  //ps settlement time 100 mS
+	    gpiod_line_set_value(gsm_IGT, HIGH);
+	    usleep(100000); // IGT pulse
+	    gpiod_line_set_value(gsm_IGT, LOW);
+
+	    gpiod_line_set_value(error, OFF);
+
+
+	    sleep(3);  //modem startup time 3 sec
+
+	    gpiod_line_release (gnss_pw_en);
+	    gpiod_line_release (gsm_pw_en);
+	    gpiod_line_release (gsm_IGT);
+
+
+     	printf("gpio config done\n");
+
+
+      /*    gpiod_line_set_value(error, ON);
+         sleep(1);
+          gpiod_line_set_value(error, OFF);
+         sleep(1);
+    */
+}
+
+}
+
+
+void* push_button_in_thread(void *arg)
+{
+	 int pressed_ms = 0;
+
+	    while (1) {
+
+	        int val = gpiod_line_get_value(pb_in);
+
+	        if (val == 1) {
+	            pressed_ms += 50;    // हर चेक 50ms पर
+	        } else {
+	            pressed_ms = 0;      // बटन छोड़ते ही टाइम रीसेट
+	        }
+
+	        // 3 सेकंड = 3000 ms
+	        if (pressed_ms >= 10000) {
+	            printf("Button pressed for 3 seconds! Rebooting system...\n");
+	            system("reboot");
+	        }
+
+	        usleep(50000); // 50ms delay
+	    }
+}
+
+
+int main() {
+	led_state_pb 	     = 	PB_OFF;
+	 led_state_pwr		 = 	PWR_OFF;
+	 led_state_status	 = 	SC_NONE;
+	 was_internet_ok     = false;
+
+    chip = gpiod_chip_open_by_name("gpiochip3");
+
+    sw_led_red = gpiod_chip_get_line(chip, I2C_SDA); // Replace with your GPIO number
+    sw_led_green = gpiod_chip_get_line(chip, I2C_SCK);
+
+    gnss_pw_en 		 =	 gpiod_chip_get_line(chip, PWM);
+    gsm_pw_en  		 = 	 gpiod_chip_get_line(chip, CIPI);
+    gsm_IGT		 = 	 gpiod_chip_get_line(chip, SCK);
+    pb_led_red 		 = 	 gpiod_chip_get_line(chip, CIPO);
+    pb_led_green	 = 	 gpiod_chip_get_line(chip, CS);
+    error		 = 	 gpiod_chip_get_line(chip, RST);
+    pb_in		 =	 gpiod_chip_get_line(chip, INT);
+
+   gpiod_line_request_output(sw_led_red, "beagleplay", OFF);
+   gpiod_line_request_output(sw_led_green, "beagleplay", OFF);
+   gpiod_line_request_output(gnss_pw_en, "beagleplay", OFF);
+   gpiod_line_request_output(gsm_pw_en, "beagleplay", OFF);
+   gpiod_line_request_output(gsm_IGT, "beagleplay", OFF);
+   gpiod_line_request_output(pb_led_red, "beagleplay", OFF);
+   gpiod_line_request_output(pb_led_green, "beagleplay", OFF);
+   gpiod_line_request_output(error, "beagleplay", OFF);
+
+   gpiod_line_request_input(pb_in, "gpio-input");
+   sleep(1);
+
+    printf("gpio initialized\n");
+/*
+    gpiod_line_set_value(sw_led_red, ON);
+    gpiod_line_set_value(sw_led_green, OFF);
+
+    gpiod_line_set_value(gnss_pw_en, ENABLE);
+    gpiod_line_set_value(gsm_pw_en, ENABLE);
+    usleep(500000);  //ps settlement time 100 mS
+    gpiod_line_set_value(gsm_IGT, HIGH);
+    usleep(100000); // IGT pulse
+    gpiod_line_set_value(gsm_IGT, LOW);
+
+    gpiod_line_set_value(error, OFF);
+
+
+    sleep(3);  //modem startup time 3 sec
+
+    gpiod_line_release (gnss_pw_en);
+    gpiod_line_release (gsm_pw_en);
+    gpiod_line_release (gsm_IGT);
+
+*/
+
+
+pthread_t t1, t2,t3,t4;
+
+    pthread_create(&t1, NULL, gpio_init_thread, NULL);
+    pthread_create(&t2, NULL, led_thread, NULL);
+    pthread_create(&t3, NULL, ping_thread, NULL);
+    pthread_create(&t4, NULL, push_button_in_thread, NULL);
+
+
+    pthread_join(t1, NULL);
+    pthread_join(t2, NULL);
+    pthread_join(t3, NULL);
+    pthread_join(t4, NULL);
+
+    gpiod_line_release (sw_led_red); // Replace with your GPIO number
+    gpiod_line_release (sw_led_green);
+
+    gpiod_line_release (gnss_pw_en);
+    gpiod_line_release (gsm_pw_en);
+    gpiod_line_release (gsm_IGT);
+    gpiod_line_release (pb_led_red);
+    gpiod_line_release (pb_led_green);
+    gpiod_line_release (error);
+
+    gpiod_chip_close(chip);
+    printf("program end \n");
+    return 0;
+}

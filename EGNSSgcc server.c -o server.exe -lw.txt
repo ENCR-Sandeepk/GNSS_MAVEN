@@ -1,0 +1,2 @@
+E:\GNSS>gcc server.c -o server.exe -lws2_32                To compile
+E:\GNSS>server.exe                                         To Run

@@ -1,0 +1,738 @@
+BEAGLEPLAY SERVICE TROUBLESHOOTING / HANDOVER SUMMARY
+==========================================================
+
+Date: 10 August 2026
+
+PURPOSE
+-------
+This document summarizes the current BeaglePlay service investigation. It is intended as a handover/troubleshooting reference before any new service, application, networking, GNSS, MCU, GPIO, Wi-Fi, modem, or system changes are made.
+
+1. USER REQUIREMENTS
+--------------------
+The user inherited a BeaglePlay board previously configured by another developer and is new to BeaglePlay/Linux.
+
+The goal is to first understand the existing system completely, then add new features without interrupting existing functionality.
+
+For every relevant service, the user wants to know:
+1. Why the service exists
+2. Who/what starts it
+3. Exact service file location
+4. Full service text
+5. Exact ExecStart/ExecStartPre/ExecStartPost/ExecStop
+6. Whether it launches an external file/program/script
+7. The complete execution chain
+8. Configuration files
+9. User/root permissions
+10. Working directory/environment
+11. Hardware devices used
+12. Serial devices
+13. GPIO lines
+14. Watchdog devices
+15. TCP/UDP ports
+16. Network interfaces
+17. Files/directories read
+18. Files/directories written
+19. Logs
+20. Other services it depends on
+21. Services depending on it
+22. What happens if it stops
+23. What happens if it crashes
+24. Restart policy
+25. Whether a new service can safely interact with it
+26. Whether it should be left untouched
+27. How to safely add new functionality around it
+
+2. USER'S OWN SOFTWARE
+----------------------
+The user explicitly confirmed that these were written by the user:
+- GNSS_ROVER_BASE.jar
+- gnss_gui_server
+- index.html
+- UI folder/code
+
+The important distinction is:
+A .service file is not necessarily the application itself. It may be a systemd launcher/wrapper which starts a script, binary, Java JAR, or command.
+
+The desired investigation model is:
+
+    service
+       |
+       +--> ExecStart
+               |
+               +--> script/program/command
+                       |
+                       +--> child program/file
+                               |
+                               +--> hardware/network/files
+
+3. BOARD / OS INFORMATION
+-------------------------
+OS:
+    Debian GNU/Linux 12 (bookworm)
+
+Kernel:
+    Linux BeagleBone 6.12.43-ti-arm64-r53
+    aarch64
+    PREEMPT_RT
+    Thu Sep 4 17:49:23 UTC 2025
+
+Hostname:
+    BeagleBone
+
+4. IMPORTANT INITIAL SERVICE FINDINGS
+-------------------------------------
+The initial running-service list contained 35 loaded/running services.
+
+Important custom/project-looking services include:
+    gnss.service
+    gnss-watchdog.service
+    gnss_gpio.service
+    gnss_gui_server.service
+    gnss-wifi-connect.service
+    gnss-wifi-setup.service
+    mcu_server.service
+    serial-bridge.service
+    quectel-check.service
+    ip-manager.service
+    modem_init.service
+    modem_status.service
+    net-timesync.service
+    daily-reboot.service
+    daily-timesync.service
+    bring-up-eth2.service
+
+Timers identified:
+    daily-reboot.timer
+    daily-timesync.timer
+    modem_status.timer
+
+Important standard services also exist, including:
+    NetworkManager.service
+    systemd-networkd.service
+    hostapd.service
+    iwd.service
+    nginx.service
+    docker.service
+    containerd.service
+    ssh.service
+    node-red.service
+    code-server@debian.service
+    systemd-timesyncd.service
+and others.
+
+5. FAILED SERVICES
+------------------
+Initial inventory reported:
+    bring-up-eth2.service    FAILED
+    dnsmasq.service          FAILED
+    networking.service       FAILED
+
+These must NOT be deleted/disabled just because they are failed. Their purpose and whether they are obsolete/replaced must be established first.
+
+6. CONFIRMED gnss.service CHAIN
+-------------------------------
+Service:
+    gnss.service
+
+Location:
+    /etc/systemd/system/gnss.service
+
+Confirmed ExecStart:
+    /opt/gnss/start_gnss.sh
+
+Current confirmed chain:
+
+    systemd
+       |
+       +--> gnss.service
+               |
+               +--> /opt/gnss/start_gnss.sh
+                       |
+                       +--> [needs inspection]
+                       |
+                       +--> GNSS_Rover_Base.jar
+
+The exact contents of start_gnss.sh must be inspected before claiming the exact Java command.
+
+7. CONFIRMED gnss_gui_server.service CHAIN
+-------------------------------------------
+Service:
+    gnss_gui_server.service
+
+Location:
+    /etc/systemd/system/gnss_gui_server.service
+
+Confirmed executable:
+    /home/debian/gnss_gui_server
+
+Observed running process:
+    /home/debian/gnss_gui_server
+
+Therefore:
+
+    gnss_gui_server.service
+       |
+       +--> /home/debian/gnss_gui_server
+               |
+               +--> user's GUI/server application
+
+Earlier inventory associated this server with TCP 8080. Verify with current socket/process output in the final architecture document.
+
+8. CONFIRMED serial-bridge.service CHAIN
+-----------------------------------------
+This was one of the user's main questions.
+
+Confirmed service:
+    serial-bridge.service
+
+Confirmed execution:
+
+    serial-bridge.service
+       |
+       +--> /bin/bash -c "sleep 10; /usr/local/bin/serial_bridge"
+               |
+               +--> sleep 10
+               |
+               +--> /usr/local/bin/serial_bridge
+
+Observed running process:
+    /usr/local/bin/serial_bridge
+
+Therefore serial-bridge.service DEFINITELY starts an external program. It does not perform the bridge entirely inside the .service file.
+
+Remaining items to verify:
+- exact serial device
+- exact TCP/UDP port
+- configuration files
+- whether serial_bridge launches children
+- device ownership
+- failure/restart behavior
+- whether another application can safely use the same serial device
+
+Earlier inventory suggested /dev/ttyS0 and TCP 2000 are involved; verify these from the actual running process/socket information before finalizing.
+
+9. CONFIRMED gnss_gpio.service
+------------------------------
+Service:
+    gnss_gpio.service
+
+Confirmed executable:
+    /opt/gnss/gnss_gpio
+
+Observed running process:
+    /opt/gnss/gnss_gpio
+
+The collected service information showed it running as root.
+
+Conceptual chain:
+
+    gnss_gpio.service
+       |
+       +--> /opt/gnss/gnss_gpio
+               |
+               +--> GPIO hardware
+
+Still to verify:
+- exact GPIO lines
+- GPIO device/chip
+- configuration
+- input/output operations
+- ownership/conflicts
+
+10. CONFIRMED gnss-watchdog.service
+------------------------------------
+Service:
+    gnss-watchdog.service
+
+Confirmed startup structure includes:
+
+    ExecStartPre:
+        /bin/sh -c "while [ ! -e /dev/watchdog1 ]; do sleep 1; done"
+
+Main executable:
+    /opt/gnss/watchdog
+
+Chain:
+
+    gnss-watchdog.service
+       |
+       +--> wait for /dev/watchdog1
+       |
+       +--> /opt/gnss/watchdog
+               |
+               +--> /dev/watchdog1
+               |
+               +--> hardware watchdog
+
+Treat this service as sensitive. Do not disable/modify it casually.
+
+Still to verify:
+- watchdog timeout
+- exact recovery/reset behavior
+- whether it monitors GNSS application health
+- logging
+- ownership
+
+11. CONFIRMED gnss-wifi-setup.service
+--------------------------------------
+Service:
+    gnss-wifi-setup.service
+
+Confirmed executable:
+    /home/debian/wifi_setup/wifi_setup
+
+Application behavior observed in the logs:
+- reads device serial number
+- sets Wi-Fi SSID
+- updates hostapd configuration
+- allows hostapd to use the resulting SSID
+
+Chain:
+
+    gnss-wifi-setup.service
+       |
+       +--> /home/debian/wifi_setup/wifi_setup
+               |
+               +--> serial number
+               +--> Wi-Fi configuration
+               +--> hostapd.conf
+
+There is also gnss-wifi-connect.service. These should be documented separately because setup and connection may be separate responsibilities.
+
+12. CONFIRMED mcu_server.service
+--------------------------------
+Service:
+    mcu_server.service
+
+Confirmed executable:
+    /usr/local/bin/mcu_server
+
+The service runs as the Debian user and has Restart=always according to the collected service information.
+
+Earlier inventory associated MCU communication with:
+    /dev/ttyS3
+    TCP 2001
+
+Verify the exact mapping from the deep trace before using it as a final architectural fact.
+
+13. OTHER CUSTOM PROGRAMS FOUND
+-------------------------------
+The inventory identified developer-created-looking files under /usr/local/bin:
+
+    /usr/local/bin/serial_bridge
+    /usr/local/bin/mcu_server
+    /usr/local/bin/quectel_check
+    /usr/local/bin/modem_manager
+    /usr/local/bin/modem_init.sh
+
+Other relevant paths:
+    /opt/gnss/start_gnss.sh
+    /opt/gnss/gnss_gpio
+    /opt/gnss/watchdog
+    /home/debian/gnss_gui_server
+    /home/debian/wifi_setup/wifi_setup
+    /home/debian/wifi_setup/wifi_connect
+
+14. SERVICE CLASSIFICATION REQUIRED
+-----------------------------------
+The final analysis should classify each service into one of these categories:
+
+A. Service -> user's/developer application
+    Example:
+        gnss.service
+           |
+           +--> start_gnss.sh
+                   |
+                   +--> GNSS_Rover_Base.jar
+
+B. Service -> developer script/program
+    Example:
+        service
+           |
+           +--> developer_script.sh
+                   |
+                   +--> developer executable
+
+C. Service -> standard Linux executable
+    Example:
+        service
+           |
+           +--> /usr/bin/system-command
+
+D. Service -> command embedded directly in unit
+    Example:
+        ExecStart=/bin/sh -c "..."
+
+E. Service -> another system daemon/service
+
+The user specifically wants to know which services fall into these groups.
+
+15. NETWORKING COMPLEXITY
+-------------------------
+The board contains several networking systems:
+- NetworkManager
+- systemd-networkd
+- hostapd
+- iwd
+
+Custom/project network services include:
+- gnss-wifi-connect.service
+- gnss-wifi-setup.service
+- ip-manager.service
+- bring-up-eth2.service
+- net-timesync.service
+
+Failed network-related services initially included:
+    bring-up-eth2.service
+    dnsmasq.service
+    networking.service
+
+Do not add another network-management mechanism until interface ownership is understood.
+
+16. QUECTEL / MODEM AREA
+------------------------
+Relevant services:
+    quectel-check.service
+    modem_init.service
+    modem_status.service
+    modem_status.timer
+
+Relevant programs/files found:
+    /usr/local/bin/quectel_check
+    /usr/local/bin/modem_manager
+    /usr/local/bin/modem_init.sh
+
+Still to verify:
+- modem device nodes
+- AT command interface
+- process ownership
+- network interface
+- APN/configuration
+- reconnect logic
+- interaction with NetworkManager/iwd/systemd-networkd
+
+17. TIME SYNCHRONIZATION AREA
+-----------------------------
+Relevant custom services:
+    net-timesync.service
+    daily-timesync.service
+    daily-timesync.timer
+
+Standard service:
+    systemd-timesyncd.service
+
+Need to determine whether custom and standard time synchronization are complementary or competing.
+
+18. DAILY REBOOT
+---------------
+Relevant:
+    daily-reboot.service
+    daily-reboot.timer
+
+The timer schedules the service. Exact schedule and command must be inspected before changing it.
+
+19. CURRENT DEEP-TRACE SCRIPT
+-----------------------------
+A tracing script was successfully created at:
+
+    /home/debian/beagle_inventory/deep_service_trace.sh
+
+The timestamped output file was not found after running it.
+
+A debug run was then used:
+
+    sudo bash -x ~/beagle_inventory/deep_service_trace.sh 2>&1 | tee ~/beagle_inventory/trace_debug.txt
+
+This successfully created:
+
+    /home/debian/beagle_inventory/trace_debug.txt
+
+Reported size:
+    approximately 467 KB
+
+The next intended step was to inspect the end of that debug file and error lines.
+
+The full contents of trace_debug.txt have not yet been incorporated into this summary, so the deep trace remains an outstanding task.
+
+20. IMPORTANT UNCONFIRMED ITEMS
+--------------------------------
+Do not guess these until the actual files/programs are inspected:
+
+- Exact contents of /opt/gnss/start_gnss.sh
+- Exact internal behavior of /usr/local/bin/serial_bridge
+- Exact internal behavior of /usr/local/bin/mcu_server
+- Exact internal behavior of /opt/gnss/gnss_gpio
+- Exact internal behavior of /opt/gnss/watchdog
+- Exact internal behavior of wifi_setup/wifi_connect
+- Exact internal behavior of quectel_check/modem_manager
+- Exact modem initialization commands
+- Exact GPIO ownership
+- Exact serial ownership
+- Exact TCP/UDP port ownership
+- Exact file read/write behavior
+- Exact inter-service dependencies
+- Exact crash/restart behavior
+- Exact relationship between GNSS Java and serial bridge
+- Exact relationship between GNSS GUI server and GNSS Java
+- Exact relationship between MCU server and user applications
+
+21. REQUIRED FINAL SERVICE DOCUMENT
+------------------------------------
+For each service, the eventual final document should contain:
+
+SERVICE NAME
+FULL SERVICE FILE
+SERVICE FILE LOCATION
+WHY IT EXISTS
+WHO/WHAT STARTS IT
+BOOT/START CONDITIONS
+EXACT ExecStart
+ExecStartPre
+ExecStartPost
+ExecStop
+USER/GROUP
+WORKING DIRECTORY
+ENVIRONMENT
+EXTERNAL FILE/SCRIPT/PROGRAM
+FULL EXECUTION CHAIN
+CONFIGURATION FILES
+HARDWARE DEVICES
+SERIAL DEVICES
+GPIO
+WATCHDOG
+TCP PORTS
+UDP PORTS
+NETWORK INTERFACES
+FILES READ
+FILES WRITTEN
+LOGS
+DEPENDENCIES
+REVERSE DEPENDENCIES
+RESTART POLICY
+FAILURE BEHAVIOR
+CRASH BEHAVIOR
+HARDWARE-DISCONNECT BEHAVIOR
+RESOURCE OWNERSHIP
+SAFE INTERACTION WITH NEW APPLICATIONS
+WHETHER TO LEAVE UNTOUCHED
+HOW TO SAFELY EXTEND IT
+HOW TO CHECK STATUS
+HOW TO VIEW LOGS
+HOW TO START/STOP/RESTART IT
+HOW TO FIND ITS PROCESS
+HOW TO FIND ITS PORTS
+HOW TO FIND ITS OPEN DEVICES
+
+22. RECOMMENDED INVESTIGATION ORDER
+------------------------------------
+Phase 1 - User applications:
+    1. gnss.service
+    2. /opt/gnss/start_gnss.sh
+    3. GNSS_Rover_Base.jar
+    4. gnss_gui_server.service
+    5. /home/debian/gnss_gui_server
+
+Phase 2 - Serial/data path:
+    6. serial-bridge.service
+    7. /usr/local/bin/serial_bridge
+    8. /dev/ttyS0
+    9. serial bridge network port
+
+Phase 3 - MCU:
+    10. mcu_server.service
+    11. /usr/local/bin/mcu_server
+    12. MCU serial device
+    13. MCU network port
+
+Phase 4 - Hardware:
+    14. gnss_gpio.service
+    15. /opt/gnss/gnss_gpio
+    16. GPIO ownership
+    17. gnss-watchdog.service
+    18. /opt/gnss/watchdog
+    19. /dev/watchdog1
+
+Phase 5 - Connectivity:
+    20. gnss-wifi-setup.service
+    21. gnss-wifi-connect.service
+    22. ip-manager.service
+    23. Quectel services
+    24. Ethernet services
+
+Phase 6 - Automation/time:
+    25. modem_status.timer
+    26. daily-reboot.timer
+    27. daily-timesync.timer
+    28. net-timesync.service
+
+Phase 7 - Failed services:
+    29. bring-up-eth2.service
+    30. dnsmasq.service
+    31. networking.service
+
+23. USEFUL MANUAL COMMANDS
+--------------------------
+For a service:
+    systemctl cat SERVICE.service
+    systemctl status SERVICE.service --no-pager --full
+    systemctl show SERVICE.service
+    systemctl show SERVICE.service -p ExecStart -p ExecStartPre -p ExecStartPost
+    systemctl list-dependencies SERVICE.service
+    systemctl list-dependencies --reverse SERVICE.service
+    journalctl -u SERVICE.service -b --no-pager
+
+For a process:
+    ps auxww | grep PROCESS_NAME
+    pgrep -a PROCESS_NAME
+
+For ports:
+    ss -lntup
+
+For open files/devices:
+    lsof -p PID
+
+For serial ownership:
+    fuser -v /dev/ttyS*
+
+For watchdog:
+    ls -lah /dev/watchdog*
+    fuser -v /dev/watchdog*
+
+For GPIO:
+    gpioinfo
+
+For a program:
+    ls -lah /path/program
+    file /path/program
+    readlink -f /path/program
+    stat /path/program
+
+For a shell script:
+    cat /path/script.sh
+
+24. SAFETY RULES BEFORE MODIFICATION
+------------------------------------
+Do NOT yet:
+- disable custom services
+- delete service files
+- change network configuration
+- change serial device ownership
+- kill GNSS processes
+- disable watchdog
+- change modem initialization
+- change hostapd configuration
+- change NetworkManager/systemd-networkd configuration
+- change boot dependencies
+- remove failed services
+
+First understand resource ownership and dependencies.
+
+25. TARGET ARCHITECTURE
+-----------------------
+The final objective is to reconstruct this type of chain for every custom service:
+
+    SERVICE
+       |
+       +--> unit file
+       |
+       +--> ExecStart
+              |
+              +--> script/program/command
+                     |
+                     +--> child program/file
+                            |
+                            +--> hardware/network/files
+                                   |
+                                   +--> dependencies
+
+The key question is not merely "what services are running?"
+
+The key question is:
+
+    "What is the actual execution and ownership architecture of the BeaglePlay?"
+
+That means identifying:
+- which service starts which program
+- which script starts which child
+- which program owns each device
+- which program listens on each port
+- which configuration files are used
+- which files are read/written
+- which services depend on one another
+- what breaks when a service stops
+- whether a new service can safely interact with an existing resource
+
+26. CURRENT KNOWN HIGH-LEVEL GRAPH
+----------------------------------
+Partially/confirmed:
+
+    systemd
+       |
+       +--> gnss.service
+       |       |
+       |       +--> /opt/gnss/start_gnss.sh
+       |               |
+       |               +--> GNSS_Rover_Base.jar [verify]
+       |
+       +--> gnss_gui_server.service
+       |       |
+       |       +--> /home/debian/gnss_gui_server
+       |
+       +--> serial-bridge.service
+       |       |
+       |       +--> /bin/bash
+       |              |
+       |              +--> sleep 10
+       |              |
+       |              +--> /usr/local/bin/serial_bridge
+       |
+       +--> gnss_gpio.service
+       |       |
+       |       +--> /opt/gnss/gnss_gpio
+       |
+       +--> gnss-watchdog.service
+       |       |
+       |       +--> wait for /dev/watchdog1
+       |       |
+       |       +--> /opt/gnss/watchdog
+       |
+       +--> gnss-wifi-setup.service
+       |       |
+       |       +--> /home/debian/wifi_setup/wifi_setup
+       |
+       +--> mcu_server.service
+       |       |
+       |       +--> /usr/local/bin/mcu_server
+       |
+       +--> quectel-check.service
+       |       |
+       |       +--> /usr/local/bin/quectel_check [verify]
+       |
+       +--> modem_init.service
+       |
+       +--> modem_status.service
+       |
+       +--> ip-manager.service
+       |
+       +--> gnss-wifi-connect.service
+       |
+       +--> net-timesync.service
+       |
+       +--> daily-reboot.timer
+       |       |
+       |       +--> daily-reboot.service
+       |
+       +--> daily-timesync.timer
+               |
+               +--> daily-timesync.service
+
+27. HANDOVER PRINCIPLE
+----------------------
+Do not infer a service's actual behavior from its name.
+
+Always follow:
+    service -> ExecStart -> script/program -> child processes -> devices/ports/files -> dependencies
+
+The user's Java/GNSS/UI software must be clearly distinguished from Linux/system services in the final documentation.
+
+END OF SUMMARY

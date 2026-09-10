@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width,initial-scale=1" />
+        <title>Device Setup</title>
+        <link rel="stylesheet" href="/ui/style.css" />
+    </head>
+
+    <body>
+        <!-- Login Page -->
+        <div id="loginPage" class="container">
+            <div class="content">
+                <h2 class="login-title">GNSS Receiver Login</h2>
+                <form id="loginForm" autocomplete="off">
+                    <div class="form-group">
+                        <label for="loginUsername">Username</label>
+                        <input type="text" id="loginUsername" required />
+                    </div>
+                    <div class="form-group">
+                        <label for="loginPassword">Password</label>
+                        <input type="password" id="loginPassword" required />
+                    </div>
+                    <div id="loginError" class="error hidden">Invalid credentials</div>
+                    <button type="submit" class="btn">Login</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Configuration Page -->
+        <div id="configPage" class="container hidden">
+            <div class="header">
+                <div class="header-content">
+                    <h1>GNSS Receiver Setup <span id="serialBadge" class="serial-badge" style="display:none;"></span> <span id="appVersion" style="font-size:13px;font-weight:normal;color:#aaa;"></span></h1>
+                    <div style="width:100%;">
+                        <div class="user-info"><strong id="usernameDisplay">User</strong></div>
+                        <div class="user-menu">
+                            <a id="receiver_server_logsLink">Server Logs</a>
+                            <a id="receiver_logsLink">Normal Logs</a>
+                            <a id="logoutLink">Logout</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="content">
+                <!-- Merged Receiver Type and Base Coordinates into single section with one save button -->
+                <form id="mainConfigForm">
+                    <div class="section-title">GNSS Receiver Settings</div>
+
+                    <div class="form-group">
+                        <label>Receiver Type</label>
+                        <div class="device-type-selector" role="radiogroup" aria-label="Receiver Type">
+                            <label class="radio-option" tabindex="0">
+                                <input type="radio" name="deviceType" value="base" />
+                                <span class="circle" aria-hidden="true"></span>
+                                <span class="label-text">BASE</span>
+                            </label>
+
+                            <label class="radio-option" tabindex="0">
+                                <input type="radio" name="deviceType" value="rover" />
+                                <span class="circle" aria-hidden="true"></span>
+                                <span class="label-text">ROVER</span>
+                            </label>
+                            <label class="radio-option" tabindex="0">
+                                <input type="radio" name="deviceType" value="stop" />
+                                <span class="circle" aria-hidden="true"></span>
+                                <span class="label-text">STOP</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Base Coordinates section for BASE device type -->
+                    <div id="baseCoordinatesSection" class="hidden">
+                        <label style="display:block; margin-bottom:10px; color:#333; font-weight:500; font-size:14px;">Base
+                            Co-ordinates</label>
+
+                        <div class="form-group">
+                            <div class="device-type-selector" role="radiogroup" aria-label="Coordinate Mode">
+                                <label class="radio-option" tabindex="0">
+                                    <input type="radio" name="coordinateMode" value="auto" />
+                                    <span class="circle" aria-hidden="true"></span>
+                                    <span class="label-text">Auto Fix Base Co-ordinates</span>
+                                </label>
+
+                                <label class="radio-option" tabindex="0">
+                                    <input type="radio" name="coordinateMode" value="manual" />
+                                    <span class="circle" aria-hidden="true"></span>
+                                    <span class="label-text">Manually feed Base Co-ordinates</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Auto Fix section -->
+                        <div id="autoFixSection">
+                            <div class="form-group">
+
+                                <div class="checkbox-wrapper">
+                                    <input type="checkbox" id="resetBaseCoordinates" />
+                                    <label for="resetBaseCoordinates">Reset Base Co-ordinates</label>
+                                </div>
+
+                                <label for="averageDelay">Average Delay (Change requires base reset.)</label>
+                                <select id="averageDelay">
+                                    <option value="1hr">1 hour</option>
+                                    <option value="2hr">2 hours</option>
+                                    <option value="3hr">3 hours</option>
+                                    <option value="4hr">4 hours</option>
+                                    <option value="6hr">6 hours</option>
+                                    <option value="12hr">12 hours</option>
+                                    <option value="24hr">24 hours</option>
+                                    <option value="48hr">48 hours</option>
+                                    <option value="72hr">72 hours</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Manual Feed section -->
+                        <div id="manualFeedSection" class="hidden">
+                            <div class="form-group">
+                                <label for="latitude">Latitude</label>
+                                <input type="text" id="latitude" placeholder="e.g., 40.7128" class="coordinate-input" />
+                            </div>
+
+                            <div class="form-group">
+                                <label for="longitude">Longitude</label>
+                                <input type="text" id="longitude" placeholder="e.g., -74.0060" class="coordinate-input" />
+                            </div>
+
+                            <div class="form-group">
+                                <label for="altitude">Altitude</label>
+                                <input type="text" id="altitude" placeholder="e.g., 10.5" class="coordinate-input" />
+                            </div>
+                        </div>
+                    </div>
+
+                </form>
+
+                <!-- Server Settings -->
+                <form id="configForm">
+
+                    <div class="section-title">GNSS Operating Mode</div>
+
+                    <div class="form-group">
+
+                        <div class="device-type-selector" role="radiogroup" aria-label="GNSS Operating Mode">
+                            <label class="radio-option" tabindex="0">
+                                <input type="radio" name="mode" value="continuous" />
+                                <span class="circle" aria-hidden="true"></span>
+                                <span class="label-text">Continuous Mode</span>
+                            </label>
+
+                            <label class="radio-option" tabindex="0">
+                                <input type="radio" name="mode" value="burst" />
+                                <span class="circle" aria-hidden="true"></span>
+                                <span class="label-text">Burst Mode</span>
+                            </label>
+
+                        </div>
+                    </div>
+
+                    <!-- Burst Mode Settings - only visible when Burst Mode is selected -->
+                    <div id="burstModeSettings" class="hidden">
+                        <div class="form-group">
+                            <label for="burstWindow">Burst Window</label>
+                            <select id="burstWindow">
+                                <option value="10min">10 Minutes</option>
+                                <option value="15min">15 Minutes</option>
+                                <option value="20min">20 Minutes</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="burstInterval">Burst Interval</label>
+                            <select id="burstInterval">
+                                <option value="1hr">1 Hour</option>
+                                <option value="2hr">2 Hours</option>
+                                <option value="3hr">3 Hours</option>
+                                <option value="4hr">4 Hours</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="section-title">Diagnostics</div>
+                    <div class="checkbox-wrapper">
+                        <input type="checkbox" id="debugEnable" />
+                        <label for="debugEnable">Enable Debug Logging (verbose logs to system journal)</label>
+                    </div>
+
+                    <div id="serverSetting">
+                        <div class="section-title">Server Settings</div>
+
+                        <div class="form-group">
+                            <label for="ipServer">IP Server</label>
+                            <input type="text" id="ipServer" placeholder="192.168.1.1" required />
+                        </div>
+
+                        <div class="form-group">
+                            <label for="portServer">Port Server</label>
+                            <input type="number" id="portServer" placeholder="2101" required />
+                        </div>
+
+                        <div class="form-group">
+                            <label for="mountPoint">Mount Point</label>
+                            <input type="text" id="mountPoint" placeholder="MOUNT1" required />
+                        </div>
+
+                        <div class="form-group">
+                            <label for="serverUser">User</label>
+                            <input type="text" id="serverUser" required />
+                        </div>
+
+                        <div class="form-group">
+                            <label for="serverPassword">Password</label>
+                            <input type="password" id="serverPassword" required />
+                        </div>
+
+                        <!-- FTP Settings: shared by rover (CSV upload) and base (config backup) -->
+                        <div class="section-title">FTP Settings</div>
+
+                        <div class="checkbox-wrapper">
+                            <input type="checkbox" id="ftpUploadEnable" />
+                            <label for="ftpUploadEnable">FTP Upload Enable</label>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="ftpIp">FTP IP</label>
+                            <input type="text" id="ftpIp" placeholder="192.168.1.100" />
+                        </div>
+
+                        <div class="form-group">
+                            <label for="ftpPort">FTP Port</label>
+                            <input type="number" id="ftpPort" placeholder="21" />
+                        </div>
+
+                        <div class="form-group">
+                            <label for="ftpUser">FTP User</label>
+                            <input type="text" id="ftpUser" />
+                        </div>
+
+                        <div class="form-group">
+                            <label for="ftpPassword">FTP Password</label>
+                            <input type="password" id="ftpPassword" />
+                        </div>
+
+                    </div>
+
+                    <!-- Rover-specific Settings -->
+                    <div id="roverSettings" class="settings-section hidden">
+                        <div class="section-title">Rover Settings</div>
+
+                        <div class="form-group">
+                            <label for="roverID">Rover ID</label>
+                            <input type="text" id="roverID" required />
+                        </div>
+
+                        <div class="form-group">
+                            <label for="scanInterval">Scan Interval</label>
+                            <select id="scanInterval">
+                                <option value="1min">1 Minute</option>
+                                <option value="5min">5 Minute</option>
+                                <option value="10min">10 Minute</option>
+                                <option value="15min">15 Minute</option>
+                                <option value="30min">30 Minute</option>
+                                <option value="1hr">1 Hour</option>
+                                <option value="2hr">2 Hour</option>
+                                <option value="3hr">3 Hour</option>
+                                <option value="6hr">6 Hour</option>
+                                <option value="12hr">12 Hour</option>
+                                <option value="24hr">24 Hour</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="row-wrapper">
+                                <div class="checkbox-wrapper">
+                                </div>
+                            </div>
+                            <!-- Row 1 -->
+                            <div class="row-1">
+                                <label class="title-label">Scan Start Time (UTC – System uses UTC time)</label>
+                                <label class="title-label" id="utcClock_datalogger"></label>
+                            </div>
+
+                            <!-- Row 2 -->
+                            <div class="row-2">
+                                <div class="time-group">
+                                    <label for="hours">HH</label>
+                                    <select id="hours"></select>
+                                </div>
+
+                                <div class="time-group">
+                                    <label for="minutes">MM</label>
+                                    <select id="minutes"></select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="section-title">Deviation Reporting Axis</div>
+
+                        <div class="checkbox-wrapper">
+                            <input type="checkbox" id="axisEnable" />
+                            <label for="axisEnable">Report deviation along &amp; transverse to a reference axis</label>
+                            <span id="axisInfoIcon" onclick="openAxisInfo()" title="How to choose the angle?"
+                                  style="display:inline-flex;align-items:center;justify-content:center;width:19px;height:19px;margin-left:8px;border-radius:50%;background:#667eea;color:#fff;font-size:13px;font-weight:700;font-family:Georgia,'Times New Roman',serif;font-style:italic;cursor:pointer;user-select:none;">i</span>
+                        </div>
+
+                        <div class="form-group" id="axisAngleSection" style="display:none;">
+                            <label for="axisAngle">Reference Axis Azimuth (degrees, 0&ndash;360)
+                                <span onclick="openAxisInfo()" style="color:#667eea;cursor:pointer;font-size:12px;">(what is this?)</span>
+                            </label>
+                            <input type="number" id="axisAngle" min="0" max="360" step="0.1" placeholder="e.g. 45" />
+                        </div>
+
+                        <div class="section-title">Data Storage</div>
+
+                        <div class="form-group">
+                            <label for="maxRecordPerFile">Max Record Per File</label>
+                            <select id="maxRecordPerFile">
+                                <option value="1">1 records</option>
+                                <option value="5">5 records</option>
+                                <option value="10">10 records</option>
+                                <option value="15">15 records</option>
+                                <option value="20">20 records</option>
+                                <option value="30">30 records</option>
+                                <option value="40">40 records</option>
+                                <option value="50">50 records</option>
+                                <option value="100">100 records</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="uploadFileAction">Upload File Action</label>
+                            <select id="uploadFileAction">
+                                <option value="delete">Delete After Upload</option>
+                                <option value="archive">Archive After Upload</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="dateTimeFormat">Date Time Format</label>
+                            <select id="dateTimeFormat">
+                                <option value="yyyy/MM/dd HH:mm:ss">yyyy/MM/dd HH:mm:ss</option>
+                                <option value="yyyy-MM-dd HH:mm:ss">yyyy-MM-dd HH:mm:ss</option>
+                                <option value="dd/MM/yyyy HH:mm:ss">dd/MM/yyyy HH:mm:ss</option>
+                                <option value="dd-MM-yyyy HH:mm:ss">dd-MM-yyyy HH:mm:ss</option>
+                                <option value="yyyy/MMM/dd HH:mm:ss">yyyy/MMM/dd HH:mm:ss</option>
+                                <option value="yyyy-MMM-dd HH:mm:ss">yyyy-MMM-dd HH:mm:ss</option>
+                                <option value="dd/MMM/yyyy HH:mm:ss">dd/MMM/yyyy HH:mm:ss</option>
+                                <option value="dd-MMM-yyyy HH:mm:ss">dd-MMM-yyyy HH:mm:ss</option>
+                            </select>
+                        </div>
+
+                        <div class="section-title">Reporting</div>
+
+                        <div class="checkbox-wrapper">
+                            <input type="checkbox" id="geodetic" />
+                            <label for="geodetic">GeoDetic Data Upload Enable</label>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="deviationUnit">Deviation Unit</label>
+                            <select id="deviationUnit">
+                                <option value="inch">Inch</option>
+                                <option value="cm">Centimeter (cm)</option>
+                                <option value="mm">Millimeter (mm)</option>
+                                <option value="ft">Feet (ft)</option>
+                                <option value="m">Meter (m)</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="baseReading">Base Reading</label>
+                            <select id="baseReading">
+                                <option value="1hr">1 hour</option>
+                                <option value="2hr">2 hours</option>
+                                <option value="3hr">3 hours</option>
+                                <option value="4hr">4 hours</option>
+                                <option value="6hr">6 hours</option>
+                                <option value="8hr">8 hours</option>
+                                <option value="12hr">12 hours</option>
+                                <option value="24hr">24 hours</option>
+                                <option value="48hr">48 hours</option>
+                                <option value="72hr">72 hours</option>
+                            </select>
+                        </div>
+
+                        <div class="checkbox-wrapper">
+                            <input type="checkbox" id="resetBaseReading" />
+                            <label for="resetBaseReading">Reset Base Reading</label>
+                        </div>
+
+                    </div>
+                    <button type="button" class="section-save-btn" onclick="saveMainConfiguration()">Save
+                        Configuration</button>
+                </form>
+
+                <!-- WiFi Settings Section -->
+                <div class="settings-section">
+                    <div class="section-title">WiFi Settings</div>
+
+                    <div class="form-group">
+                        <label for="wifiSSID">WiFi SSID</label>
+                        <input type="text" id="wifiSSID" placeholder="Enter WiFi network name" />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="wifiPassword">WiFi Password</label>
+                        <input type="password" id="wifiPassword" placeholder="Enter WiFi password" />
+                    </div>
+
+                    <div id="wifiStatus"
+                         style="display:none; padding:10px; border-radius:8px; margin-bottom:12px; font-size:13px;"></div>
+
+                    <button type="button" class="section-save-btn" onclick="saveWifiSettings()">Save WiFi Settings</button>
+                </div>
+
+                <!-- IP Settings Section -->
+                <div class="settings-section">
+                    <div class="section-title">IP Settings</div>
+
+                    <div id="ipSettingStatus"
+                         style="display:none; padding:10px; border-radius:8px; margin-bottom:12px; font-size:13px;"></div>
+
+                    <div class="form-group">
+                        <label for="ipSettingAddress">IP Address</label>
+                        <input type="text" id="ipSettingAddress" placeholder="e.g., 192.168.1.60" />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="ipSettingPort">Port Number</label>
+                        <input type="text" id="ipSettingPort" value="2000" readonly
+                               style="background:#f0f0f0; color:#666; cursor:not-allowed;" />
+                    </div>
+
+                    <button type="button" class="section-save-btn" onclick="saveIpSetting()">Save IP Settings</button>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Logs Page -->
+        <div id="logsPage" class="container hidden">
+            <div class="header">
+                <div class="header-content">
+                    <h1 id="logsHeading">System Logs</h1>
+                    <div style="width:100%;">
+                        <div class="user-info"><strong id="usernameDisplayLogs">User</strong></div>
+                        <div class="user-menu">
+                            <a id="backToConfigLink">Back to Config</a>
+                            <a id="logoutLinkFromLogs">Logout</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="content">
+                <div class="logs-container" id="logsContainer">
+                </div>
+            </div>
+        </div>
+
+        <script src="/ui/app.js"></script>
+
+        <div id="customAlertOverlay" class="alert-overlay">
+            <div class="alert-box">
+                <div class="alert-header">
+                    <span id="alertTitle">Alert</span>
+                </div>
+                <div class="alert-body">
+                    <p id="alertMessage">This is a custom alert message.</p>
+                </div>
+                <div class="alert-footer">
+                    <button onclick="closeCustomAlert()">OK</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== Deviation Reporting Axis — Help dialog ===== -->
+        <div id="axisInfoOverlay" class="alert-overlay" onclick="if(event.target===this) closeAxisInfo()">
+            <div class="alert-box" style="max-width:600px;width:92%;">
+                <div class="alert-header">
+                    <span>Deviation Reporting Axis &mdash; Help</span>
+                </div>
+                <div class="alert-body" style="text-align:left;max-height:72vh;overflow:auto;font-size:13px;line-height:1.55;color:#3a4653;">
+
+                    <div style="text-align:center;margin:4px 0 14px;">
+                        <svg viewBox="0 0 320 300" width="290" style="max-width:100%;" role="img" aria-label="Diagram showing the reference axis azimuth measured clockwise from North, with the Along and Transverse directions.">
+                            <defs>
+                                <marker id="arrN" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#888"/></marker>
+                                <marker id="arrG" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#10b981"/></marker>
+                                <marker id="arrO" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#e0821e"/></marker>
+                            </defs>
+                            <!-- structure (thick) along NE-SW axis -->
+                            <line x1="82" y1="228" x2="238" y2="72" stroke="#9aa5b1" stroke-width="13" stroke-linecap="round" opacity="0.45"/>
+                            <text x="243" y="66" font-size="11" fill="#6b7684">structure</text>
+                            <!-- compass -->
+                            <line x1="160" y1="150" x2="160" y2="42" stroke="#888" stroke-width="1.6" marker-end="url(#arrN)"/>
+                            <text x="160" y="34" text-anchor="middle" font-size="14" font-weight="700" fill="#333">N</text>
+                            <text x="299" y="155" font-size="12" fill="#999">E</text>
+                            <text x="156" y="292" font-size="12" fill="#999">S</text>
+                            <text x="13" y="155" font-size="12" fill="#999">W</text>
+                            <!-- angle arc N -> axis -->
+                            <path d="M160,102 A48,48 0 0,1 194,116" fill="none" stroke="#667eea" stroke-width="2"/>
+                            <text x="180" y="98" font-size="13" font-weight="700" fill="#667eea">&theta;</text>
+                            <!-- Along arrow -->
+                            <line x1="160" y1="150" x2="238" y2="72" stroke="#10b981" stroke-width="3" marker-end="url(#arrG)"/>
+                            <text x="196" y="88" font-size="12" font-weight="700" fill="#10b981">Along</text>
+                            <!-- Transverse arrow -->
+                            <line x1="160" y1="150" x2="218" y2="208" stroke="#e0821e" stroke-width="3" marker-end="url(#arrO)"/>
+                            <text x="150" y="212" font-size="12" font-weight="700" fill="#e0821e">Transverse</text>
+                            <circle cx="160" cy="150" r="3.5" fill="#333"/>
+                            <text x="160" y="285" text-anchor="middle" font-size="10.5" fill="#8a93a0">&theta; = azimuth entered (clockwise from North)</text>
+                        </svg>
+                    </div>
+
+                    <div style="font-weight:700;margin-bottom:4px;">What angle should I enter?</div>
+                    Enter the <b>azimuth (compass bearing) of your structure's main axis</b>, measured
+                    <b>clockwise from TRUE North</b>. Range 0&ndash;360&deg;
+                    (0&deg; = North, 90&deg; = East, 180&deg; = South, 270&deg; = West).
+
+                    <div style="font-weight:700;margin:10px 0 4px;">What you will get</div>
+                    <ul style="margin:0 0 4px 18px;padding:0;">
+                        <li><b>Along-axis</b> &mdash; movement in the direction of the axis you enter
+                            (e.g. lengthwise along a dam crest, rail, wall, or slope).</li>
+                        <li><b>Transverse-axis</b> &mdash; movement perpendicular to it (90&deg; clockwise),
+                            usually the critical direction (e.g. across a dam: upstream/downstream).</li>
+                    </ul>
+
+                    <div style="font-weight:700;margin:10px 0 4px;">How to obtain the angle</div>
+                    <ul style="margin:0 0 4px 18px;padding:0;">
+                        <li><b>Design drawing / site plan:</b> read the bearing of the structure's main axis.</li>
+                        <li><b>Map (e.g. Google Earth):</b> draw a line along the axis and read its bearing.</li>
+                        <li><b>Two survey points on the axis:</b> azimuth = atan2(&Delta;East, &Delta;North),
+                            converted to 0&ndash;360&deg;.</li>
+                        <li><b>Compass:</b> read the magnetic bearing, then add the local magnetic
+                            declination to get the TRUE bearing.</li>
+                    </ul>
+
+                    <div style="font-weight:700;margin:10px 0 4px;">Example</div>
+                    A dam running <b>North-East to South-West</b> &rarr; enter <b>45</b>.
+                    &ldquo;Along&rdquo; then reports movement along the dam, and &ldquo;Transverse&rdquo;
+                    reports movement across it.
+
+                    <div style="margin-top:10px;color:#6b7684;">
+                        Leave the checkbox unticked to report standard East / North / Up. The total
+                        movement magnitude is identical in either mode &mdash; only the axis direction changes.
+                    </div>
+                </div>
+                <div class="alert-footer">
+                    <button onclick="closeAxisInfo()">Close</button>
+                </div>
+            </div>
+        </div>
+
+    </body>
+
+</html>

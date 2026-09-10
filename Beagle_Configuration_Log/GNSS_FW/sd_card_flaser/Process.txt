@@ -1,0 +1,35 @@
+password : niraj
+
+// copy sdcard_flasher into beagle board
+F:\sd_card_flaser>scp sdcard_flasher debian@192.168.10.100:~
+
+// 
+sudo ./sdcard_flasher
+[sudo] password for debian: beagle
+
+// run on putty after copying for permission or make executable
+chmod 777 sdcard_flasher
+
+Enter Password:niraj
+
+now insert the sd card and power cycle the beagle board
+
+Run command below or power cycle the card 
+sudo reboot
+
+now led lights will runs with glow. means writing the code into memory card 
+
+when it stopped runs led glow and power off that means sd card is ready. this process will take around 22 to 25 min
+
+
+now sd card is ready. 
+
+now put the sd card into new beagle play board and power up the card it will start the writing into beagle play board.
+means from sd card to beagle play board. 
+
+again it will take around 25 min.  and in this way we program the new beagle play boards.
+
+after program burn finished then remove the sd card and power cycle the board. 
+
+you board is ready to run
+

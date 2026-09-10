@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">
+<refactoring comment="Delete resource &apos;server_fulldup_serrial/Debug/server_simplex_shm&apos;" deleteContents="false" description="Delete resource &apos;server_fulldup_serrial/Debug/server_simplex_shm&apos;" element1="/server_fulldup_serrial/Debug/server_simplex_shm" flags="7" id="org.eclipse.ltk.core.refactoring.delete.resources" resources="1" stamp="1743656631207"/>
+</session>

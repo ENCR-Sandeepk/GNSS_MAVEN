@@ -1,0 +1,7 @@
+09:44:59 **** Rebuild of configuration Debug for project hello3 ****
+Info: Internal Builder is used for build
+aarch64-linux-gnu-gcc -O0 -g3 -Wall -c -fmessage-length=0 -o main.o ../main.c 
+aarch64-linux-gnu-gcc -o hello3 main.o 
+
+09:45:00 Build Finished. 0 errors, 0 warnings. (took 134ms)
+

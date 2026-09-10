@@ -1,0 +1,114 @@
+These are your project's services:
+
+gnss.service
+serial-bridge.service
+mcu_server.service
+gnss_gui_server.service
+gnss_gpio.service
+gnss-watchdog.service
+ip-manager.service
+bring-up-eth2.service
+modem_init.service
+quectel-check.service
+quectel_ec200u_net.service
+gnss-wifi-setup.service
+gnss-wifi-connect.service
+
+These were added by your firmware developer.
+
+
+
+debian@BeagleBone:~$ systemctl cat gnss.service
+
+systemctl cat serial-bridge.service
+
+systemctl cat mcu_server.service
+
+systemctl cat gnss_gui_server.service
+
+systemctl cat gnss_gpio.service
+# /etc/systemd/system/gnss.service
+[Unit]
+Description=GNSS Java Base Station Auto Start
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=debian
+WorkingDirectory=/opt/gnss
+ExecStart=/opt/gnss/start_gnss.sh
+Restart=always
+RestartSec=10
+SuccessExitStatus=143
+
+[Install]
+WantedBy=multi-user.target
+# /etc/systemd/system/serial-bridge.service
+[Unit]
+Description=Serial-to-LAN Bridge
+After=network.target
+
+[Service]
+ExecStart=/bin/bash -c "sleep 10; /usr/local/bin/serial_bridge"
+Restart=always
+User=root
+
+[Install]
+WantedBy=multi-user.target
+
+
+# /etc/systemd/system/mcu_server.service
+[Unit]
+Description=MCU Server
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+ExecStart=/usr/local/bin/mcu_server
+Restart=always
+RestartSec=2
+User=debian
+WorkingDirectory=/usr/local/bin
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target
+# /etc/systemd/system/gnss_gui_server.service
+[Unit]
+Description=GNSS GUI Server Service
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=/home/debian/gnss_gui_server
+WorkingDirectory=/home/debian
+Restart=always
+RestartSec=5
+User=debian
+
+[Install]
+WantedBy=multi-user.target
+# /etc/systemd/system/gnss_gpio.service
+[Unit]
+Description=GNSS GPIO Service
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+ExecStart=/opt/gnss/gnss_gpio
+WorkingDirectory=/opt/gnss
+Restart=always
+RestartSec=5
+User=root
+
+# Optional: logs ko journalctl me bhejne ke liye
+# StandardOutput=journal
+# StandardError=journal
+
+[Install]
+WantedBy=multi-user.target
+debian@BeagleBone:~$

@@ -1,0 +1,2047 @@
+BEAGLEPLAY TCP SERIAL BRIDGE
+Complete Installation, Configuration, Testing, Operation and Rollback Guide
+=========================================================================
+
+PURPOSE
+-------
+This document is the permanent reference for the BeaglePlay GNSS and MCU
+serial bridge services.
+
+The production design uses ONE common C executable:
+
+    /usr/local/bin/tcp_serial_bridge
+
+The same executable is started twice by systemd:
+
+    1) GNSS/K803
+       Service : serial-bridge.service
+       TCP     : 2000
+       UART    : /dev/ttyS0
+       Baud    : 115200
+       User    : root
+
+    2) MCU
+       Service : mcu_server.service
+       TCP     : 2001
+       UART    : /dev/ttyS3
+       Baud    : 115200
+       User    : debian
+
+The bridge is intentionally transparent:
+
+    TCP -> UART
+    UART -> TCP
+
+It does not interpret GNSS or MCU commands, does not assume one-line or
+multi-line replies, and does not implement application-level command
+synchronization.
+
+The Java application is responsible for the application protocol and
+command/response coordination.
+
+IMPORTANT:
+The exact source code that is deployed to production must always be kept in
+version control. The source included in this document is a reference
+implementation matching the deployed interface and design. If the project's
+validated source differs, the validated project source is authoritative.
+
+=========================================================================
+1. FINAL ARCHITECTURE
+=========================================================================
+
+                         BEAGLEPLAY
+                              |
+              +---------------+---------------+
+              |                               |
+              v                               v
+      serial-bridge.service          mcu_server.service
+              |                               |
+              v                               v
+      tcp_serial_bridge                tcp_serial_bridge
+        instance #1                     instance #2
+              |                               |
+          TCP :2000                       TCP :2001
+              |                               |
+          /dev/ttyS0                     /dev/ttyS3
+              |                               |
+              v                               v
+             K803                            MCU
+              |                               |
+              v                               v
+        Java GNSS app                    Java MCU app
+
+
+GNSS data path:
+
+    Java
+      |
+      | TCP 2000
+      v
+    tcp_serial_bridge
+      |
+      | UART 115200
+      v
+    /dev/ttyS0
+      |
+      v
+    K803 GNSS module
+
+MCU data path:
+
+    Java
+      |
+      | TCP 2001
+      v
+    tcp_serial_bridge
+      |
+      | UART 115200
+      v
+    /dev/ttyS3
+      |
+      v
+    MCU
+
+Reverse direction is also supported:
+
+    UART -> TCP
+
+=========================================================================
+2. WHY THE SAME PROGRAM IS USED TWICE
+=========================================================================
+
+Linux permits multiple independent processes to execute the same binary.
+
+GNSS instance:
+
+    /usr/local/bin/tcp_serial_bridge 2000 /dev/ttyS0
+
+MCU instance:
+
+    /usr/local/bin/tcp_serial_bridge 2001 /dev/ttyS3
+
+The executable is the same, but each process has its own:
+
+    TCP listening socket
+    UART file descriptor
+    client list
+    threads
+    process ID
+
+Therefore the two services are independent.
+
+=========================================================================
+3. SYSTEM INFORMATION
+=========================================================================
+
+The BeaglePlay system identified during troubleshooting:
+
+    Debian GNU/Linux 12 (bookworm)
+
+    Linux:
+    6.12.43-ti-arm64-r53
+
+    Architecture:
+    aarch64
+
+Relevant UART devices:
+
+    /dev/ttyS0
+    /dev/ttyS3
+
+Both bridges use:
+
+    115200 baud
+    8 data bits
+    no parity
+    1 stop bit
+    no hardware flow control
+
+TCP ports:
+
+    2000 = GNSS/K803
+    2001 = MCU
+
+Maximum bridge clients:
+
+    8 per bridge instance
+
+=========================================================================
+4. ORIGINAL PRODUCTION SERVICES
+=========================================================================
+
+Before migration, GNSS was:
+
+    /etc/systemd/system/serial-bridge.service
+
+    [Unit]
+    Description=Serial-to-LAN Bridge
+    After=network.target
+
+    [Service]
+    ExecStart=/bin/bash -c "sleep 10; /usr/local/bin/serial_bridge"
+    Restart=always
+    User=root
+
+    [Install]
+    WantedBy=multi-user.target
+
+Its process chain was:
+
+    systemd
+      |
+      v
+    /bin/bash
+      |
+      +-- sleep 10
+      |
+      v
+    /usr/local/bin/serial_bridge
+      |
+      +-- /dev/ttyS0
+      +-- TCP 2000
+
+
+MCU was:
+
+    /etc/systemd/system/mcu_server.service
+
+    [Unit]
+    Description=MCU Server
+    After=network-online.target
+    Wants=network-online.target
+
+    [Service]
+    Type=simple
+    ExecStart=/usr/local/bin/mcu_server
+    Restart=always
+    RestartSec=2
+    User=debian
+    WorkingDirectory=/usr/local/bin
+    StandardOutput=journal
+    StandardError=journal
+
+    [Install]
+    WantedBy=multi-user.target
+
+Its process chain was:
+
+    systemd
+      |
+      v
+    /usr/local/bin/mcu_server
+      |
+      +-- /dev/ttyS3
+      +-- TCP 2001
+
+=========================================================================
+5. FINAL PRODUCTION SERVICE FILES
+=========================================================================
+
+5.1 /etc/systemd/system/serial-bridge.service
+
+    [Unit]
+    Description=GNSS K803 TCP Serial Bridge
+    After=network.target
+    Wants=network.target
+
+    [Service]
+    Type=simple
+    ExecStart=/usr/local/bin/tcp_serial_bridge 2000 /dev/ttyS0
+    Restart=always
+    RestartSec=2
+    User=root
+    WorkingDirectory=/usr/local/bin
+    StandardOutput=journal
+    StandardError=journal
+
+    [Install]
+    WantedBy=multi-user.target
+
+
+5.2 /etc/systemd/system/mcu_server.service
+
+    [Unit]
+    Description=MCU TCP Serial Bridge
+    After=network-online.target
+    Wants=network-online.target
+
+    [Service]
+    Type=simple
+    ExecStart=/usr/local/bin/tcp_serial_bridge 2001 /dev/ttyS3
+    Restart=always
+    RestartSec=2
+    User=debian
+    WorkingDirectory=/usr/local/bin
+    StandardOutput=journal
+    StandardError=journal
+
+    [Install]
+    WantedBy=multi-user.target
+
+=========================================================================
+6. EXPLANATION OF THE SERVICE FILES
+=========================================================================
+
+[Unit]
+    Describes startup ordering and dependencies.
+
+Description=
+    Human-readable name shown by systemctl.
+
+After=
+    Tells systemd to start this service after the specified target.
+
+Wants=
+    Requests activation of the specified target.
+
+[Service]
+    Defines the actual program to run.
+
+Type=simple
+    The ExecStart process is the main service process.
+
+ExecStart=
+    The exact command executed by systemd.
+
+GNSS:
+
+    /usr/local/bin/tcp_serial_bridge 2000 /dev/ttyS0
+
+MCU:
+
+    /usr/local/bin/tcp_serial_bridge 2001 /dev/ttyS3
+
+Restart=always
+    If the program exits, systemd starts it again.
+
+RestartSec=2
+    Wait two seconds before restarting.
+
+User=root
+    GNSS bridge runs as root, matching the original service.
+
+User=debian
+    MCU bridge runs as debian, matching the original service.
+
+WorkingDirectory=/usr/local/bin
+    Sets the process working directory.
+
+StandardOutput=journal
+StandardError=journal
+    Sends stdout/stderr to systemd journal.
+
+[Install]
+WantedBy=multi-user.target
+    Allows the service to be enabled for normal boot.
+
+=========================================================================
+7. REFERENCE C SOURCE
+=========================================================================
+
+The following is a complete transparent bridge implementation.
+
+Command syntax:
+
+    tcp_serial_bridge <TCP_PORT> <SERIAL_DEVICE>
+
+Examples:
+
+    ./tcp_serial_bridge 2000 /dev/ttyS0
+
+    ./tcp_serial_bridge 2001 /dev/ttyS3
+
+Design:
+
+    - maximum 8 TCP clients
+    - one TCP listening socket
+    - one serial port
+    - serial -> all connected TCP clients
+    - TCP -> serial
+    - mutex protects serial writes
+    - no command parsing
+    - no line parsing
+    - no artificial 200 ms command collection
+    - no artificial 2000 ms response timeout
+    - no application protocol synchronization
+
+SOURCE:
+
+-----------------------------------------------------------------------
+
+#define _GNU_SOURCE
+
+#include <arpa/inet.h>
+#include <errno.h>
+#include <fcntl.h>
+#include <netinet/in.h>
+#include <pthread.h>
+#include <signal.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sys/socket.h>
+#include <termios.h>
+#include <unistd.h>
+
+#define MAX_CLIENTS 8
+#define BUFFER_SIZE 4096
+#define BAUD_RATE B115200
+
+typedef struct {
+    int fd;
+    int active;
+} client_t;
+
+typedef struct {
+    int client_index;
+    int serial_fd;
+} client_context_t;
+
+static client_t clients[MAX_CLIENTS];
+static pthread_mutex_t clients_mutex = PTHREAD_MUTEX_INITIALIZER;
+static pthread_mutex_t serial_write_mutex = PTHREAD_MUTEX_INITIALIZER;
+
+static volatile sig_atomic_t running = 1;
+
+static void handle_signal(int sig)
+{
+    (void)sig;
+    running = 0;
+}
+
+static void remove_client(int index)
+{
+    pthread_mutex_lock(&clients_mutex);
+
+    if (index >= 0 &&
+        index < MAX_CLIENTS &&
+        clients[index].active) {
+
+        close(clients[index].fd);
+        clients[index].fd = -1;
+        clients[index].active = 0;
+    }
+
+    pthread_mutex_unlock(&clients_mutex);
+}
+
+static int add_client(int fd)
+{
+    int index = -1;
+
+    pthread_mutex_lock(&clients_mutex);
+
+    for (int i = 0; i < MAX_CLIENTS; i++) {
+
+        if (!clients[i].active) {
+
+            clients[i].fd = fd;
+            clients[i].active = 1;
+
+            index = i;
+            break;
+        }
+    }
+
+    pthread_mutex_unlock(&clients_mutex);
+
+    return index;
+}
+
+static int open_serial(const char *device)
+{
+    int fd = open(device, O_RDWR | O_NOCTTY | O_NONBLOCK);
+
+    if (fd < 0) {
+        fprintf(stderr,
+                "[ERROR] Cannot open serial device %s: %s\n",
+                device,
+                strerror(errno));
+        return -1;
+    }
+
+    struct termios tty;
+
+    if (tcgetattr(fd, &tty) != 0) {
+
+        fprintf(stderr,
+                "[ERROR] tcgetattr(%s): %s\n",
+                device,
+                strerror(errno));
+
+        close(fd);
+        return -1;
+    }
+
+    cfmakeraw(&tty);
+
+    cfsetispeed(&tty, BAUD_RATE);
+    cfsetospeed(&tty, BAUD_RATE);
+
+    tty.c_cflag |= CLOCAL | CREAD;
+    tty.c_cflag &= ~CSTOPB;
+    tty.c_cflag &= ~PARENB;
+    tty.c_cflag &= ~CRTSCTS;
+    tty.c_cflag &= ~CSIZE;
+    tty.c_cflag |= CS8;
+
+    tty.c_cc[VMIN] = 0;
+    tty.c_cc[VTIME] = 1;
+
+    if (tcsetattr(fd, TCSANOW, &tty) != 0) {
+
+        fprintf(stderr,
+                "[ERROR] tcsetattr(%s): %s\n",
+                device,
+                strerror(errno));
+
+        close(fd);
+        return -1;
+    }
+
+    return fd;
+}
+
+static int create_server(int port)
+{
+    int server_fd;
+    int option = 1;
+
+    server_fd = socket(AF_INET, SOCK_STREAM, 0);
+
+    if (server_fd < 0) {
+        perror("[ERROR] socket");
+        return -1;
+    }
+
+    if (setsockopt(server_fd,
+                   SOL_SOCKET,
+                   SO_REUSEADDR,
+                   &option,
+                   sizeof(option)) < 0) {
+
+        perror("[ERROR] setsockopt");
+        close(server_fd);
+        return -1;
+    }
+
+    struct sockaddr_in address;
+
+    memset(&address, 0, sizeof(address));
+
+    address.sin_family = AF_INET;
+    address.sin_addr.s_addr = htonl(INADDR_ANY);
+    address.sin_port = htons(port);
+
+    if (bind(server_fd,
+             (struct sockaddr *)&address,
+             sizeof(address)) < 0) {
+
+        fprintf(stderr,
+                "[ERROR] bind port %d failed: %s\n",
+                port,
+                strerror(errno));
+
+        close(server_fd);
+        return -1;
+    }
+
+    if (listen(server_fd, MAX_CLIENTS) < 0) {
+
+        perror("[ERROR] listen");
+        close(server_fd);
+        return -1;
+    }
+
+    return server_fd;
+}
+
+static void broadcast_to_clients(const char *buffer, ssize_t length)
+{
+    pthread_mutex_lock(&clients_mutex);
+
+    for (int i = 0; i < MAX_CLIENTS; i++) {
+
+        if (!clients[i].active)
+            continue;
+
+        ssize_t sent = send(clients[i].fd,
+                            buffer,
+                            length,
+                            MSG_NOSIGNAL);
+
+        if (sent < 0) {
+
+            if (errno == EPIPE ||
+                errno == ECONNRESET ||
+                errno == ENOTCONN) {
+
+                close(clients[i].fd);
+                clients[i].fd = -1;
+                clients[i].active = 0;
+            }
+        }
+    }
+
+    pthread_mutex_unlock(&clients_mutex);
+}
+
+static void *serial_reader_thread(void *argument)
+{
+    int serial_fd = *(int *)argument;
+
+    char buffer[BUFFER_SIZE];
+
+    while (running) {
+
+        ssize_t n = read(serial_fd,
+                         buffer,
+                         sizeof(buffer));
+
+        if (n > 0) {
+
+            /*
+             * Anything received from the hardware is sent to every
+             * currently connected TCP client.
+             */
+            broadcast_to_clients(buffer, n);
+
+        } else if (n < 0) {
+
+            if (errno != EAGAIN &&
+                errno != EWOULDBLOCK &&
+                errno != EINTR) {
+
+                fprintf(stderr,
+                        "[ERROR] Serial read failed: %s\n",
+                        strerror(errno));
+
+                break;
+            }
+        }
+
+        usleep(1000);
+    }
+
+    return NULL;
+}
+
+static void *client_thread(void *argument)
+{
+    client_context_t *context =
+        (client_context_t *)argument;
+
+    int index = context->client_index;
+    int serial_fd = context->serial_fd;
+
+    free(context);
+
+    char buffer[BUFFER_SIZE];
+
+    while (running) {
+
+        ssize_t n = recv(clients[index].fd,
+                         buffer,
+                         sizeof(buffer),
+                         0);
+
+        if (n > 0) {
+
+            /*
+             * Multiple client threads can receive TCP data at the same
+             * time. The physical UART is shared, therefore serial writes
+             * are protected by a mutex.
+             *
+             * This prevents two write() operations from interleaving.
+             */
+            pthread_mutex_lock(&serial_write_mutex);
+
+            ssize_t offset = 0;
+
+            while (offset < n) {
+
+                ssize_t written =
+                    write(serial_fd,
+                          buffer + offset,
+                          (size_t)(n - offset));
+
+                if (written > 0) {
+                    offset += written;
+                    continue;
+                }
+
+                if (written < 0 && errno == EINTR)
+                    continue;
+
+                if (written < 0 &&
+                    (errno == EAGAIN ||
+                     errno == EWOULDBLOCK)) {
+
+                    usleep(1000);
+                    continue;
+                }
+
+                fprintf(stderr,
+                        "[ERROR] Serial write failed: %s\n",
+                        strerror(errno));
+
+                break;
+            }
+
+            pthread_mutex_unlock(&serial_write_mutex);
+
+        } else if (n == 0) {
+
+            break;
+
+        } else {
+
+            if (errno == EINTR)
+                continue;
+
+            break;
+        }
+    }
+
+    printf("[INFO] Client %d disconnected\n", index);
+
+    remove_client(index);
+
+    return NULL;
+}
+
+static void close_all_clients(void)
+{
+    pthread_mutex_lock(&clients_mutex);
+
+    for (int i = 0; i < MAX_CLIENTS; i++) {
+
+        if (clients[i].active) {
+            close(clients[i].fd);
+            clients[i].fd = -1;
+            clients[i].active = 0;
+        }
+    }
+
+    pthread_mutex_unlock(&clients_mutex);
+}
+
+int main(int argc, char *argv[])
+{
+    if (argc != 3) {
+
+        fprintf(stderr,
+                "Usage: %s <TCP_PORT> <SERIAL_DEVICE>\n",
+                argv[0]);
+
+        fprintf(stderr,
+                "Example: %s 2000 /dev/ttyS0\n",
+                argv[0]);
+
+        fprintf(stderr,
+                "Example: %s 2001 /dev/ttyS3\n",
+                argv[0]);
+
+        return EXIT_FAILURE;
+    }
+
+    int port = atoi(argv[1]);
+
+    if (port <= 0 || port > 65535) {
+
+        fprintf(stderr,
+                "[ERROR] Invalid TCP port: %s\n",
+                argv[1]);
+
+        return EXIT_FAILURE;
+    }
+
+    const char *serial_device = argv[2];
+
+    signal(SIGINT, handle_signal);
+    signal(SIGTERM, handle_signal);
+    signal(SIGPIPE, SIG_IGN);
+
+    printf("[INFO] ================================\n");
+    printf("[INFO] TCP Serial Bridge\n");
+    printf("[INFO] TCP port       : %d\n", port);
+    printf("[INFO] Serial device  : %s\n", serial_device);
+    printf("[INFO] Baud rate      : 115200\n");
+    printf("[INFO] Maximum clients: %d\n", MAX_CLIENTS);
+    printf("[INFO] Mode           : transparent\n");
+    printf("[INFO] ================================\n");
+
+    for (int i = 0; i < MAX_CLIENTS; i++) {
+        clients[i].fd = -1;
+        clients[i].active = 0;
+    }
+
+    int serial_fd = open_serial(serial_device);
+
+    if (serial_fd < 0)
+        return EXIT_FAILURE;
+
+    int server_fd = create_server(port);
+
+    if (server_fd < 0) {
+        close(serial_fd);
+        return EXIT_FAILURE;
+    }
+
+    pthread_t serial_thread;
+
+    if (pthread_create(&serial_thread,
+                       NULL,
+                       serial_reader_thread,
+                       &serial_fd) != 0) {
+
+        perror("[ERROR] pthread_create");
+
+        close(server_fd);
+        close(serial_fd);
+
+        return EXIT_FAILURE;
+    }
+
+    printf("[INFO] Bridge is running\n");
+
+    while (running) {
+
+        struct sockaddr_in client_address;
+        socklen_t client_length =
+            sizeof(client_address);
+
+        int client_fd =
+            accept(server_fd,
+                   (struct sockaddr *)&client_address,
+                   &client_length);
+
+        if (client_fd < 0) {
+
+            if (errno == EINTR)
+                continue;
+
+            if (!running)
+                break;
+
+            perror("[ERROR] accept");
+            continue;
+        }
+
+        int index = add_client(client_fd);
+
+        if (index < 0) {
+
+            fprintf(stderr,
+                    "[WARN] Maximum clients reached; rejecting connection\n");
+
+            close(client_fd);
+            continue;
+        }
+
+        char ip[INET_ADDRSTRLEN];
+
+        inet_ntop(AF_INET,
+                  &client_address.sin_addr,
+                  ip,
+                  sizeof(ip));
+
+        printf("[INFO] Client %d connected from %s:%d\n",
+               index,
+               ip,
+               ntohs(client_address.sin_port));
+
+        client_context_t *context =
+            malloc(sizeof(client_context_t));
+
+        if (!context) {
+
+            fprintf(stderr,
+                    "[ERROR] Cannot allocate client context\n");
+
+            remove_client(index);
+            continue;
+        }
+
+        context->client_index = index;
+        context->serial_fd = serial_fd;
+
+        pthread_t thread;
+
+        if (pthread_create(&thread,
+                           NULL,
+                           client_thread,
+                           context) != 0) {
+
+            perror("[ERROR] pthread_create");
+
+            free(context);
+            remove_client(index);
+            continue;
+        }
+
+        pthread_detach(thread);
+    }
+
+    running = 0;
+
+    close(server_fd);
+
+    close_all_clients();
+
+    pthread_join(serial_thread, NULL);
+
+    close(serial_fd);
+
+    printf("[INFO] Bridge stopped\n");
+
+    return EXIT_SUCCESS;
+}
+
+-----------------------------------------------------------------------
+
+=========================================================================
+8. C CODE DESIGN EXPLANATION
+=========================================================================
+
+8.1 MAX_CLIENTS
+
+    #define MAX_CLIENTS 8
+
+Each bridge instance accepts a maximum of eight TCP clients.
+
+GNSS and MCU have independent limits.
+
+Therefore:
+
+    GNSS bridge -> up to 8 clients
+    MCU bridge  -> up to 8 clients
+
+8.2 Serial configuration
+
+The UART is configured as:
+
+    115200 baud
+    8 data bits
+    no parity
+    1 stop bit
+    no hardware flow control
+
+8.3 TCP server
+
+The program creates:
+
+    IPv4 TCP socket
+    INADDR_ANY
+    requested TCP port
+    listen backlog = 8
+
+Therefore Java clients can connect using:
+
+    <BeaglePlay-IP>:2000
+
+or:
+
+    <BeaglePlay-IP>:2001
+
+8.4 Serial-to-TCP direction
+
+A dedicated serial reader thread continuously reads the UART.
+
+When bytes arrive:
+
+    UART
+      |
+      v
+    serial_reader_thread
+      |
+      v
+    broadcast_to_clients()
+      |
+      +---- client 1
+      +---- client 2
+      +---- client 3
+      +---- ...
+      +---- client 8
+
+The bridge does not parse the bytes.
+
+8.5 TCP-to-Serial direction
+
+Every TCP client has a client thread.
+
+When bytes arrive:
+
+    TCP client
+       |
+       v
+    recv()
+       |
+       v
+    serial_write_mutex
+       |
+       v
+    UART write()
+
+8.6 Why the serial-write mutex exists
+
+The UART is one physical communication channel.
+
+Suppose two TCP clients send data simultaneously:
+
+    Client A -> command A
+    Client B -> command B
+
+Without protection, separate threads could write concurrently.
+
+The mutex ensures that only one thread performs a serial write operation
+at a time.
+
+This prevents the two write() operations themselves from being executed
+simultaneously.
+
+IMPORTANT:
+The mutex does NOT implement application-level command/response
+synchronization. It only protects the physical UART write operation.
+
+The Java/application layer remains responsible for ensuring that commands
+sent to the hardware are logically coordinated.
+
+8.7 One-line and multi-line replies
+
+The bridge has no concept of a line.
+
+For example:
+
+    Hardware sends:
+        ABC\r\n
+
+The bridge forwards those bytes.
+
+If hardware sends:
+
+    ABC\r\n
+    DEF\r\n
+    GHI\r\n
+
+the bridge forwards all received bytes.
+
+There is no assumption that a reply ends at newline.
+
+8.8 200 ms / 2000 ms timing
+
+This bridge does NOT implement:
+
+    wait 200 ms before sending
+
+or:
+
+    wait 2000 ms for response
+
+Those are application protocol decisions.
+
+The current design intentionally provides a transport tunnel.
+
+=========================================================================
+9. BUILDING THE PROGRAM
+=========================================================================
+
+Save the source as:
+
+    tcp_serial_bridge.c
+
+Compile:
+
+    gcc -O2 -Wall -Wextra -pthread \
+        tcp_serial_bridge.c \
+        -o tcp_serial_bridge
+
+Check:
+
+    ls -lh tcp_serial_bridge
+
+Check architecture:
+
+    file tcp_serial_bridge
+
+The BeaglePlay uses aarch64, so the executable must be compatible with
+the board.
+
+Check compiler:
+
+    gcc --version
+
+Record the compiler version for future reproducibility.
+
+=========================================================================
+10. INSTALLING THE PROGRAM
+=========================================================================
+
+From the directory containing the executable:
+
+    sudo cp tcp_serial_bridge /usr/local/bin/tcp_serial_bridge
+
+Set owner:
+
+    sudo chown root:root /usr/local/bin/tcp_serial_bridge
+
+Set executable permission:
+
+    sudo chmod 755 /usr/local/bin/tcp_serial_bridge
+
+Verify:
+
+    ls -lh /usr/local/bin/tcp_serial_bridge
+
+    file /usr/local/bin/tcp_serial_bridge
+
+Final executable:
+
+    /usr/local/bin/tcp_serial_bridge
+
+=========================================================================
+11. COMPLETE MIGRATION PROCEDURE
+=========================================================================
+
+Always migrate one service at a time.
+
+ORDER:
+
+    1. Backup
+    2. Install new executable
+    3. Stop GNSS service
+    4. Test new GNSS bridge manually
+    5. Configure GNSS service
+    6. Start GNSS service
+    7. Test Java GNSS
+    8. Stop MCU service
+    9. Test new MCU bridge manually
+   10. Configure MCU service
+   11. Start MCU service
+   12. Test Java MCU
+   13. Test restart
+   14. Test reboot
+
+=========================================================================
+12. BACKUP
+=========================================================================
+
+Create:
+
+    mkdir -p ~/tcp_bridge_migration_backup
+
+Backup old GNSS binary:
+
+    sudo cp -a /usr/local/bin/serial_bridge \
+        ~/tcp_bridge_migration_backup/serial_bridge.original
+
+Backup old MCU binary:
+
+    sudo cp -a /usr/local/bin/mcu_server \
+        ~/tcp_bridge_migration_backup/mcu_server.original
+
+Backup GNSS service:
+
+    sudo cp -a /etc/systemd/system/serial-bridge.service \
+        ~/tcp_bridge_migration_backup/serial-bridge.service.original
+
+Backup MCU service:
+
+    sudo cp -a /etc/systemd/system/mcu_server.service \
+        ~/tcp_bridge_migration_backup/mcu_server.service.original
+
+Save current status:
+
+    sudo systemctl status serial-bridge.service --no-pager \
+        > ~/tcp_bridge_migration_backup/serial_bridge_status.txt
+
+    sudo systemctl status mcu_server.service --no-pager \
+        > ~/tcp_bridge_migration_backup/mcu_server_status.txt
+
+Check backup:
+
+    ls -lh ~/tcp_bridge_migration_backup
+
+DO NOT continue if the old binaries and service files have not been backed
+up.
+
+=========================================================================
+13. VERIFY CURRENT SYSTEM
+=========================================================================
+
+Run:
+
+    systemctl is-active serial-bridge.service
+    systemctl is-active mcu_server.service
+
+Check ports:
+
+    sudo ss -lntp | grep -E ':2000|:2001'
+
+Check UART ownership:
+
+    sudo lsof /dev/ttyS0
+    sudo lsof /dev/ttyS3
+
+=========================================================================
+14. GNSS REPLACEMENT
+=========================================================================
+
+Stop old GNSS service:
+
+    sudo systemctl stop serial-bridge.service
+
+Verify:
+
+    systemctl is-active serial-bridge.service
+
+Expected:
+
+    inactive
+
+Check port:
+
+    sudo ss -lntp | grep ':2000'
+
+Port 2000 must be free before manual testing.
+
+Check UART:
+
+    sudo lsof /dev/ttyS0
+
+The old bridge must no longer own /dev/ttyS0.
+
+=========================================================================
+15. MANUAL GNSS TEST
+=========================================================================
+
+Run:
+
+    sudo /usr/local/bin/tcp_serial_bridge 2000 /dev/ttyS0
+
+Open another PuTTY terminal.
+
+Check:
+
+    sudo ss -lntp | grep ':2000'
+
+Check:
+
+    sudo lsof /dev/ttyS0
+
+Expected:
+
+    TCP :2000
+        |
+        v
+    tcp_serial_bridge
+        |
+        v
+    /dev/ttyS0
+
+Test the existing Java GNSS application.
+
+The Java application continues to connect to:
+
+    BeaglePlay-IP:2000
+
+Test:
+
+    - normal K803 commands
+    - one-line responses
+    - multi-line responses
+    - repeated commands
+    - continuous data where applicable
+    - disconnect/reconnect
+
+When testing is complete, return to the manual bridge terminal and press:
+
+    Ctrl+C
+
+=========================================================================
+16. CONFIGURE GNSS SERVICE
+=========================================================================
+
+Edit:
+
+    sudo nano /etc/systemd/system/serial-bridge.service
+
+Use exactly:
+
+    [Unit]
+    Description=GNSS K803 TCP Serial Bridge
+    After=network.target
+    Wants=network.target
+
+    [Service]
+    Type=simple
+    ExecStart=/usr/local/bin/tcp_serial_bridge 2000 /dev/ttyS0
+    Restart=always
+    RestartSec=2
+    User=root
+    WorkingDirectory=/usr/local/bin
+    StandardOutput=journal
+    StandardError=journal
+
+    [Install]
+    WantedBy=multi-user.target
+
+Save and exit.
+
+Reload systemd:
+
+    sudo systemctl daemon-reload
+
+Start:
+
+    sudo systemctl start serial-bridge.service
+
+Check:
+
+    systemctl status serial-bridge.service --no-pager
+
+Enable at boot:
+
+    sudo systemctl enable serial-bridge.service
+
+Check:
+
+    systemctl is-enabled serial-bridge.service
+
+Expected:
+
+    enabled
+
+=========================================================================
+17. MCU REPLACEMENT
+=========================================================================
+
+Stop old MCU service:
+
+    sudo systemctl stop mcu_server.service
+
+Verify:
+
+    systemctl is-active mcu_server.service
+
+Expected:
+
+    inactive
+
+Check:
+
+    sudo ss -lntp | grep ':2001'
+
+Check:
+
+    sudo lsof /dev/ttyS3
+
+=========================================================================
+18. MANUAL MCU TEST
+=========================================================================
+
+Run:
+
+    sudo /usr/local/bin/tcp_serial_bridge 2001 /dev/ttyS3
+
+From another terminal:
+
+    sudo ss -lntp | grep ':2001'
+
+Then:
+
+    sudo lsof /dev/ttyS3
+
+Test the existing Java MCU application on:
+
+    BeaglePlay-IP:2001
+
+Test normal MCU commands and responses.
+
+When finished:
+
+    Ctrl+C
+
+=========================================================================
+19. CONFIGURE MCU SERVICE
+=========================================================================
+
+Edit:
+
+    sudo nano /etc/systemd/system/mcu_server.service
+
+Use:
+
+    [Unit]
+    Description=MCU TCP Serial Bridge
+    After=network-online.target
+    Wants=network-online.target
+
+    [Service]
+    Type=simple
+    ExecStart=/usr/local/bin/tcp_serial_bridge 2001 /dev/ttyS3
+    Restart=always
+    RestartSec=2
+    User=debian
+    WorkingDirectory=/usr/local/bin
+    StandardOutput=journal
+    StandardError=journal
+
+    [Install]
+    WantedBy=multi-user.target
+
+Reload:
+
+    sudo systemctl daemon-reload
+
+Start:
+
+    sudo systemctl start mcu_server.service
+
+Check:
+
+    systemctl status mcu_server.service --no-pager
+
+Enable:
+
+    sudo systemctl enable mcu_server.service
+
+Check:
+
+    systemctl is-enabled mcu_server.service
+
+Expected:
+
+    enabled
+
+=========================================================================
+20. FINAL HEALTH CHECK
+=========================================================================
+
+Run:
+
+    echo "========== SERVICES =========="
+    systemctl is-active serial-bridge.service
+    systemctl is-active mcu_server.service
+
+    echo
+    echo "========== ENABLED =========="
+    systemctl is-enabled serial-bridge.service
+    systemctl is-enabled mcu_server.service
+
+    echo
+    echo "========== TCP =========="
+    sudo ss -lntp | grep -E ':2000|:2001'
+
+    echo
+    echo "========== UART =========="
+    sudo lsof /dev/ttyS0
+    sudo lsof /dev/ttyS3
+
+    echo
+    echo "========== PROCESSES =========="
+    pgrep -af tcp_serial_bridge
+
+Expected:
+
+    serial-bridge.service -> active
+    mcu_server.service    -> active
+
+    TCP 2000 -> tcp_serial_bridge -> /dev/ttyS0
+    TCP 2001 -> tcp_serial_bridge -> /dev/ttyS3
+
+There should be two tcp_serial_bridge processes.
+
+Example:
+
+    root   ... /usr/local/bin/tcp_serial_bridge 2000 /dev/ttyS0
+    debian ... /usr/local/bin/tcp_serial_bridge 2001 /dev/ttyS3
+
+=========================================================================
+21. FIND THE SERVICE
+=========================================================================
+
+Show service definition:
+
+    systemctl cat serial-bridge.service
+
+    systemctl cat mcu_server.service
+
+Physical locations:
+
+    /etc/systemd/system/serial-bridge.service
+    /etc/systemd/system/mcu_server.service
+
+Show actual ExecStart:
+
+    systemctl show serial-bridge.service -p ExecStart
+    systemctl show mcu_server.service -p ExecStart
+
+=========================================================================
+22. FIND THE PROCESS
+=========================================================================
+
+    pgrep -af tcp_serial_bridge
+
+For a PID:
+
+    sudo ps -fp <PID>
+
+Executable:
+
+    sudo readlink -f /proc/<PID>/exe
+
+Command line:
+
+    sudo tr '\0' ' ' < /proc/<PID>/cmdline
+    echo
+
+Working directory:
+
+    sudo readlink -f /proc/<PID>/cwd
+
+Open files:
+
+    sudo lsof -p <PID>
+
+=========================================================================
+23. FIND TCP PORT OWNERS
+=========================================================================
+
+TCP 2000:
+
+    sudo ss -lntp | grep ':2000'
+
+    sudo lsof -nP -iTCP:2000 -sTCP:LISTEN
+
+    sudo fuser -v 2000/tcp
+
+TCP 2001:
+
+    sudo ss -lntp | grep ':2001'
+
+    sudo lsof -nP -iTCP:2001 -sTCP:LISTEN
+
+    sudo fuser -v 2001/tcp
+
+=========================================================================
+24. FIND UART OWNERS
+=========================================================================
+
+GNSS:
+
+    sudo lsof /dev/ttyS0
+
+    sudo fuser -v /dev/ttyS0
+
+MCU:
+
+    sudo lsof /dev/ttyS3
+
+    sudo fuser -v /dev/ttyS3
+
+Intended ownership:
+
+    /dev/ttyS0 -> serial-bridge.service
+
+    /dev/ttyS3 -> mcu_server.service
+
+=========================================================================
+25. LOGGING
+=========================================================================
+
+GNSS:
+
+    sudo journalctl -u serial-bridge.service -n 100 --no-pager
+
+MCU:
+
+    sudo journalctl -u mcu_server.service -n 100 --no-pager
+
+Live GNSS:
+
+    sudo journalctl -u serial-bridge.service -f
+
+Live MCU:
+
+    sudo journalctl -u mcu_server.service -f
+
+Both:
+
+    sudo journalctl \
+        -u serial-bridge.service \
+        -u mcu_server.service \
+        -f
+
+Current boot:
+
+    sudo journalctl -u serial-bridge.service -b
+    sudo journalctl -u mcu_server.service -b
+
+=========================================================================
+26. AUTOMATIC RESTART
+=========================================================================
+
+Both services contain:
+
+    Restart=always
+    RestartSec=2
+
+Therefore:
+
+    bridge exits
+       |
+       v
+    systemd detects exit
+       |
+       v
+    wait 2 seconds
+       |
+       v
+    start bridge again
+
+Test GNSS:
+
+    sudo systemctl kill serial-bridge.service
+
+    sleep 5
+
+    systemctl is-active serial-bridge.service
+
+    sudo ss -lntp | grep ':2000'
+
+Test MCU:
+
+    sudo systemctl kill mcu_server.service
+
+    sleep 5
+
+    systemctl is-active mcu_server.service
+
+    sudo ss -lntp | grep ':2001'
+
+=========================================================================
+27. REBOOT TEST
+=========================================================================
+
+Before reboot:
+
+    systemctl is-active serial-bridge.service
+    systemctl is-active mcu_server.service
+
+Reboot:
+
+    sudo reboot
+
+Reconnect with PuTTY.
+
+Run:
+
+    systemctl is-active serial-bridge.service
+    systemctl is-active mcu_server.service
+
+Then:
+
+    sudo ss -lntp | grep -E ':2000|:2001'
+
+Then:
+
+    sudo lsof /dev/ttyS0
+    sudo lsof /dev/ttyS3
+
+Then:
+
+    pgrep -af tcp_serial_bridge
+
+Both services must automatically start after reboot.
+
+=========================================================================
+28. ROLLBACK - GNSS
+=========================================================================
+
+If the new GNSS bridge fails:
+
+    sudo systemctl stop serial-bridge.service
+
+Restore old binary:
+
+    sudo cp ~/tcp_bridge_migration_backup/serial_bridge.original \
+        /usr/local/bin/serial_bridge
+
+Restore old service:
+
+    sudo cp ~/tcp_bridge_migration_backup/serial-bridge.service.original \
+        /etc/systemd/system/serial-bridge.service
+
+Set permissions:
+
+    sudo chown root:root /usr/local/bin/serial_bridge
+    sudo chmod 755 /usr/local/bin/serial_bridge
+
+Reload:
+
+    sudo systemctl daemon-reload
+
+Start:
+
+    sudo systemctl start serial-bridge.service
+
+Verify:
+
+    systemctl status serial-bridge.service --no-pager
+    sudo ss -lntp | grep ':2000'
+    sudo lsof /dev/ttyS0
+
+=========================================================================
+29. ROLLBACK - MCU
+=========================================================================
+
+If the new MCU bridge fails:
+
+    sudo systemctl stop mcu_server.service
+
+Restore old binary:
+
+    sudo cp ~/tcp_bridge_migration_backup/mcu_server.original \
+        /usr/local/bin/mcu_server
+
+Restore old service:
+
+    sudo cp ~/tcp_bridge_migration_backup/mcu_server.service.original \
+        /etc/systemd/system/mcu_server.service
+
+Set permissions:
+
+    sudo chown debian:debian /usr/local/bin/mcu_server
+    sudo chmod 755 /usr/local/bin/mcu_server
+
+Reload:
+
+    sudo systemctl daemon-reload
+
+Start:
+
+    sudo systemctl start mcu_server.service
+
+Verify:
+
+    systemctl status mcu_server.service --no-pager
+    sudo ss -lntp | grep ':2001'
+    sudo lsof /dev/ttyS3
+
+=========================================================================
+30. TROUBLESHOOTING
+=========================================================================
+
+PROBLEM: "Address already in use"
+
+Example:
+
+    bind port 2000 failed: Address already in use
+
+Find owner:
+
+    sudo ss -lntp | grep ':2000'
+
+    sudo lsof -nP -iTCP:2000 -sTCP:LISTEN
+
+Do not start another copy until the existing listener is identified.
+
+For port 2001 use the same commands with 2001.
+
+PROBLEM: UART is busy
+
+GNSS:
+
+    sudo lsof /dev/ttyS0
+    sudo fuser -v /dev/ttyS0
+
+MCU:
+
+    sudo lsof /dev/ttyS3
+    sudo fuser -v /dev/ttyS3
+
+Only the intended bridge should own each UART.
+
+PROBLEM: service changes are not taking effect
+
+Run:
+
+    sudo systemctl daemon-reload
+
+Then:
+
+    sudo systemctl restart serial-bridge.service
+
+or:
+
+    sudo systemctl restart mcu_server.service
+
+Verify:
+
+    systemctl show serial-bridge.service -p ExecStart
+    systemctl show mcu_server.service -p ExecStart
+
+PROBLEM: program starts and immediately exits
+
+Check:
+
+    systemctl status serial-bridge.service --no-pager
+
+    sudo journalctl -u serial-bridge.service -n 100 --no-pager
+
+or:
+
+    systemctl status mcu_server.service --no-pager
+
+    sudo journalctl -u mcu_server.service -n 100 --no-pager
+
+For manual debugging, stop the service first and run:
+
+    sudo /usr/local/bin/tcp_serial_bridge 2000 /dev/ttyS0
+
+or:
+
+    sudo /usr/local/bin/tcp_serial_bridge 2001 /dev/ttyS3
+
+Do not run the manual instance and systemd instance simultaneously.
+
+=========================================================================
+31. IMPORTANT OPERATING RULES
+=========================================================================
+
+1. Never run two bridge processes on TCP 2000.
+
+2. Never run two bridge processes on TCP 2001.
+
+3. Never allow another process to use /dev/ttyS0 while the GNSS bridge
+   owns it.
+
+4. Never allow another process to use /dev/ttyS3 while the MCU bridge
+   owns it.
+
+5. Do not change Java TCP ports without a deliberate architecture change.
+
+6. Use systemctl for production operation.
+
+7. Use manual execution only for controlled tests.
+
+8. Keep the original binaries until the new implementation has been
+   proven stable.
+
+9. Keep tcp_serial_bridge.c in source control.
+
+10. Record the compiler version and build command.
+
+11. Keep the service files in source control.
+
+12. Keep this document with the project.
+
+=========================================================================
+32. SOURCE CODE / BINARY MANAGEMENT
+=========================================================================
+
+Recommended project layout:
+
+    tcp_serial_bridge/
+        tcp_serial_bridge.c
+        README.md
+        build.sh
+        systemd/
+            serial-bridge.service
+            mcu_server.service
+        docs/
+            BEAGLEPLAY_TCP_SERIAL_BRIDGE.txt
+
+Production executable:
+
+    /usr/local/bin/tcp_serial_bridge
+
+The binary should be generated from the source.
+
+Do not make undocumented changes directly to the production binary.
+
+Recommended deployment sequence:
+
+    source change
+       |
+       v
+    compile
+       |
+       v
+    static/manual test
+       |
+       v
+    GNSS test
+       |
+       v
+    MCU test
+       |
+       v
+    systemd restart test
+       |
+       v
+    reboot test
+       |
+       v
+    production deployment
+
+=========================================================================
+33. QUICK REFERENCE TABLE
+=========================================================================
+
++----------------------+------------------------------+
+| Item                 | GNSS / K803                 |
++----------------------+------------------------------+
+| Service              | serial-bridge.service       |
+| Service file          | /etc/systemd/system/...     |
+| Executable            | tcp_serial_bridge           |
+| Executable path       | /usr/local/bin/...          |
+| TCP port              | 2000                        |
+| UART                  | /dev/ttyS0                  |
+| Baud                  | 115200                      |
+| User                  | root                        |
+| Hardware              | K803 GNSS                   |
+| Java connection       | TCP 2000                    |
++----------------------+------------------------------+
+
++----------------------+------------------------------+
+| Item                 | MCU                         |
++----------------------+------------------------------+
+| Service              | mcu_server.service          |
+| Service file          | /etc/systemd/system/...     |
+| Executable            | tcp_serial_bridge           |
+| Executable path       | /usr/local/bin/...          |
+| TCP port              | 2001                        |
+| UART                  | /dev/ttyS3                  |
+| Baud                  | 115200                      |
+| User                  | debian                      |
+| Hardware              | MCU                         |
+| Java connection       | TCP 2001                    |
++----------------------+------------------------------+
+
+=========================================================================
+34. FINAL HEALTH CHECK COMMAND BLOCK
+=========================================================================
+
+Copy and run:
+
+    echo "===== SERVICES ====="
+    systemctl is-active serial-bridge.service
+    systemctl is-active mcu_server.service
+
+    echo
+    echo "===== ENABLED ====="
+    systemctl is-enabled serial-bridge.service
+    systemctl is-enabled mcu_server.service
+
+    echo
+    echo "===== TCP LISTENERS ====="
+    sudo ss -lntp | grep -E ':2000|:2001'
+
+    echo
+    echo "===== GNSS UART ====="
+    sudo lsof /dev/ttyS0
+
+    echo
+    echo "===== MCU UART ====="
+    sudo lsof /dev/ttyS3
+
+    echo
+    echo "===== BRIDGE PROCESSES ====="
+    pgrep -af tcp_serial_bridge
+
+Expected:
+
+    serial-bridge.service -> active
+    mcu_server.service    -> active
+
+    :2000 -> tcp_serial_bridge -> /dev/ttyS0
+    :2001 -> tcp_serial_bridge -> /dev/ttyS3
+
+=========================================================================
+35. FINAL UNDERSTANDING FOR A NEW DEVELOPER
+=========================================================================
+
+There are two logical services but one common bridge implementation.
+
+GNSS:
+
+    serial-bridge.service
+        |
+        v
+    /usr/local/bin/tcp_serial_bridge 2000 /dev/ttyS0
+        |
+        +--> TCP 2000
+        |
+        +--> /dev/ttyS0
+        |
+        +--> K803
+
+MCU:
+
+    mcu_server.service
+        |
+        v
+    /usr/local/bin/tcp_serial_bridge 2001 /dev/ttyS3
+        |
+        +--> TCP 2001
+        |
+        +--> /dev/ttyS3
+        |
+        +--> MCU
+
+The bridge is a transport layer.
+
+It does not know:
+    - what a GNSS command means
+    - what an MCU command means
+    - whether a response is one line
+    - whether a response is multiple lines
+    - which Java operation initiated a command
+
+It simply moves bytes:
+
+    TCP -> UART
+    UART -> TCP
+
+The physical UART write is protected so that concurrent client threads do
+not execute UART writes simultaneously.
+
+Application-level synchronization remains outside this bridge.
+
+=========================================================================
+36. DEPLOYMENT CHECKLIST
+=========================================================================
+
+Before deployment:
+
+    [ ] Backup serial_bridge
+    [ ] Backup mcu_server
+    [ ] Backup serial-bridge.service
+    [ ] Backup mcu_server.service
+    [ ] Verify new binary with file
+    [ ] Verify executable permissions
+    [ ] Test GNSS manually
+    [ ] Test MCU manually
+
+After deployment:
+
+    [ ] GNSS service active
+    [ ] MCU service active
+    [ ] TCP 2000 listening
+    [ ] TCP 2001 listening
+    [ ] /dev/ttyS0 owned by GNSS bridge
+    [ ] /dev/ttyS3 owned by MCU bridge
+    [ ] Java GNSS communication works
+    [ ] Java MCU communication works
+    [ ] One-line response works
+    [ ] Multi-line response works
+    [ ] Multiple client connection tested
+    [ ] Restart recovery tested
+    [ ] Reboot recovery tested
+    [ ] Rollback files retained
+
+=========================================================================
+END
+=========================================================================

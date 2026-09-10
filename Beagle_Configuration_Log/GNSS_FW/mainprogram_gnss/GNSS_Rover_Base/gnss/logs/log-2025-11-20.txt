@@ -1,0 +1,128 @@
+[2025-11-20 13:37:23] Controller started safely...
+[2025-11-20 13:37:23] Mode change detected: base
+[2025-11-20 13:37:23] Starting Base Station...
+[2025-11-20 13:37:27] Base error: connect timed out
+[2025-11-20 13:37:27] Reconnecting in 1000 ms
+[2025-11-20 13:37:57] Controller started safely...
+[2025-11-20 13:37:57] Mode change detected: base
+[2025-11-20 13:37:57] Starting Base Station...
+[2025-11-20 13:37:57] Connected to server NTRIP
+[2025-11-20 13:37:57] Connected to base GNSS 192.168.1.61:4000
+[2025-11-20 13:37:59] Sent reset command to Base
+[2025-11-20 13:38:10] Sent config to base: unlogall
+[2025-11-20 13:38:10] Sent config to base: FIX position 10 20 30
+[2025-11-20 13:38:10] Sent config to base: log com1 rtcm1074b ontime 1
+[2025-11-20 13:38:10] Sent config to base: log com1 rtcm1084b ontime 1
+[2025-11-20 13:38:11] Sent config to base: log com1 rtcm1094b ontime 1
+[2025-11-20 13:38:11] Sent config to base: log com1 rtcm1114b ontime 1
+[2025-11-20 13:38:11] Sent config to base: log com1 rtcm1124b ontime 1
+[2025-11-20 13:38:11] Sent config to base: log com1 rtcm1005b ontime 5
+[2025-11-20 13:38:12] Sent config to base: log com1 rtcm1033b ontime 10
+[2025-11-20 13:38:12] Sent config to base: log com1 gpgga ontime 1
+[2025-11-20 13:38:12] Sent config to base: saveconfig
+[2025-11-20 13:38:12] Sent config to base: 
+[2025-11-20 13:38:40] Controller started safely...
+[2025-11-20 13:38:40] Mode change detected: base
+[2025-11-20 13:38:40] Starting Base Station...
+[2025-11-20 13:38:40] Connected to server NTRIP
+[2025-11-20 13:38:40] Connected to base GNSS 192.168.1.61:4000
+[2025-11-20 13:38:42] Sent reset command to Base
+[2025-11-20 13:38:53] Sent config to base: unlogall
+[2025-11-20 13:38:53] Sent config to base: FIX position 10 20 30
+[2025-11-20 13:38:53] Sent config to base: log com1 rtcm1074b ontime 1
+[2025-11-20 13:38:53] Sent config to base: log com1 rtcm1084b ontime 1
+[2025-11-20 13:38:54] Sent config to base: log com1 rtcm1094b ontime 1
+[2025-11-20 13:38:54] Sent config to base: log com1 rtcm1114b ontime 1
+[2025-11-20 13:38:54] Sent config to base: log com1 rtcm1124b ontime 1
+[2025-11-20 13:38:54] Sent config to base: log com1 rtcm1005b ontime 5
+[2025-11-20 13:38:55] Sent config to base: log com1 rtcm1033b ontime 10
+[2025-11-20 13:38:55] Sent config to base: log com1 gpgga ontime 1
+[2025-11-20 13:38:55] Sent config to base: saveconfig
+[2025-11-20 13:38:55] Sent config to base: 
+[2025-11-20 13:39:05] SOURCE accepted by server
+[2025-11-20 13:39:06] Received 3742 bytes from base
+[2025-11-20 13:39:06] Received 140 bytes from base
+[2025-11-20 13:39:07] Received 81 bytes from base
+[2025-11-20 13:39:08] Received 81 bytes from base
+[2025-11-20 13:39:09] Received 268 bytes from base
+[2025-11-20 13:39:10] Received 371 bytes from base
+[2025-11-20 13:39:11] Received 477 bytes from base
+[2025-11-20 13:39:12] Received 371 bytes from base
+[2025-11-20 13:39:13] Received 371 bytes from base
+[2025-11-20 13:39:14] Received 369 bytes from base
+[2025-11-20 13:39:14] Received 401 bytes from base
+[2025-11-20 13:39:15] Received 770 bytes from base
+[2025-11-20 13:39:16] Received 610 bytes from base
+[2025-11-20 13:39:16] Received 275 bytes from base
+[2025-11-20 13:39:17] Received 369 bytes from base
+[2025-11-20 13:39:17] Received 442 bytes from base
+[2025-11-20 13:39:18] Received 811 bytes from base
+[2025-11-20 13:39:19] Received 811 bytes from base
+[2025-11-20 13:39:20] Received 369 bytes from base
+[2025-11-20 13:39:20] Received 442 bytes from base
+[2025-11-20 13:39:21] Received 917 bytes from base
+[2025-11-20 13:39:22] Received 742 bytes from base
+[2025-11-20 13:41:12] Controller started safely...
+[2025-11-20 13:41:13] Mode change detected: base
+[2025-11-20 13:41:13] Starting Base Station...
+[2025-11-20 13:41:13] Connected to server NTRIP
+[2025-11-20 13:41:13] Connected to base GNSS 192.168.1.61:4000
+[2025-11-20 13:41:15] Sent reset command to Base
+[2025-11-20 13:41:25] Sent config to base: unlogall
+[2025-11-20 13:41:25] Sent config to base: FIX position 10 20 30
+[2025-11-20 13:41:26] Sent config to base: log com1 rtcm1074b ontime 1
+[2025-11-20 13:41:26] Sent config to base: log com1 rtcm1084b ontime 1
+[2025-11-20 13:41:26] Sent config to base: log com1 rtcm1094b ontime 1
+[2025-11-20 13:41:26] Sent config to base: log com1 rtcm1114b ontime 1
+[2025-11-20 13:41:27] Sent config to base: log com1 rtcm1124b ontime 1
+[2025-11-20 13:41:27] Sent config to base: log com1 rtcm1005b ontime 5
+[2025-11-20 13:41:27] Sent config to base: log com1 rtcm1033b ontime 10
+[2025-11-20 13:41:27] Sent config to base: log com1 gpgga ontime 1
+[2025-11-20 13:41:28] Sent config to base: saveconfig
+[2025-11-20 13:41:28] Sent config to base: 
+[2025-11-20 13:42:09] Controller started safely...
+[2025-11-20 13:42:10] Mode change detected: base
+[2025-11-20 13:42:10] Starting Base Station...
+[2025-11-20 13:42:10] Connected to server NTRIP
+[2025-11-20 13:42:10] Connected to base GNSS 192.168.1.61:4000
+[2025-11-20 13:42:12] Sent reset command to Base
+[2025-11-20 13:42:22] Sent config to base: unlogall
+[2025-11-20 13:42:22] Sent config to base: FIX position 10 20 30
+[2025-11-20 13:42:22] Sent config to base: log com1 rtcm1074b ontime 1
+[2025-11-20 13:42:23] Sent config to base: log com1 rtcm1084b ontime 1
+[2025-11-20 13:42:23] Sent config to base: log com1 rtcm1094b ontime 1
+[2025-11-20 13:42:23] Sent config to base: log com1 rtcm1114b ontime 1
+[2025-11-20 13:42:23] Sent config to base: log com1 rtcm1124b ontime 1
+[2025-11-20 13:42:24] Sent config to base: log com1 rtcm1005b ontime 5
+[2025-11-20 13:42:24] Sent config to base: log com1 rtcm1033b ontime 10
+[2025-11-20 13:42:24] Sent config to base: log com1 gpgga ontime 1
+[2025-11-20 13:42:24] Sent config to base: saveconfig
+[2025-11-20 13:42:25] Sent config to base: 
+[2025-11-20 14:24:23] Controller started safely...
+[2025-11-20 14:24:23] Mode change detected: base
+[2025-11-20 14:24:23] Starting Base Station...
+[2025-11-20 14:24:23] Going to collect base station co ordinates 
+[2025-11-20 14:26:53] Controller started safely...
+[2025-11-20 14:26:53] Mode change detected: base
+[2025-11-20 14:26:53] Starting Base Station...
+[2025-11-20 14:26:53] Going to collect base station co ordinates 
+[2025-11-20 14:30:45] Controller started safely...
+[2025-11-20 14:30:45] Mode change detected: base
+[2025-11-20 14:30:45] Starting Base Station...
+[2025-11-20 14:30:45] Going to collect base station co ordinates 
+[2025-11-20 15:14:01] Controller started safely...
+[2025-11-20 15:14:01] Mode change detected: base
+[2025-11-20 15:14:01] Starting Base Station...
+[2025-11-20 15:14:01] Going to collect base station co ordinates 
+[2025-11-20 15:59:24] Controller started safely...
+[2025-11-20 15:59:25] Mode change detected: base
+[2025-11-20 15:59:25] Starting Base Station...
+[2025-11-20 15:59:25] Going to collect base station co ordinates 
+[2025-11-20 16:00:37] Controller started safely...
+[2025-11-20 16:00:37] Mode change detected: base
+[2025-11-20 16:00:37] Starting Base Station...
+[2025-11-20 16:00:37] Going to collect base station co ordinates 
+[2025-11-20 18:21:19] Controller started safely...
+[2025-11-20 18:21:19] Mode change detected: base
+[2025-11-20 18:21:19] Starting Base Station...
+[2025-11-20 18:21:19] Going to collect base station co ordinates 

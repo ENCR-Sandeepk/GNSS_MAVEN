@@ -1,0 +1,14 @@
+13:46:32 **** Incremental Build of configuration Debug for project serial_bridge ****
+Info: Internal Builder is used for build
+aarch64-linux-gnu-gcc -O0 -g3 -Wall -c -fmessage-length=0 -o server.o ../server.c 
+../server.c: In function ‘main’:
+../server.c:355:1: warning: label ‘abc’ defined but not used [-Wunused-label]
+ abc :
+ ^~~
+../server.c:193:9: warning: unused variable ‘buffer’ [-Wunused-variable]
+    char buffer[BUF_SIZE];
+         ^~~~~~
+aarch64-linux-gnu-gcc -o serial_bridge server.o -lrt -lpthread 
+
+13:46:33 Build Finished. 0 errors, 2 warnings. (took 1s.16ms)
+

@@ -1,0 +1,9 @@
+13:12:21 **** Build of configuration Debug for project hello1 ****
+make all 
+Cannot run program "make": Unknown reason
+
+Error: Program "make" not found in PATH
+PATH=[/home/niraj/Downloads/gcc-linaro-7.5.0-2019.12-x86_64_arm-linux-gnueabihf/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/snap/bin]
+
+13:12:21 Build Failed. 1 errors, 0 warnings. (took 8ms)
+

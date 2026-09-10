@@ -1,0 +1,1776 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Device Setup</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 0;
+        }
+
+        .container {
+            background: white;
+            width: 100%;
+            min-height: 100vh;
+            overflow-y: auto;
+        }
+
+        .header {
+            background: #667eea;
+            color: white;
+            padding: 15px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .header h1 {
+            font-size: 18px;
+            flex: 1;
+            min-width: 120px;
+        }
+
+        .user-info {
+            font-size: 13px;
+            margin-bottom: 8px;
+        }
+
+        .user-menu {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            font-size: 13px;
+        }
+
+        .user-menu a {
+            color: white;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.3s;
+            padding: 8px 16px;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 6px;
+            font-weight: 500;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .user-menu a:hover {
+            background: rgba(255, 255, 255, 0.25);
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        .user-menu a:active {
+            transform: translateY(0);
+        }
+
+        .content {
+            padding: 20px 15px;
+            padding-bottom: 40px;
+        }
+
+        @media(min-width:768px) {
+            body {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                padding: 20px;
+            }
+
+            .container {
+                border-radius: 10px;
+                box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+                max-width: 600px;
+                min-height: auto;
+            }
+
+            .header {
+                padding: 20px;
+                position: relative;
+            }
+
+            .header h1 {
+                font-size: 24px;
+            }
+
+            .content {
+                padding: 30px;
+            }
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 6px;
+            color: #333;
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        input,
+        select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            -webkit-appearance: none;
+            appearance: none;
+        }
+
+        select {
+            background: white url('data:image/svg+xml;utf8,<svg fill="%23333" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>') no-repeat right 10px center;
+            background-size: 20px;
+            padding-right: 40px;
+        }
+
+        input:focus,
+        select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 14px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .btn:active {
+            background: #5568d3;
+            transform: scale(0.98);
+        }
+
+        @media(min-width:768px) {
+            .btn:hover {
+                background: #5568d3;
+            }
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        /* Circular radio styles */
+        .device-type-selector {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            justify-content: flex-start;
+            margin-bottom: 20px;
+        }
+
+        .radio-option {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 14px;
+            background: transparent;
+            border-radius: 8px;
+            cursor: pointer;
+            user-select: none;
+            transition: background 0.14s, transform 0.12s;
+            position: relative;
+            font-weight: 700;
+            color: #222;
+        }
+
+        .radio-option input[type="radio"] {
+            position: absolute;
+            opacity: 0;
+            pointer-events: none;
+            width: 0;
+            height: 0;
+        }
+
+        .radio-option .circle {
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            border: 2px solid #667eea;
+            display: inline-block;
+            position: relative;
+            flex: 0 0 26px;
+            box-sizing: border-box;
+        }
+
+        .radio-option .circle::after {
+            content: "";
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #667eea;
+            transition: transform 0.12s ease;
+        }
+
+        .radio-option .label-text {
+            font-size: 15px;
+            letter-spacing: 0.6px;
+        }
+
+        .radio-option:has(input:checked) {
+            background: rgba(102, 126, 234, 0.08);
+            border-radius: 8px;
+        }
+
+        .radio-option:has(input:checked) .circle::after {
+            transform: translate(-50%, -50%) scale(1);
+        }
+
+        .radio-option:focus-within {
+            outline: none;
+            box-shadow: 0 4px 10px rgba(102, 126, 234, 0.14);
+            border-radius: 8px;
+        }
+
+        @media (pointer: fine) {
+            .radio-option:hover {
+                transform: translateY(-2px);
+            }
+        }
+
+        .section-title {
+            font-size: 16px;
+            color: #667eea;
+            margin-bottom: 15px;
+            margin-top: 25px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #667eea;
+            font-weight: 600;
+        }
+
+        .settings-section {
+            margin-top: 20px;
+        }
+
+        .login-title {
+            text-align: center;
+            color: #667eea;
+            margin-bottom: 30px;
+            font-size: 24px;
+            font-weight: 700;
+        }
+
+        @media(min-width:768px) {
+            .login-title {
+                font-size: 28px;
+            }
+
+            .section-title {
+                font-size: 18px;
+            }
+        }
+
+        .error {
+            color: #e74c3c;
+            font-size: 12px;
+            margin-top: 5px;
+        }
+
+        /* Enhanced checkbox styles with visible checkmark */
+        .checkbox-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .checkbox-wrapper input[type="checkbox"] {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 22px;
+            height: 22px;
+            border: 2px solid #667eea;
+            border-radius: 4px;
+            cursor: pointer;
+            flex-shrink: 0;
+            position: relative;
+            background: white;
+            transition: all 0.2s ease;
+        }
+
+        .checkbox-wrapper input[type="checkbox"]:checked {
+            background: #667eea;
+            border-color: #667eea;
+        }
+
+        .checkbox-wrapper input[type="checkbox"]:checked::after {
+            content: '✓';
+            position: absolute;
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .checkbox-wrapper label {
+            margin-bottom: 0;
+            cursor: pointer;
+        }
+
+        .section-save-btn {
+            width: 100%;
+            padding: 12px;
+            margin-top: 15px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 2px 4px rgba(102, 126, 234, 0.2);
+        }
+
+        .section-save-btn:active {
+            background: #5568d3;
+            transform: scale(0.98);
+        }
+
+        @media(min-width:768px) {
+            .section-save-btn:hover {
+                background: #5568d3;
+                box-shadow: 0 4px 8px rgba(102, 126, 234, 0.3);
+                transform: translateY(-1px);
+            }
+        }
+
+        .logs-container {
+            max-height: 100%;
+            overflow-y: auto;
+            background: #f8f9fa;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 20px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+        }
+
+        .log-entry {
+            padding: 8px 0;
+            border-bottom: 1px solid #e0e0e0;
+            color: #333;
+        }
+
+        .log-entry:last-child {
+            border-bottom: none;
+        }
+
+        .log-time {
+            color: #667eea;
+            font-weight: 600;
+            margin-right: 10px;
+        }
+
+        .log-type {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 600;
+            margin-right: 10px;
+        }
+
+        .log-type.info {
+            background: #e3f2fd;
+            color: #1976d2;
+        }
+
+        .log-type.success {
+            background: #e8f5e9;
+            color: #388e3c;
+        }
+
+        .log-type.warning {
+            background: #fff3e0;
+            color: #f57c00;
+        }
+
+        .log-type.error {
+            background: #ffebee;
+            color: #d32f2f;
+        }
+
+        .back-btn {
+            display: inline-block;
+            padding: 10px 20px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.3s;
+            margin-bottom: 15px;
+        }
+
+        .back-btn:hover {
+            background: #5568d3;
+            transform: translateY(-1px);
+        }
+
+        /* Added styles for coordinate input fields */
+        .coordinate-fields {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 15px;
+        }
+
+        .coordinate-input {
+            width: 100%;
+        }
+
+        .time-picker {
+            display: flex;
+            gap: 15px;
+            /* space between dropdowns */
+            align-items: flex-start;
+            margin: 20px;
+        }
+
+        .time-group {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .time-group label {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        /* Background Overlay */
+        .alert-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100%;
+            width: 100%;
+            background: rgba(0, 0, 0, 0.45);
+            backdrop-filter: blur(3px);
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            animation: fadeIn 0.3s ease;
+        }
+
+        /* Alert Box */
+        .alert-box {
+            width: 350px;
+            background: #ffffff;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0px 10px 25px rgba(0, 0, 0, 0.25);
+            transform: translateY(-30px);
+            animation: slideDown 0.35s ease forwards;
+            font-family: "Segoe UI", Arial, sans-serif;
+        }
+
+        /* Header */
+        .alert-header {
+            background: #4a90e2;
+            color: white;
+            padding: 15px;
+            font-size: 20px;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        /* Message Body */
+        .alert-body {
+            padding: 20px;
+            color: #333;
+            font-size: 16px;
+            text-align: center;
+        }
+
+        /* Footer + Button */
+        .alert-footer {
+            padding: 12px;
+            text-align: center;
+        }
+
+        .alert-footer button {
+            background: #4a90e2;
+            border: none;
+            padding: 10px 25px;
+            border-radius: 8px;
+            color: white;
+            cursor: pointer;
+            font-size: 15px;
+            transition: 0.2s;
+        }
+
+        .alert-footer button:hover {
+            background: #3b78c2;
+            transform: scale(1.05);
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-50px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Login Page -->
+    <div id="loginPage" class="container">
+        <div class="content">
+            <h2 class="login-title">GNSS Receiver Login</h2>
+            <form id="loginForm" autocomplete="off">
+                <div class="form-group">
+                    <label for="loginUsername">Username</label>
+                    <input type="text" id="loginUsername" required />
+                </div>
+                <div class="form-group">
+                    <label for="loginPassword">Password</label>
+                    <input type="password" id="loginPassword" required />
+                </div>
+                <div id="loginError" class="error hidden">Invalid credentials</div>
+                <button type="submit" class="btn">Login</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Configuration Page -->
+    <div id="configPage" class="container hidden">
+        <div class="header">
+            <div class="header-content">
+                <h1>GNSS Receiver Setup</h1>
+                <div style="width:100%;">
+                    <div class="user-info"><strong id="usernameDisplay">User</strong></div>
+                    <div class="user-menu">
+                        <a id="receiver_server_logsLink">Server Logs</a>
+                        <a id="receiver_logsLink">Normal Logs</a>
+                        <a id="logoutLink">Logout</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="content">
+            <!-- Merged Receiver Type and Base Coordinates into single section with one save button -->
+            <form id="mainConfigForm">
+                <div class="section-title">GNSS Receiver Settings</div>
+
+                <div class="form-group">
+                    <label>Receiver Type</label>
+                    <div class="device-type-selector" role="radiogroup" aria-label="Receiver Type">
+                        <label class="radio-option" tabindex="0">
+                            <input type="radio" name="deviceType" value="base" />
+                            <span class="circle" aria-hidden="true"></span>
+                            <span class="label-text">BASE</span>
+                        </label>
+
+                        <label class="radio-option" tabindex="0">
+                            <input type="radio" name="deviceType" value="rover" />
+                            <span class="circle" aria-hidden="true"></span>
+                            <span class="label-text">ROVER</span>
+                        </label>
+                        <label class="radio-option" tabindex="0">
+                            <input type="radio" name="deviceType" value="stop" />
+                            <span class="circle" aria-hidden="true"></span>
+                            <span class="label-text">STOP</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Base Coordinates section for BASE device type -->
+                <div id="baseCoordinatesSection" class="hidden">
+                    <label style="display:block; margin-bottom:10px; color:#333; font-weight:500; font-size:14px;">Base
+                        Co-ordinates</label>
+
+                    <div class="form-group">
+                        <div class="device-type-selector" role="radiogroup" aria-label="Coordinate Mode">
+                            <label class="radio-option" tabindex="0">
+                                <input type="radio" name="coordinateMode" value="auto" />
+                                <span class="circle" aria-hidden="true"></span>
+                                <span class="label-text">Auto Fix Base Co-ordinates</span>
+                            </label>
+
+                            <label class="radio-option" tabindex="0">
+                                <input type="radio" name="coordinateMode" value="manual" />
+                                <span class="circle" aria-hidden="true"></span>
+                                <span class="label-text">Manually feed Base Co-ordinates</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Auto Fix section -->
+                    <div id="autoFixSection">
+                        <div class="form-group">
+
+                            <div class="checkbox-wrapper">
+                                <input type="checkbox" id="resetBaseCoordinates" />
+                                <label for="resetBaseCoordinates">Reset Base Co-ordinates</label>
+                            </div>
+
+                            <label for="averageDelay">Average Delay (Change requires base reset.)</label>
+                            <select id="averageDelay">
+                                <option value="1hr">1 hour</option>
+                                <option value="2hr">2 hours</option>
+                                <option value="3hr">3 hours</option>
+                                <option value="4hr">4 hours</option>
+                                <option value="6hr">6 hours</option>
+                                <option value="12hr">12 hours</option>
+                                <option value="24hr">24 hours</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Manual Feed section -->
+                    <div id="manualFeedSection" class="hidden">
+                        <div class="form-group">
+                            <label for="latitude">Latitude</label>
+                            <input type="text" id="latitude" placeholder="e.g., 40.7128" class="coordinate-input" />
+                        </div>
+
+                        <div class="form-group">
+                            <label for="longitude">Longitude</label>
+                            <input type="text" id="longitude" placeholder="e.g., -74.0060" class="coordinate-input" />
+                        </div>
+
+                        <div class="form-group">
+                            <label for="altitude">Altitude</label>
+                            <input type="text" id="altitude" placeholder="e.g., 10.5" class="coordinate-input" />
+                        </div>
+                    </div>
+                </div>
+
+            </form>
+
+            <!-- Server Settings -->
+            <form id="configForm">
+
+                <div id="modemSettings">
+                    <div class="section-title">Modem Settings</div>
+
+                    <div class="form-group">
+                        <label for="apn">SIM APN</label>
+                        <input type="text" id="apn" placeholder="apn" required />
+                    </div>
+
+                </div>
+
+                <div id="serverSetting">
+                    <div class="section-title">Server Settings</div>
+
+                    <div class="form-group">
+                        <label for="ipServer">IP Server</label>
+                        <input type="text" id="ipServer" placeholder="192.168.1.1" required />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="portServer">Port Server</label>
+                        <input type="number" id="portServer" placeholder="2101" required />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="mountPoint">Mount Point</label>
+                        <input type="text" id="mountPoint" placeholder="MOUNT1" required />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="serverUser">User</label>
+                        <input type="text" id="serverUser" required />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="serverPassword">Password</label>
+                        <input type="password" id="serverPassword" required />
+                    </div>
+
+                </div>
+
+                <!-- Rover-specific Settings -->
+                <div id="roverSettings" class="settings-section hidden">
+                    <div class="section-title">Rover Settings</div>
+
+                    <div class="form-group">
+                        <label for="roverID">Rover ID</label>
+                        <input type="text" id="roverID" required />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="scanInterval">Scan Interval</label>
+                        <select id="scanInterval">
+                            <option value="1min">1 Minute</option>
+                            <option value="5min">5 Minute</option>
+                            <option value="10min">10 Minute</option>
+                            <option value="15min">15 Minute</option>
+                            <option value="30min">30 Minute</option>
+                            <option value="1hr">1 Hour</option>
+                            <option value="2hr">2 Hour</option>
+                            <option value="3hr">3 Hour</option>
+                            <option value="6hr">6 Hour</option>
+                            <option value="12hr">12 Hour</option>
+                            <option value="24hr">24 Hour</option>
+
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label> Scan Start Time </label>
+                        <div class="time-picker">
+                            <div class="time-group">
+                                <label for="hours">HH</label>
+                                <select id="hours"></select>
+                            </div>
+                            <div class="time-group">
+                                <label for="minutes">MM</label>
+                                <select id="minutes"></select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="section-title">FTP Settings</div>
+
+                    <div class="checkbox-wrapper">
+                        <input type="checkbox" id="ftpUploadEnable" />
+                        <label for="ftpUploadEnable">FTP Upload Enable</label>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="ftpIp">FTP IP</label>
+                        <input type="text" id="ftpIp" placeholder="192.168.1.100" />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="ftpPort">FTP Port</label>
+                        <input type="number" id="ftpPort" placeholder="21" />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="ftpUser">FTP User</label>
+                        <input type="text" id="ftpUser" />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="ftpPassword">FTP Password</label>
+                        <input type="password" id="ftpPassword" />
+                    </div>
+
+                    <div class="section-title">Data Storage</div>
+
+                    <div class="form-group">
+                        <label for="maxRecordPerFile">Max Record Per File</label>
+                        <select id="maxRecordPerFile">
+                            <option value="1">1 records</option>
+                            <option value="5">5 records</option>
+                            <option value="10">10 records</option>
+                            <option value="15">15 records</option>
+                            <option value="20">20 records</option>
+                            <option value="30">30 records</option>
+                            <option value="40">40 records</option>
+                            <option value="50">50 records</option>
+                            <option value="100">100 records</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="uploadFileAction">Upload File Action</label>
+                        <select id="uploadFileAction">
+                            <option value="delete">Delete After Upload</option>
+                            <option value="archive">Archive After Upload</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="dateTimeFormat">Date Time Format</label>
+                        <select id="dateTimeFormat">
+                            <option value="yyyy/MM/dd HH:mm:ss">yyyy/MM/dd HH:mm:ss</option>
+                            <option value="yyyy-MM-dd HH:mm:ss">yyyy-MM-dd HH:mm:ss</option>
+                            <option value="dd/MM/yyyy HH:mm:ss">dd/MM/yyyy HH:mm:ss</option>
+                            <option value="dd-MM-yyyy HH:mm:ss">dd-MM-yyyy HH:mm:ss</option>
+                            <option value="yyyy/MMM/dd HH:mm:ss">yyyy/MMM/dd HH:mm:ss</option>
+                            <option value="yyyy-MMM-dd HH:mm:ss">yyyy-MMM-dd HH:mm:ss</option>
+                            <option value="dd/MMM/yyyy HH:mm:ss">dd/MMM/yyyy HH:mm:ss</option>
+                            <option value="dd-MMM-yyyy HH:mm:ss">dd-MMM-yyyy HH:mm:ss</option>
+                        </select>
+                    </div>
+
+                    <div class="section-title">Reporting</div>
+
+                    <div class="form-group">
+                        <label for="deviationUnit">Deviation Unit</label>
+                        <select id="deviationUnit">
+                            <option value="inch">Inch</option>
+                            <option value="cm">Centimeter (cm)</option>
+                            <option value="mm">Millimeter (mm)</option>
+                            <option value="ft">Feet (ft)</option>
+                            <option value="m">Meter (m)</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="baseReading">Base Reading</label>
+                        <select id="baseReading">
+                            <option value="1hr">1 hour</option>
+                            <option value="2hr">2 hours</option>
+                            <option value="3hr">3 hours</option>
+                            <option value="4hr">4 hours</option>
+                            <option value="6hr">6 hours</option>
+                            <option value="8hr">8 hours</option>
+                            <option value="12hr">12 hours</option>
+                            <option value="24hr">24 hours</option>
+                            <option value="48hr">48 hours</option>
+                            <option value="72hr">72 hours</option>
+                        </select>
+                    </div>
+
+                    <div class="checkbox-wrapper">
+                        <input type="checkbox" id="resetBaseReading" />
+                        <label for="resetBaseReading">Reset Base Reading</label>
+                    </div>
+
+
+                </div>
+                <button type="button" class="section-save-btn" onclick="saveMainConfiguration()">Save
+                    Configuration</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Logs Page -->
+    <div id="logsPage" class="container hidden">
+        <div class="header">
+            <div class="header-content">
+                <h1 id="logsHeading">System Logs</h1>
+                <div style="width:100%;">
+                    <div class="user-info"><strong id="usernameDisplayLogs">User</strong></div>
+                    <div class="user-menu">
+                        <a id="backToConfigLink">Back to Config</a>
+                        <a id="logoutLinkFromLogs">Logout</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="content">
+            <div class="logs-container" id="logsContainer">
+                <!-- Dummy logs will be inserted here -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function setLogType(logType) {
+            document.getElementById("logsHeading").textContent = logType;
+        }
+        const hourSelect = document.getElementById('hours');
+        for (let h = 0; h < 24; h++) {
+            const option = document.createElement('option');
+            option.value = h.toString().padStart(2, '0');
+            option.textContent = h.toString().padStart(2, '0');
+            hourSelect.appendChild(option);
+        }
+
+        // Populate minutes (00–59)
+        const minuteSelect = document.getElementById('minutes');
+        for (let m = 0; m < 60; m++) {
+            const option = document.createElement('option');
+            option.value = m.toString().padStart(2, '0');
+            option.textContent = m.toString().padStart(2, '0');
+            minuteSelect.appendChild(option);
+        }
+
+        const STORAGE_KEY = 'deviceConfig';
+        // State
+        let currentUser = null;
+
+        // GNSS Receiver Configuration
+        let deviceType = null;
+        let coordinateMode = null;
+        let lat = null;
+        let lon = null;
+        let alt = null;
+        let average = null;
+        let resetBaseCoordinates = null;
+
+
+
+        // Modem settings
+        let apn = null;
+
+        // Server Setting
+        let ip = null;
+        let port = null;
+        let mountPoint = null;
+        let user = null;
+        let password = null;
+
+        // Rover Setting
+        let rover_id = null;
+        let scan_start_time = null;
+        let scanInterval = null;
+
+        // Ftp Settings
+        let ftpEnable = null;
+        let ftpIP = null;
+        let ftpPort = null;
+        let ftpUser = null;
+        let ftpPass = null;
+
+        // Data Storage
+        let maxRecPerFile = null;
+        let uploadFileAction = null;
+        let dateTimeFormat = null;
+
+        // Reporting Unit
+        let deviationUnit = null;
+        let baseReading = null;
+        let resetBaseReading = null;
+
+        // Elements
+        const loginPage = document.getElementById('loginPage');
+        const configPage = document.getElementById('configPage');
+        const logsPage = document.getElementById('logsPage');
+        const loginForm = document.getElementById('loginForm');
+        const mainConfigForm = document.getElementById('mainConfigForm');
+        const configForm = document.getElementById('configForm');
+        const roverSettings = document.getElementById('roverSettings');
+        const baseCoordinatesSection = document.getElementById('baseCoordinatesSection');
+        const autoFixSection = document.getElementById('autoFixSection');
+        const manualFeedSection = document.getElementById('manualFeedSection');
+        const serverSetting = document.getElementById('serverSetting');
+        const deviceTypeRadios = document.querySelectorAll('input[name="deviceType"]');
+        const coordinateModeRadios = document.querySelectorAll('input[name="coordinateMode"]');
+
+        const DEFAULT_USERNAME = 'admin';
+        const DEFAULT_PASSWORD = 'admin';
+
+
+        // Call it on page load
+        window.addEventListener('load', loadGnssSettings);
+
+        function loadGnssSettings() {
+            // Request saved values from server
+            fetch('/load_gnss_receiver_settings')
+                .then(resp => {
+                    if (!resp.ok) throw new Error('Network response was not ok: ' + resp.status);
+                    return resp.text();
+                })
+                .then(txt => {
+
+                    if (!txt || txt.trim() === '' || txt.trim() === 'NO_DATA') {
+                        console.log('No saved config found (server returned NO_DATA or empty).');
+                        return;
+                    }
+
+                    const params = new URLSearchParams(txt.trim());
+
+                    console.log(params.toString());
+
+                    deviceType = params.get('deviceType') || null;
+                    coordinateMode = params.get('coordinateMode') || null;
+                    lat = params.get('lat') || null;
+                    lon = params.get('lon') || null;
+                    alt = params.get('alt') || null;
+                    average = params.get('average') || null;
+
+                    apn = params.get('apn') || null;
+
+                    ip = params.get('ip') || null;
+                    port = params.get('port') || null;
+                    mountPoint = params.get('mountPoint') || null;
+                    user = params.get('user') || null;
+                    password = params.get('password') || null;
+
+                    rover_id = params.get('rover_id') || null;
+                    scan_start_time = params.get('scan_start_time') || null;
+                    scanInterval = params.get('scanInterval') || null;
+
+                    ftpEnable = params.get('ftpEnable') || null;
+                    ftpIP = params.get('ftpIP') || null;
+                    ftpPort = params.get('ftpPort') || null;
+                    ftpUser = params.get('ftpUser') || null;
+                    ftpPass = params.get('ftpPass') || null;
+
+                    maxRecPerFile = params.get('maxRecPerFile') || null;
+                    uploadFileAction = params.get('uploadFileAction') || null;
+                    dateTimeFormat = params.get('dateTimeFormat') || null;
+
+                    deviationUnit = params.get('deviationUnit') || null;
+                    baseReading = params.get('baseReading') || null;
+
+
+                    // Device type radio
+                    if (deviceType) {
+                        const el = document.querySelector(`input[name="deviceType"][value="${deviceType}"]`);
+                        if (el) {
+                            el.checked = true;
+                            updateDeviceTypeSections();
+                        }
+                    }
+
+                    // Coordinate mode radio
+                    if (coordinateMode) {
+                        const m = document.querySelector(`input[name="coordinateMode"][value="${coordinateMode}"]`);
+                        if (m) {
+                            m.checked = true;
+                            updateCoordinateModeSections();
+                        }
+                    }
+
+                    // Base Co-ordinates
+                    if (average !== null && document.getElementById('averageDelay'))
+                        document.getElementById('averageDelay').value = average;
+
+                    if (lat !== null && document.getElementById('latitude'))
+                        document.getElementById('latitude').value = lat;
+
+                    if (lon !== null && document.getElementById('longitude'))
+                        document.getElementById('longitude').value = lon;
+
+                    if (alt !== null && document.getElementById('altitude'))
+                        document.getElementById('altitude').value = alt;
+
+                    // APN Settings
+                    if (apn !== null && document.getElementById('apn'))
+                        document.getElementById('apn').value = apn;
+
+                    // Server Settings
+                    if (ip !== null && document.getElementById('ipServer'))
+                        document.getElementById('ipServer').value = ip;
+
+                    if (port !== null && document.getElementById('portServer'))
+                        document.getElementById('portServer').value = port;
+
+                    if (mountPoint !== null && document.getElementById('mountPoint'))
+                        document.getElementById('mountPoint').value = mountPoint;
+
+                    if (user !== null && document.getElementById('serverUser'))
+                        document.getElementById('serverUser').value = user;
+
+                    if (password !== null && document.getElementById('serverPassword'))
+                        document.getElementById('serverPassword').value = password;
+
+                    // Rover Settings
+
+                    if (rover_id !== null && document.getElementById('roverID'))
+                        document.getElementById('roverID').value = rover_id;
+
+                    if (scan_start_time !== null) {
+
+                        const [hh, mm] = scan_start_time.split(":");
+
+                        if (document.getElementById('hours'))
+                            document.getElementById('hours').value = hh;
+
+                        if (document.getElementById('minutes'))
+                            document.getElementById('minutes').value = mm;
+                    }
+
+                    if (scanInterval !== null && document.getElementById('scanInterval'))
+                        document.getElementById('scanInterval').value = scanInterval;
+
+                    // FTP Settings
+
+                    if (ftpEnable !== null) {
+                        const el = document.querySelector(`#ftpUploadEnable`);
+                        if (el) {
+                            el.checked = (ftpEnable === "true");
+                        }
+                    }
+
+                    if (ftpIP !== null && document.getElementById('ftpIp'))
+                        document.getElementById('ftpIp').value = ftpIP;
+
+                    if (ftpPort !== null && document.getElementById('ftpPort'))
+                        document.getElementById('ftpPort').value = ftpPort;
+
+                    if (ftpUser !== null && document.getElementById('ftpUser'))
+                        document.getElementById('ftpUser').value = ftpUser;
+
+                    if (ftpPass !== null && document.getElementById('ftpPassword'))
+                        document.getElementById('ftpPassword').value = ftpPass;
+
+                    if (maxRecPerFile !== null && document.getElementById('maxRecordPerFile'))
+                        document.getElementById('maxRecordPerFile').value = maxRecPerFile;
+
+                    if (uploadFileAction !== null && document.getElementById('uploadFileAction'))
+                        document.getElementById('uploadFileAction').value = uploadFileAction;
+
+                    if (dateTimeFormat !== null && document.getElementById('dateTimeFormat'))
+                        document.getElementById('dateTimeFormat').value = dateTimeFormat;
+
+                    if (deviationUnit !== null && document.getElementById('deviationUnit'))
+                        document.getElementById('deviationUnit').value = deviationUnit;
+
+                    if (baseReading !== null && document.getElementById('baseReading'))
+                        document.getElementById('baseReading').value = baseReading;
+
+
+                    console.log('Loaded settings from server:', Object.fromEntries(params.entries()));
+                })
+                .catch(err => {
+                    console.error('Failed to load saved settings:', err);
+                });
+        }
+
+
+        function isValidDomainOrIP(value) {
+            value = value.trim();
+
+            // IPv4 regex
+            const ipv4Regex = /^(25[0-5]|2[0-4]\d|1\d{2}|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d{2}|[1-9]?\d)){3}$/;
+
+            // IPv6 regex (simplified valid form)
+            const ipv6Regex = /^(([0-9a-fA-F]{1,4}):){7}([0-9a-fA-F]{1,4})$/;
+
+            // Domain name regex
+            const domainRegex = /^(?!-)(?:[a-zA-Z0-9-]{1,63}\.)+[A-Za-z]{2,}$/;
+
+            // Apn regex
+            return ipv4Regex.test(value) || ipv6Regex.test(value) || domainRegex.test(value);
+        }
+
+
+        function loadConfiguration() {
+            const savedConfig = localStorage.getItem(STORAGE_KEY);
+            if (savedConfig) {
+                const config = JSON.parse(savedConfig);
+                deviceType = config.deviceType;
+
+                // Set the device type radio button
+                const deviceRadio = document.querySelector(`input[name="deviceType"][value="${deviceType}"]`);
+                if (deviceRadio) {
+                    deviceRadio.checked = true;
+                }
+
+                // Show appropriate sections based on device type
+                updateDeviceTypeSections();
+
+                if (deviceType === 'base' && config.coordinateMode) {
+                    coordinateMode = config.coordinateMode;
+                    const coordRadio = document.querySelector(`input[name="coordinateMode"][value="${coordinateMode}"]`);
+                    if (coordRadio) {
+                        coordRadio.checked = true;
+                    }
+                    updateCoordinateModeSections();
+
+                    if (coordinateMode === 'auto' && config.averageDelay) {
+                        document.getElementById('averageDelay').value = config.averageDelay;
+                    } else if (coordinateMode === 'manual') {
+                        // if (config.latitude) document.getElementById('latitude').value = config.latitude;
+                        // if (config.longitude) document.getElementById('longitude').value = config.longitude;
+                        // if (config.altitude) document.getElementById('altitude').value = config.altitude;
+                    }
+                }
+            } else {
+                coordinateMode = null;
+            }
+        }
+
+        function updateDeviceTypeSections() {
+            if (deviceType === 'rover') {
+                roverSettings.classList.remove('hidden');
+                serverSetting.classList.remove('hidden');
+                baseCoordinatesSection.classList.add('hidden');
+            } else if (deviceType === 'base') {
+                roverSettings.classList.add('hidden');
+                baseCoordinatesSection.classList.remove('hidden');
+                serverSetting.classList.remove('hidden');
+                if (coordinateMode) {
+                    updateCoordinateModeSections();
+                } else {
+                    autoFixSection.classList.add('hidden');
+                    manualFeedSection.classList.add('hidden');
+                }
+            } else {
+                // No device type selected
+                roverSettings.classList.add('hidden');
+                baseCoordinatesSection.classList.add('hidden');
+                serverSetting.classList.add('hidden');
+            }
+        }
+
+        function updateCoordinateModeSections() {
+            if (coordinateMode === 'auto') {
+                autoFixSection.classList.remove('hidden');
+                manualFeedSection.classList.add('hidden');
+            } else {
+                autoFixSection.classList.add('hidden');
+                manualFeedSection.classList.remove('hidden');
+            }
+        }
+
+        function showPage(page) {
+            loginPage.classList.add('hidden');
+            configPage.classList.add('hidden');
+            logsPage.classList.add('hidden');
+
+            if (page === 'login') {
+                loginPage.classList.remove('hidden');
+                document.getElementById('loginError').classList.add('hidden');
+            } else if (page === 'config') {
+                configPage.classList.remove('hidden');
+                loadConfiguration();
+            } else if (page === 'receiver_server_logs') {
+                logsPage.classList.remove('hidden');
+                document.getElementById('usernameDisplayLogs').textContent = currentUser;
+                loadLogs("server");
+            }
+            else if (page === 'receiver_logs') {
+                logsPage.classList.remove('hidden');
+                document.getElementById('usernameDisplayLogs').textContent = currentUser;
+                loadLogs("log");
+            }
+            window.scrollTo(0, 0);
+        }
+
+
+        async function loadLogs(type) {
+            const logsContainer = document.getElementById('logsContainer');
+            logsContainer.innerHTML = "<b>Loading...</b>";
+
+            try {
+                // Fetch list of log files from server
+                const response = await fetch(`/list?type=${type}`);
+                const text = await response.text();
+
+                // Show file list HTML inside logsContainer
+                logsContainer.innerHTML = text;
+
+                // Attach click event to each log link
+                const links = logsContainer.querySelectorAll("a");
+                links.forEach(link => {
+                    link.addEventListener("click", async function (event) {
+                        event.preventDefault();
+                        const file = this.getAttribute("href").split("=")[1];
+                        loadLogFile(file, type);
+                    });
+                });
+
+
+            } catch (err) {
+                logsContainer.innerHTML = `<span style="color:red">Error loading log list</span>`;
+                console.error(err);
+            }
+        }
+        async function loadLogFile(filename, type) {
+            const logsContainer = document.getElementById('logsContainer');
+            logsContainer.innerHTML = "<b>No file found...</b>";
+
+            try {
+                const response = await fetch(`/view?file=${filename}`);
+                const text = await response.text();
+                logsContainer.innerHTML = "";
+                // Render file content as plain text
+
+                const fileName = document.createElement("div");
+                fileName.className = "log-entry";
+
+                fileName.innerHTML = `
+            <h2 class="label-text">${filename}</h2>
+           
+        `;
+
+                logsContainer.appendChild(fileName);
+
+
+                //    logsContainer.innerHTML = `<h2 class="label-text">${filename}</h2>`;
+                const lines = text.split("\n");
+
+
+                lines.forEach(line => {
+                    if (line.trim() === "") return; // skip empty lines
+
+
+
+                    const logEntry = document.createElement("div");
+                    logEntry.className = "log-entry";
+
+                    logEntry.innerHTML = `
+            <span class="log-time">${line}</span>
+           
+        `;
+
+                    logsContainer.appendChild(logEntry);
+                });
+
+                const logEntry = document.createElement("div");
+                logEntry.className = "log-entry";
+
+                const span = document.createElement("span");
+                span.className = "log-time";
+
+                const backBtn = document.createElement("button");
+                backBtn.className = "btn";
+                backBtn.textContent = "Back";
+                backBtn.onclick = () => loadLogs(type);
+
+                span.appendChild(backBtn);
+                logEntry.appendChild(span);
+                logsContainer.appendChild(logEntry);
+
+
+
+
+            } catch (err) {
+                logsContainer.innerHTML = `<span style="color:red">Error loading file</span>`;
+                console.error(err);
+            }
+        }
+
+
+        // function loadLogs() {
+        //     const logsContainer = document.getElementById('logsContainer');
+        //     logsContainer.innerHTML = '';
+
+        //     dummyLogs.forEach(log => {
+        //         const logEntry = document.createElement('div');
+        //         logEntry.className = 'log-entry';
+        //         logEntry.innerHTML = `
+        //     <span class="log-time">${log.time}</span>
+        //     <span class="log-type ${log.type}">${log.type.toUpperCase()}</span>
+        //     <span>${log.message}</span>
+        //     `;
+        //         logsContainer.appendChild(logEntry);
+        //     });
+        // }
+
+        loginForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const username = document.getElementById('loginUsername').value.trim();
+            const password = document.getElementById('loginPassword').value;
+
+            if (username === DEFAULT_USERNAME && password === DEFAULT_PASSWORD) {
+                currentUser = username;
+                document.getElementById('usernameDisplay').textContent = username;
+                loadGnssSettings();
+                showPage('config');
+            } else {
+                const err = document.getElementById('loginError');
+                err.classList.remove('hidden');
+                err.textContent = 'Invalid username or password';
+            }
+        });
+
+        deviceTypeRadios.forEach(radio => {
+            radio.addEventListener('change', (e) => {
+                deviceType = e.target.value;
+                // coordinateMode = null;
+                // coordinateModeRadios.forEach(r => r.checked = false);
+                updateDeviceTypeSections();
+            });
+        });
+
+        coordinateModeRadios.forEach(radio => {
+            radio.addEventListener('change', (e) => {
+                coordinateMode = e.target.value;
+                updateCoordinateModeSections();
+            });
+        });
+
+        function isValidAPN(accessPointName) {
+            if (!accessPointName || accessPointName.trim() === "") {
+                return false;  // empty or null
+            }
+
+            // APN rules:
+            const apnPattern =
+                /^(?!-)(?!.*\.\.)(?!.*--)(?!.*\.-)(?!.*-\.)[A-Za-z0-9][A-Za-z0-9.-]{0,98}[A-Za-z0-9]$/;
+
+            return apnPattern.test(accessPointName);
+        }
+
+        function saveMainConfiguration() {
+
+            const ipPattern = /^(25[0-5]|2[0-4]\d|1\d{2}|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d{2}|[1-9]?\d)){3}$/;
+            const userPattern = /^[a-zA-Z0-9_]{3,32}$/;
+            const mountPattern = /^[A-Za-z][A-Za-z0-9_-]{2,31}$/;
+
+            const deviceTypeChecked = document.querySelector('input[name="deviceType"]:checked');
+
+            if (!deviceTypeChecked) {
+                showCustomAlert("Error", 'Please select a Receiver Type before saving.');
+                return;
+            }
+
+            const selectedDeviceType = deviceTypeChecked.value;
+            const config = { deviceType: selectedDeviceType };
+            deviceType = selectedDeviceType;
+
+            // If BASE is selected, validate and save coordinate settings
+            if (selectedDeviceType === 'base') {
+                const coordinateModeChecked = document.querySelector('input[name="coordinateMode"]:checked');
+                const mode = coordinateModeChecked ? coordinateModeChecked.value : 'auto';
+                config.coordinateMode = mode;
+                coordinateMode = mode;
+
+                if (mode === 'auto') {
+                    const averageDelay = document.getElementById('averageDelay').value;
+
+                    if (!averageDelay) {
+                        showCustomAlert("Error", 'Please select an Average Delay value before saving.');
+                        return;
+                    }
+                    average = averageDelay;
+                    config.averageDelay = averageDelay;
+                } else {
+                    const latitude = document.getElementById('latitude').value.trim();
+                    const longitude = document.getElementById('longitude').value.trim();
+                    const altitude = document.getElementById('altitude').value.trim();
+
+                    if (!latitude || !longitude || !altitude) {
+                        showCustomAlert("Error", 'Please fill in all coordinate fields (Latitude, Longitude, Altitude) before saving.');
+                        return;
+                    }
+                    lat = latitude;
+                    lon = longitude;
+                    alt = altitude;
+                }
+            }
+
+            if (selectedDeviceType === 'rover' || selectedDeviceType === 'base') {
+
+                // APN Settings
+                const simApn = document.getElementById('apn').value.trim();
+                if (!isValidAPN(simApn)) {
+                    showCustomAlert("Error", "Please enter a valid APN Modem Settings .!");
+                    return;
+                }
+
+                apn = simApn;
+
+                // Server Settings
+                const ipServer = document.getElementById('ipServer').value.trim();
+                const portServer = document.getElementById('portServer').value.trim();
+                const mPoint = document.getElementById('mountPoint').value.trim();
+                const serverUser = document.getElementById('serverUser').value.trim();
+                const serverPassword = document.getElementById('serverPassword').value.trim();
+
+                if (!ipServer || !portServer || !mPoint || !serverUser || !serverPassword) {
+                    showCustomAlert("Error", 'Please fill in all Server Settings fields before saving.');
+                    return;
+                }
+
+                if (!ipPattern.test(ipServer)) {
+                    showCustomAlert("Error", 'Please enter a valid IP address for Server Settings (e.g., 192.168.1.100).');
+                    return;
+                }
+
+                const portNum = Number(portServer);
+                if (isNaN(portNum) || portNum < 1 || portNum > 65535) {
+                    showCustomAlert("Error", 'Please enter a valid port number for Server Settings (1–65535).');
+                    return;
+                }
+
+                if (!mountPattern.test(mPoint)) {
+                    showCustomAlert("Error", 'Mount Point should start with a letter and be 3–32 characters (letters, digits, underscore, hyphen).');
+                    return;
+                }
+
+                if (!userPattern.test(serverUser)) {
+                    showCustomAlert("Error", 'Username should be 3–32 characters for Server Settings (letters, numbers, underscore only).');
+                    return;
+                }
+                if (serverPassword.length < 3) {
+                    showCustomAlert("Error", 'Password must be at least 3 characters long for Server Settings.');
+                    return;
+                }
+
+                if (!userPattern.test(serverPassword)) {
+                    showCustomAlert("Error", 'Password should be 3–32 characters for Server Settings (letters, numbers, underscore only).');
+                    return;
+                }
+
+                const resetBase = document.getElementById('resetBaseCoordinates').checked;
+
+                ip = ipServer;
+                port = portServer;
+                mountPoint = mPoint;
+                user = serverUser;
+                password = serverPassword;
+                resetBaseCoordinates = resetBase;
+
+            }
+
+            if (selectedDeviceType === 'rover') {
+                // Rover Settings
+
+                const roverID = document.getElementById('roverID').value.trim();
+                if (!roverID) {
+                    showCustomAlert("Error", 'Please enter Rover ID before saving.');
+                    return;
+                }
+
+                if (!userPattern.test(roverID)) {
+                    showCustomAlert("Error", 'Rover ID should be 3–32 characters (letters, numbers, underscore only).');
+                    return;
+                }
+
+                rover_id = roverID;
+
+                const hh = document.getElementById('hours').value;
+                const mm = document.getElementById('minutes').value;
+
+                if (!hh) {
+                    showCustomAlert("Error", 'Please select HH value of Scan Start Time before saving.');
+                    return;
+                }
+                if (!mm) {
+                    showCustomAlert("Error", 'Please select MM value of Scan Start Time before saving.');
+                    return;
+                }
+                scan_start_time = `${hh.toString().padStart(2, "0")}:${mm.toString().padStart(2, "0")}`;
+
+                const scanInt = document.getElementById('scanInterval').value;
+
+                if (!scanInt) {
+                    showCustomAlert("Error", 'Please select Scan Interval value before saving.');
+                    return;
+                }
+                scanInterval = scanInt;
+                // FTP Settings
+
+                const ftpUploadEnable = document.getElementById('ftpUploadEnable').checked;
+                const ftpIpAddr = document.getElementById('ftpIp').value.trim();
+                const ftpPortNum = document.getElementById('ftpPort').value.trim();
+                const ftpUsr = document.getElementById('ftpUser').value.trim();
+                const ftpPassword = document.getElementById('ftpPassword').value.trim();
+
+                if (!ftpIpAddr || !ftpPortNum || !ftpUsr || !ftpPassword) {
+                    showCustomAlert("Error", 'Please fill in all FTP Settings fields before saving.');
+                    return;
+                }
+
+                if (!isValidDomainOrIP(ftpIpAddr)) {
+                    console.log("Please enter a valid host for FTP Settings (e.g., 192.168.1.100 or ftp.example.org).!");
+                }
+
+                const portNumber = Number(ftpPortNum);
+                if (isNaN(portNumber) || portNumber < 1 || portNumber > 65535) {
+                    showCustomAlert("Error", 'Please enter a valid port number for FTP Settings (1–65535).');
+                    return;
+                }
+
+                if (!userPattern.test(ftpUsr)) {
+                    showCustomAlert("Error", 'Username should be 3–32 characters for FTP Settings (letters, numbers, underscore only).');
+                    return;
+                }
+                if (ftpPassword.length < 3) {
+                    showCustomAlert("Error", 'Password must be at least 3 characters long for FTP Settings.');
+                    return;
+                }
+                if (!userPattern.test(ftpPassword)) {
+                    showCustomAlert("Error", 'Password should be 3–32 characters for FTP Settings (letters, numbers, underscore only).');
+                    return;
+                }
+
+                ftpEnable = ftpUploadEnable;
+                ftpIP = ftpIpAddr;
+                ftpPort = ftpPortNum;
+                ftpUser = ftpUsr;
+                ftpPass = ftpPassword;
+
+                // Data Storage
+
+                const maxRecordPerFile = document.getElementById('maxRecordPerFile').value;
+                const uploadFileAct = document.getElementById('uploadFileAction').value;
+                const dtFormat = document.getElementById('dateTimeFormat').value;
+
+                if (!maxRecordPerFile || !uploadFileAct || !dtFormat) {
+                    showCustomAlert("Error", 'Please select all Data Storage options before saving.');
+                    return;
+                }
+                maxRecPerFile = maxRecordPerFile;
+                uploadFileAction = uploadFileAct;
+                dateTimeFormat = dtFormat;
+
+                // Reporting
+                const devUnit = document.getElementById('deviationUnit').value;
+                const initialReading = document.getElementById('baseReading').value;
+
+                if (!devUnit || !initialReading) {
+                    showCustomAlert("Error", 'Please select all Reporting options before saving.');
+                    return;
+                }
+
+                const isChecked = document.getElementById('resetBaseReading').checked;
+
+
+
+                deviationUnit = devUnit;
+                baseReading = initialReading;
+                resetBaseReading = isChecked;
+
+            }
+
+            const data =
+                encodeData("deviceType", deviceType) + "&" +
+                encodeData("coordinateMode", coordinateMode) + "&" +
+                encodeData("lat", lat) + "&" +
+                encodeData("lon", lon) + "&" +
+                encodeData("alt", alt) + "&" +
+                encodeData("average", average) + "&" +
+                encodeData("resetBaseCoordinates", resetBaseCoordinates) + "&" +
+                encodeData("ip", ip) + "&" +
+                encodeData("port", port) + "&" +
+                encodeData("mountPoint", mountPoint) + "&" +
+                encodeData("user", user) + "&" +
+                encodeData("password", password) + "&" +
+                encodeData("rover_id", rover_id) + "&" +
+                encodeData("scan_start_time", scan_start_time) + "&" +
+                encodeData("scanInterval", scanInterval) + "&" +
+                encodeData("ftpEnable", ftpEnable) + "&" +
+                encodeData("ftpIP", ftpIP) + "&" +
+                encodeData("ftpPort", ftpPort) + "&" +
+                encodeData("ftpUser", ftpUser) + "&" +
+                encodeData("ftpPass", ftpPass) + "&" +
+                encodeData("maxRecPerFile", maxRecPerFile) + "&" +
+                encodeData("uploadFileAction", uploadFileAction) + "&" +
+                encodeData("dateTimeFormat", dateTimeFormat) + "&" +
+                encodeData("deviationUnit", deviationUnit) + "&" +
+                encodeData("baseReading", baseReading) + "&" +
+                encodeData("apn", apn) + "&" +
+                encodeData("resetBaseReading", resetBaseReading);
+
+            fetch('/save_gnss_receiver_settings', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: data
+            })
+                .then(res => res.text())
+                .then(msg => showCustomAlert("Success", msg))
+                .catch(err => alert("Error saving GNSS Receiver Settings: " + err));
+        }
+
+        // Encode key=value pairs for URL-encoded POST
+        function encodeData(key, value) {
+            return encodeURIComponent(key) + "=" + encodeURIComponent(value);
+        }
+
+        document.getElementById('logoutLink').addEventListener('click', () => {
+            currentUser = null;
+            deviceType = null;
+            coordinateMode = null;
+            loginForm.reset();
+            mainConfigForm.reset();
+            configForm.reset();
+            showPage('login');
+        });
+
+        document.getElementById('logoutLinkFromLogs').addEventListener('click', () => {
+            currentUser = null;
+            deviceType = null;
+            coordinateMode = null;
+            loginForm.reset();
+            mainConfigForm.reset();
+            configForm.reset();
+            showPage('login');
+        });
+
+        document.getElementById('receiver_server_logsLink').addEventListener('click', () => {
+            setLogType("Receiver Server Logs");
+
+            showPage('receiver_server_logs');
+        });
+        document.getElementById('receiver_logsLink').addEventListener('click', () => {
+            setLogType("Receiver Logs");
+
+            showPage('receiver_logs');
+        });
+
+        document.getElementById('backToConfigLink').addEventListener('click', () => {
+            showPage('config');
+        });
+
+        showPage('login');
+
+        function showCustomAlert(title, message) {
+            document.getElementById("alertTitle").innerText = title;
+            document.getElementById("alertMessage").innerText = message;
+
+            const overlay = document.getElementById("customAlertOverlay");
+            overlay.style.display = "flex";
+        }
+
+        function closeCustomAlert() {
+            const overlay = document.getElementById("customAlertOverlay");
+            overlay.style.display = "none";
+        }
+
+    </script>
+
+    <div id="customAlertOverlay" class="alert-overlay">
+        <div class="alert-box">
+            <div class="alert-header">
+                <span id="alertTitle">Alert</span>
+            </div>
+            <div class="alert-body">
+                <p id="alertMessage">This is a custom alert message.</p>
+            </div>
+            <div class="alert-footer">
+                <button onclick="closeCustomAlert()">OK</button>
+            </div>
+        </div>
+    </div>
+
+</body>
+
+</html>

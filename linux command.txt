@@ -1,0 +1,69 @@
+// transferring file >> it replace file if file exist
+scp fileName debian@192.168.1.100:~
+scp GNSS_Rover_Base.jar debian@192.168.10.100:~
+
+password :beagle/@ncard10
+user :debian
+
+// transferring index.html file >> it replace file if file exist
+scp index.html debian@192.168.10.100:~/gnss/
+password :beagle
+user :debian
+
+// transferring server.c file >> it replace file if file exist
+scp server.c debian@192.168.10.100:~
+password :beagle
+user :Debian
+
+// Compiling server.c file
+cc server.c -o gnss_gui_server
+
+Run install_wifi_setup.sh file 
+cd ~/wifi_setup
+sed -i 's/\r$//' wifi_connect.c gnss-wifi-connect.service install_wifi_setup.sh
+sudo bash install_wifi_setup.sh
+
+// Remove file
+rm fileName
+
+IP Password
+Lan : 192.168.10.100:8080
+
+Wifi : 	SSID : XXXX_GNSS_XX
+	Pass : gnss1234
+	IP   : 192.168.50.1:8080
+
+
+// transferring folder >> it replace folder if file exist
+scp -r fileName debian@192.168.10.100:~
+password :beagle
+user :debian
+
+
+// to Give Permission
+// to make executable
+chmod +x filename
+
+// for all permission
+chmod 777 filename
+
+
+all files are available at home/Debian/gnss
+
+// change ip
+
+ifconfig eth0 192.168.1.101 netmask 255.255.255.0 up
+
+wifi pass : gnss1234
+
+
+sudo journalctl -fu gnss.service
+
+
+// copying files from beagle to pc 
+scp -r debian@192.168.1.100:/home/debian/gnss .
+
+
+
+cat /home/debian/gnss/config/save_gnss_receiver_settings.txt
+

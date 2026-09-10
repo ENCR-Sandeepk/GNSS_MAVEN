@@ -1,0 +1,7 @@
+12:54:52 **** Rebuild of configuration Debug for project hello2 ****
+Info: Internal Builder is used for build
+arm-linux-gnueabihf-gcc -O0 -g3 -Wall -c -fmessage-length=0 -o main.o ../main.c 
+arm-linux-gnueabihf-gcc -o hello2 main.o 
+
+12:54:52 Build Finished. 0 errors, 0 warnings. (took 330ms)
+

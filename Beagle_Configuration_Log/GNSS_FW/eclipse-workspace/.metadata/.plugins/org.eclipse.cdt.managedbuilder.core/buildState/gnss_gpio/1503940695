@@ -1,0 +1,5 @@
+#
+#Mon Nov 10 11:45:51 IST 2025
+Debug/gnss_gpio=1
+Debug/gnss_gpio_main.o=1
+gnss_gpio_main.c=1

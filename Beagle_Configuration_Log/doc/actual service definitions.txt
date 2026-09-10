@@ -1,0 +1,451 @@
+1. bring-up-eth2.service
+
+Location: /etc/systemd/system/bring-up-eth2.service
+
+[Unit]
+Description=Bring up eth2 if available
+After=network.target
+
+[Service]
+ExecStart=/sbin/ifup eth2
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
+
+2. daily-reboot.service
+
+Location: /etc/systemd/system/daily-reboot.service
+
+[Unit]
+Description=Daily System Reboot
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/systemctl reboot
+
+It is triggered by daily-reboot.timer.
+
+3. daily-timesync.service
+
+Location: /etc/systemd/system/daily-timesync.service
+
+[Unit]
+Description=Daily time and RTC sync
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/bash -c "timedatectl set-ntp true && sleep 15 && hwclock -w"
+
+It is triggered by daily-timesync.timer.
+
+4. gnss-watchdog.service
+
+Location: /etc/systemd/system/gnss-watchdog.service
+
+[Unit]
+Description=GNSS Hardware Watchdog Service
+After=multi-user.target
+
+[Service]
+Type=simple
+ExecStartPre=/bin/sh -c 'while [ ! -e /dev/watchdog1 ]; do sleep 1; done'
+ExecStart=/opt/gnss/watchdog
+Restart=always
+RestartSec=2
+User=root
+
+[Install]
+WantedBy=multi-user.target
+
+This is an important one because it explicitly waits for /dev/watchdog1 and then launches /opt/gnss/watchdog. The running process confirms /opt/gnss/watchdog is the actual program.
+
+5. gnss-wifi-connect.service
+
+Location: /etc/systemd/system/gnss-wifi-connect.service
+
+[Unit]
+Description=Connect BeaglePlay to external WiFi for internet access
+After=NetworkManager.service
+Wants=NetworkManager.service
+
+[Service]
+Type=simple
+WorkingDirectory=/home/debian
+ExecStart=/home/debian/wifi_setup/wifi_connect
+Restart=on-failure
+RestartSec=5
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target
+
+So this service directly starts:
+
+/home/debian/wifi_setup/wifi_connect
+
+The actual running process confirms that.
+
+6. gnss-wifi-setup.service
+
+Location: /etc/systemd/system/gnss-wifi-setup.service
+
+[Unit]
+Description=Set WiFi AP SSID from device serial number
+# Run AFTER network interfaces are up but BEFORE hostapd starts
+After=network-pre.target
+Before=hostapd.service
+Wants=network-pre.target
+
+[Service]
+Type=oneshot
+# Set working directory to where the serial file is stored
+# WorkingDirectory must point to where ./gnss/.sys_cal.dat is (parent of gnss folder)
+WorkingDirectory=/home/debian
+ExecStart=/home/debian/wifi_setup/wifi_setup
+RemainAfterExit=yes
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target
+
+This is a particularly useful service to understand because it has:
+
+Before=hostapd.service
+
+and:
+
+ExecStart=/home/debian/wifi_setup/wifi_setup
+
+The logs show that wifi_setup reads the serial number and updates hostapd.conf.
+
+7. gnss.service
+
+Location: /etc/systemd/system/gnss.service
+
+[Unit]
+Description=GNSS Java Base Station Auto Start
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=debian
+WorkingDirectory=/opt/gnss
+ExecStart=/opt/gnss/start_gnss.sh
+Restart=always
+RestartSec=10
+SuccessExitStatus=143
+
+[Install]
+WantedBy=multi-user.target
+
+And this confirms the exact chain we were discussing:
+
+systemd
+   ↓
+gnss.service
+   ↓
+/opt/gnss/start_gnss.sh
+   ↓
+/usr/bin/java -jar /home/debian/GNSS_Rover_Base.jar
+
+The running process explicitly shows both the shell script and your Java application.
+
+This is therefore a confirmed example of a service launching another program through a script.
+
+8. gnss_gpio.service
+
+Location: /etc/systemd/system/gnss_gpio.service
+
+[Unit]
+Description=GNSS GPIO Service
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+ExecStart=/opt/gnss/gnss_gpio
+WorkingDirectory=/opt/gnss
+Restart=always
+RestartSec=5
+User=root
+
+# Optional: logs ko journalctl me bhejne ke liye
+# StandardOutput=journal
+# StandardError=journal
+
+[Install]
+WantedBy=multi-user.target
+
+It directly starts:
+
+/opt/gnss/gnss_gpio
+
+as root.
+
+9. gnss_gui_server.service
+
+Location: /etc/systemd/system/gnss_gui_server.service
+
+[Unit]
+Description=GNSS GUI Server Service
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=/home/debian/gnss_gui_server
+WorkingDirectory=/home/debian
+Restart=always
+RestartSec=5
+User=debian
+
+[Install]
+WantedBy=multi-user.target
+
+This directly starts your application:
+
+gnss_gui_server.service
+        ↓
+/home/debian/gnss_gui_server
+
+The running process confirms that exact executable.
+
+10. ip-manager.service
+
+Location: /etc/systemd/system/ip-manager.service
+
+[Unit]
+Description=GNSS IP Manager Service
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/opt/gnss/ip_manager
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target
+
+This directly starts:
+
+/opt/gnss/ip_manager
+
+The logs show that this program:
+
+reads/configures an IP
+executes ip addr add ... dev eth0
+executes systemctl restart gnss.service
+
+For example, the inventory shows:
+
+Configured  : 192.168.10.100:2000
+Stored file : 192.168.10.100:2000
+Default IP  : 10.10.0.1
+RUN: ip addr add 192.168.10.100/24 dev eth0
+RUN: systemctl restart gnss.service
+
+This is therefore an important service in the GNSS startup architecture.
+
+11. mcu_server.service
+
+Location: /etc/systemd/system/mcu_server.service
+
+[Unit]
+Description=MCU Server
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+ExecStart=/usr/local/bin/mcu_server
+Restart=always
+RestartSec=2
+User=debian
+WorkingDirectory=/usr/local/bin
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target
+
+It directly starts:
+
+/usr/local/bin/mcu_server
+
+as user debian.
+
+12. modem_init.service
+
+Location: /etc/systemd/system/modem_init.service
+
+[Unit]
+Description=Modem ECM Boot Initializer
+After=multi-user.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/modem_init.sh
+
+[Install]
+WantedBy=multi-user.target
+
+So:
+
+modem_init.service
+       ↓
+/usr/local/bin/modem_init.sh
+
+It is a oneshot service, so it runs its initialization and exits. The inventory confirms it completed successfully.
+
+13. modem_status.service
+
+Location: /etc/systemd/system/modem_status.service
+
+[Unit]
+Description=Modem Status Collector
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/modem_manager
+
+It is triggered by:
+
+modem_status.timer
+        ↓
+modem_status.service
+        ↓
+/usr/local/bin/modem_manager
+
+The inventory explicitly confirms that relationship.
+
+14. net-timesync.service
+
+Location: /etc/systemd/system/net-timesync.service
+
+[Unit]
+Description=Sync time when network comes online
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/bash -c "timedatectl set-ntp true && sleep 10 && hwclock -w"
+
+[Install]
+WantedBy=multi-user.target
+
+The command performs:
+
+timedatectl set-ntp true
+        ↓
+wait 10 seconds
+        ↓
+hwclock -w
+
+The service runs once after the network becomes available and then exits successfully.
+
+15. quectel-check.service
+
+Location: /etc/systemd/system/quectel-check.service
+
+[Unit]
+Description=Quectel EC200U Auto Connect Check
+After=multi-user.target
+
+[Service]
+Type=simple
+ExecStart=/bin/bash -c 'while true; do /usr/local/bin/quectel_check; sleep 10; done'
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
+
+This one is especially clear:
+
+quectel-check.service
+        ↓
+/bin/bash
+        ↓
+while true
+   ↓
+/usr/local/bin/quectel_check
+   ↓
+sleep 10
+   ↓
+repeat forever
+
+The running process confirms the loop.
+
+16. serial-bridge.service
+
+Location: /etc/systemd/system/serial-bridge.service
+
+[Unit]
+Description=Serial-to-LAN Bridge
+After=network.target
+
+[Service]
+ExecStart=/bin/bash -c "sleep 10; /usr/local/bin/serial_bridge"
+Restart=always
+User=root
+
+[Install]
+WantedBy=multi-user.target
+
+And the actual process confirms:
+
+serial-bridge.service
+        ↓
+/bin/bash
+        ↓
+sleep 10
+        ↓
+/usr/local/bin/serial_bridge
+
+The important picture
+
+Now that we have the actual service files, we can already divide them into different types:
+
+Service	What ExecStart launches
+bring-up-eth2.service	/sbin/ifup eth2
+daily-reboot.service	systemctl reboot
+daily-timesync.service	Bash command
+gnss-watchdog.service	/opt/gnss/watchdog
+gnss-wifi-connect.service	/home/debian/wifi_setup/wifi_connect
+gnss-wifi-setup.service	/home/debian/wifi_setup/wifi_setup
+gnss.service	/opt/gnss/start_gnss.sh → GNSS_Rover_Base.jar
+gnss_gpio.service	/opt/gnss/gnss_gpio
+gnss_gui_server.service	/home/debian/gnss_gui_server
+ip-manager.service	/opt/gnss/ip_manager
+mcu_server.service	/usr/local/bin/mcu_server
+modem_init.service	/usr/local/bin/modem_init.sh
+modem_status.service	/usr/local/bin/modem_manager
+net-timesync.service	Bash command
+quectel-check.service	Bash loop → /usr/local/bin/quectel_check
+serial-bridge.service	Bash → /usr/local/bin/serial_bridge
+Most important discovery for your original question
+
+Your understanding was correct:
+
+gnss.service
+    ↓
+/opt/gnss/start_gnss.sh
+    ↓
+/usr/bin/java -jar /home/debian/GNSS_Rover_Base.jar
+
+This is confirmed by the running process, not just inferred from the service file.
+
+And:
+
+serial-bridge.service
+    ↓
+/bin/bash
+    ↓
+sleep 10
+    ↓
+/usr/local/bin/serial_bridge
