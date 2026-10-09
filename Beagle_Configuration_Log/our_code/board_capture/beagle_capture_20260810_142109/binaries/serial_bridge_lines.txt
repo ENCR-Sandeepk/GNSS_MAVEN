@@ -1,0 +1,207 @@
+
+/usr/local/bin/serial_bridge:     file format elf64-littleaarch64
+
+Contents of the .debug_line section:
+
+start.S:
+File name                            Line number    Starting address    View    Stmt
+start.S                                       50            0x400f90               x
+start.S                                       51            0x400f94               x
+start.S                                       54            0x400f98               x
+start.S                                       57            0x400f9c               x
+start.S                                       58            0x400fa0               x
+start.S                                       61            0x400fa4               x
+start.S                                       74            0x400fa8               x
+start.S                                       75            0x400fac               x
+start.S                                       76            0x400fb0               x
+start.S                                       83            0x400fb4               x
+start.S                                       86            0x400fb8               x
+start.S                                        -            0x400fd8
+
+
+CU: init.c:
+File name                            Line number    Starting address    View    Stmt
+
+crti.S:
+File name                            Line number    Starting address    View    Stmt
+crti.S                                        63            0x400fd8               x
+crti.S                                        64            0x400fdc               x
+crti.S                                        65            0x400fe0               x
+crti.S                                        66            0x400fe4               x
+crti.S                                        68            0x400fe8               x
+crti.S                                         -            0x400fec
+
+crti.S                                        77            0x400d18               x
+crti.S                                        78            0x400d1c               x
+crti.S                                        80            0x400d20               x
+crti.S                                         -            0x400d24
+
+crti.S                                        90            0x40186c               x
+crti.S                                        91            0x401870               x
+crti.S                                         -            0x401874
+
+
+server.c:
+File name                            Line number    Starting address    View    Stmt
+server.c                                     135            0x40108c               x
+server.c                                     138            0x40109c               x
+server.c                                     139            0x4010b8               x
+server.c                                     140            0x4010c4               x
+server.c                                     141            0x4010d0               x
+server.c                                     142            0x4010d8               x
+server.c                                     143            0x4010f0               x
+server.c                                     144            0x401110               x
+server.c                                     145            0x40111c               x
+server.c                                     146            0x401130               x
+server.c                                     141            0x401140               x
+server.c                                     141            0x40114c        
+server.c                                     150            0x401158               x
+server.c                                     137            0x401164               x
+server.c                                     157            0x401168               x
+server.c                                     158            0x401178               x
+server.c                                     161            0x401184               x
+server.c                                     162            0x40119c               x
+server.c                                     163            0x4011a8               x
+server.c                                     160            0x4011c0               x
+server.c                                     165            0x4011c4               x
+server.c                                     169            0x4011c8               x
+server.c                                     170            0x4011d4               x
+server.c                                     171            0x4011dc               x
+server.c                                     172            0x4011f8               x
+server.c                                     173            0x401208               x
+server.c                                     170            0x40120c               x
+server.c                                     170            0x401218        
+server.c                                     176            0x401224               x
+server.c                                     177            0x401230               x
+server.c                                     178            0x401238               x
+server.c                                     179            0x401240               x
+server.c                                     180            0x401244               x
+server.c                                     188            0x401250               x
+server.c                                     199            0x401260               x
+server.c                                     200            0x401280               x
+server.c                                     201            0x401294               x
+server.c                                     202            0x4012a0               x
+server.c                                     205            0x4012a8               x
+server.c                                     209            0x4012bc               x
+server.c                                     211            0x4012cc               x
+server.c                                     212            0x4012e8               x
+server.c                                     213            0x4012f4               x
+server.c                                     214            0x401304               x
+server.c                                     218            0x40130c               x
+server.c                                     220            0x401314               x
+server.c                                     221            0x401320               x
+server.c                                     224            0x40132c               x
+server.c                                     225            0x401338               x
+server.c                                     226            0x401344               x
+server.c                                     227            0x401350               x
+server.c                                     229            0x40135c               x
+server.c                                     230            0x40136c               x
+server.c                                     231            0x40137c               x
+server.c                                     233            0x401388               x
+server.c                                     234            0x401390               x
+server.c                                     236            0x401394               x
+server.c                                     237            0x4013a8               x
+server.c                                     238            0x4013cc               x
+server.c                                     239            0x4013d8               x
+server.c                                     240            0x4013e8               x
+server.c                                     244            0x4013f0               x
+server.c                                     263            0x401414               x
+server.c                                     265            0x40141c               x
+server.c                                     263            0x401428               x
+server.c                                     263            0x401434        
+server.c                                     268            0x401440               x
+server.c                                     334            0x40144c               x
+server.c                                     335            0x40146c               x
+server.c                                     337            0x401480               x
+server.c                                     338            0x40148c               x
+server.c                                     342            0x401494               x
+server.c                                     343            0x40149c               x
+server.c                                     345            0x4014c0               x
+server.c                                     346            0x4014cc               x
+server.c                                     347            0x4014d4               x
+server.c                                     348            0x4014e4               x
+server.c                                     349            0x4014f4               x
+server.c                                     351            0x401514               x
+server.c                                     352            0x401520               x
+server.c                                     355            0x401528               x
+server.c                                     358            0x40152c               x
+server.c                                     359            0x401548               x
+server.c                                     360            0x401554               x
+server.c                                     361            0x401564               x
+server.c                                     363            0x40156c               x
+server.c                                     366            0x40157c               x
+server.c                                     368            0x401590               x
+server.c                                     391            0x401598               x
+server.c                                     394            0x4015a8               x
+server.c                                     395            0x4015c0               x
+server.c                                     396            0x4015cc               x
+server.c                                     397            0x4015d8               x
+server.c                                     399            0x4015e0               x
+server.c                                     402            0x4015ec               x
+server.c                                     403            0x40160c               x
+server.c                                     404            0x401618               x
+server.c                                     405            0x401624               x
+server.c                                     409            0x40162c               x
+server.c                                     410            0x401648               x
+server.c                                     411            0x401664               x
+server.c                                     411            0x401670        
+server.c                                     412            0x40167c               x
+server.c                                     413            0x401688               x
+server.c                                     418            0x401690               x
+server.c                                     421            0x4016ac               x
+server.c                                     422            0x4016d4               x
+server.c                                     424            0x4016e8               x
+server.c                                     425            0x4016f4               x
+server.c                                     426            0x4016f8               x
+server.c                                     427            0x401700               x
+server.c                                     428            0x401718               x
+server.c                                     429            0x401734               x
+server.c                                     430            0x40173c               x
+server.c                                     426            0x401740               x
+server.c                                     426            0x40174c        
+server.c                                     433            0x401758               x
+server.c                                     435            0x401764               x
+server.c                                     436            0x401770               x
+server.c                                     438            0x401784               x
+server.c                                     439            0x401790               x
+server.c                                     441            0x4017a4               x
+server.c                                     442            0x4017c0               x
+server.c                                     422            0x4017cc               x
+server.c                                     420            0x4017d0               x
+server.c                                     784            0x4017d4               x
+server.c                                       -            0x4017e4
+
+
+elf-init.c:
+File name                            Line number    Starting address    View    Stmt
+elf-init.c                                    68            0x4017e8               x
+elf-init.c                                    86            0x4017f4               x
+elf-init.c                                    68            0x401804               x
+elf-init.c                                    86            0x401808               x
+elf-init.c                                    68            0x40180c               x
+elf-init.c                                    86            0x401818               x
+elf-init.c                                    68            0x40181c               x
+elf-init.c                                    83            0x401820               x
+elf-init.c                                    87            0x401824               x
+elf-init.c                                    87            0x40182c               x
+elf-init.c                                    88            0x401830               x
+elf-init.c                                    87            0x401840               x
+elf-init.c                                    88            0x401844               x
+elf-init.c                                    87            0x401848               x
+elf-init.c                                    89            0x401854               x
+elf-init.c                                    96            0x401868               x
+elf-init.c                                   106            0x401868       1       x
+elf-init.c                                     -            0x40186c
+
+
+crtn.S:
+File name                            Line number    Starting address    View    Stmt
+crtn.S                                        41            0x400d24               x
+crtn.S                                        42            0x400d28               x
+crtn.S                                         -            0x400d2c
+
+crtn.S                                        45            0x401874               x
+crtn.S                                        46            0x401878               x
+crtn.S                                         -            0x40187c
+
+

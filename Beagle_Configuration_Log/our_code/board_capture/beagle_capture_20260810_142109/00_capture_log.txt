@@ -1,0 +1,59 @@
+=== BeaglePlay capture started: Mon Aug 10 14:21:09 IST 2026 ===
+=== Running as: uid=0(root) gid=0(root) groups=0(root) ===
+
+########## 1. SYSTEMD UNITS ##########
+--- enabled/disabled state ---
+Units copied: 21 service files
+
+########## 2. CUSTOM BINARIES ##########
+COPIED : /opt/gnss/gnss_gpio  (71992 bytes, 2026-06-03 12:29:44)
+COPIED : /opt/gnss/watchdog  (70960 bytes, 2026-04-14 10:06:46)
+COPIED : /opt/gnss/ip_manager  (71472 bytes, 2026-03-18 09:54:18)
+COPIED : /opt/gnss/start_gnss.sh  (508 bytes, 2025-11-12 19:40:53)
+COPIED : /opt/gnss/javaprogram.txt  (20 bytes, 2025-11-12 18:44:30)
+COPIED : /usr/local/bin/mcu_server  (72624 bytes, 2026-04-17 15:09:15)
+COPIED : /usr/local/bin/serial_bridge  (110752 bytes, 2025-04-04 12:54:11)
+COPIED : /usr/local/bin/quectel_check  (71528 bytes, 2026-06-03 12:31:43)
+COPIED : /usr/local/bin/modem_manager  (71640 bytes, 2025-11-17 15:04:54)
+COPIED : /usr/local/bin/modem_init.sh  (333 bytes, 2025-11-17 14:28:38)
+COPIED : /home/debian/gnss_gui_server  (73976 bytes, 2026-08-03 17:12:17)
+COPIED : /home/debian/gnss_on  (70808 bytes, 2025-11-20 15:28:03)
+COPIED : /home/debian/gnss_off  (70808 bytes, 2025-11-20 15:28:33)
+COPIED : /home/debian/gnss_restart  (70856 bytes, 2025-11-20 15:14:55)
+COPIED : /home/debian/tcp_client  (71696 bytes, 2026-04-03 13:19:17)
+COPIED : /home/debian/uart_app  (71120 bytes, 2026-05-21 13:46:51)
+COPIED : /home/debian/sdcard_flasher  (70968 bytes, 2026-05-27 12:46:09)
+
+--- analysing binaries (symbols + strings) ---
+analysed: gnss_gpio
+analysed: gnss_gui_server
+analysed: gnss_off
+analysed: gnss_on
+analysed: gnss_restart
+analysed: ip_manager
+analysed: mcu_server
+analysed: modem_manager
+analysed: quectel_check
+analysed: sdcard_flasher
+analysed: serial_bridge
+analysed: tcp_client
+analysed: uart_app
+analysed: watchdog
+--- serial_bridge DWARF (has debug info!) ---
+DWARF dumped (1612 lines)
+
+########## 3. SOURCE CODE ON BOARD ##########
+source files found: 845
+
+########## 4. SHELL HISTORY ##########
+history lines (debian): 2000
+capture_everything.sh: line 106: /home/debian/beagle_capture_20260810_142109/logs/bash_history_root.txt: No such file or directory
+history lines (root)  : 0
+
+########## 5. RUNTIME STATE (as root) ##########
+runtime state captured
+
+########## 6. CONFIG + LOGS ##########
+logs captured
+
+########## 7. PACKAGING ##########

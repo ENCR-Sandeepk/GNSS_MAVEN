@@ -1,0 +1,39 @@
+=== FILE TYPE ===
+/home/debian/beagle_capture_20260810_142109/binaries/tcp_client: ELF 64-bit LSB pie executable, ARM aarch64, version 1 (SYSV), dynamically linked, interpreter /lib/ld-linux-aarch64.so.1, BuildID[sha1]=4aa1e6241a2185756c0e56084ae905d42a539256, for GNU/Linux 3.7.0, not stripped
+
+=== FUNCTION SYMBOLS ===
+                 w _ITM_deregisterTMCloneTable
+                 w _ITM_registerTMCloneTable
+                 w __cxa_finalize@GLIBC_2.17
+0000000000000d00 t __do_global_dtors_aux
+                 w __gmon_start__
+00000000000011e0 T _fini
+0000000000000a88 T _init
+0000000000000c40 T _start
+0000000000000c74 t call_weak_fn
+00000000000200c0 W data_start
+0000000000000c90 t deregister_tm_clones
+0000000000000d50 t frame_dummy
+0000000000000fb4 T main
+0000000000000cc0 t register_tm_clones
+0000000000000d54 T rx_thread_func
+0000000000000e54 T tx_thread_func
+
+=== INTERESTING STRINGS ===
+Connected to server %s:%d
+crtstuff.c
+perror
+perror@GLIBC_2.17
+pthread_cancel
+pthread_cancel@GLIBC_2.34
+pthread_create
+pthread_create rx_thread
+pthread_create tx_thread
+pthread_create@GLIBC_2.34
+pthread_join
+pthread_join@GLIBC_2.34
+rx_thread_func
+socket
+socket@GLIBC_2.17
+tcp_full_duplex_client.c
+tx_thread_func

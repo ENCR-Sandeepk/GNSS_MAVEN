@@ -1,0 +1,41 @@
+  UNIT                        LOAD   ACTIVE SUB     DESCRIPTION
+  avahi-daemon.service        loaded active running Avahi mDNS/DNS-SD Stack
+  bb-usb-gadgets.service      loaded active running BeagleBoard.org USB gadgets
+  code-server@debian.service  loaded active running code-server
+  containerd.service          loaded active running containerd container runtime
+  cron.service                loaded active running Regular background program processing daemon
+  dbus.service                loaded active running D-Bus System Message Bus
+  docker.service              loaded active running Docker Application Container Engine
+  getty@tty1.service          loaded active running Getty on tty1
+  gnss-watchdog.service       loaded active running GNSS Hardware Watchdog Service
+  gnss-wifi-connect.service   loaded active running Connect BeaglePlay to external WiFi for internet access
+  gnss.service                loaded active running GNSS Java Base Station Auto Start
+  gnss_gpio.service           loaded active running GNSS GPIO Service
+  gnss_gui_server.service     loaded active running GNSS GUI Server Service
+  hostapd.service             loaded active running Access point and authentication server for Wi-Fi and Ethernet
+  iwd.service                 loaded active running Wireless service
+  mcu_server.service          loaded active running MCU Server
+  mender-client.service       loaded active running Mender OTA update service
+  NetworkManager.service      loaded active running Network Manager
+  nginx.service               loaded active running A high performance web server and a reverse proxy server
+  nodered.service             loaded active running Node-RED graphical event wiring tool
+  polkit.service              loaded active running Authorization Manager
+  quectel-check.service       loaded active running Quectel EC200U Auto Connect Check
+  rtkit-daemon.service        loaded active running RealtimeKit Scheduling Policy Service
+  serial-bridge.service       loaded active running Serial-to-LAN Bridge
+  serial-getty@ttyGS0.service loaded active running Serial Getty on ttyGS0
+  serial-getty@ttyS2.service  loaded active running Serial Getty on ttyS2
+  ssh.service                 loaded active running OpenBSD Secure Shell server
+  systemd-journald.service    loaded active running Journal Service
+  systemd-logind.service      loaded active running User Login Management
+  systemd-networkd.service    loaded active running Network Configuration
+  systemd-timesyncd.service   loaded active running Network Time Synchronization
+  systemd-udevd.service       loaded active running Rule-based Manager for Device Events and Files
+  udisks2.service             loaded active running Disk Manager
+  unattended-upgrades.service loaded active running Unattended Upgrades Shutdown
+  user@1000.service           loaded active running User Manager for UID 1000
+
+LOAD   = Reflects whether the unit definition was properly loaded.
+ACTIVE = The high-level unit activation state, i.e. generalization of SUB.
+SUB    = The low-level unit activation state, values depend on unit type.
+35 loaded units listed.

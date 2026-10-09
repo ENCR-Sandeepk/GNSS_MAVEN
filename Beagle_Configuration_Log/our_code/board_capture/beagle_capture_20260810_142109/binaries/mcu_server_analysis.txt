@@ -1,0 +1,56 @@
+=== FILE TYPE ===
+/home/debian/beagle_capture_20260810_142109/binaries/mcu_server: ELF 64-bit LSB pie executable, ARM aarch64, version 1 (SYSV), dynamically linked, interpreter /lib/ld-linux-aarch64.so.1, BuildID[sha1]=2ac15c49829e68c18d9fa556325dfbe6eccb1868, for GNU/Linux 3.7.0, not stripped
+
+=== FUNCTION SYMBOLS ===
+                 w _ITM_deregisterTMCloneTable
+                 w _ITM_registerTMCloneTable
+                 w __cxa_finalize@GLIBC_2.17
+0000000000001100 t __do_global_dtors_aux
+                 w __gmon_start__
+00000000000018b0 T _fini
+0000000000000da0 T _init
+0000000000001040 T _start
+0000000000001074 t call_weak_fn
+0000000000020128 W data_start
+0000000000001090 t deregister_tm_clones
+0000000000001150 t frame_dummy
+0000000000001318 T main
+00000000000010c0 t register_tm_clones
+0000000000001154 T serial_reader
+0000000000001230 T tcp_to_serial
+
+=== INTERESTING STRINGS ===
+/beagleplay_uart2_shm
+/dev/ttyS3
+/sem_empty1
+/sem_full1
+Error getting termios attrs
+Error opening serial port
+Error setting termios attrs
+Listening on TCP port %d...
+Serial port %s opened successfully.
+crtstuff.c
+listen
+listen@GLIBC_2.17
+mmap failed
+open@GLIBC_2.17
+perror
+perror@GLIBC_2.17
+pthread_create
+pthread_create@GLIBC_2.34
+pthread_detach
+pthread_detach@GLIBC_2.34
+pthread_mutex_lock
+pthread_mutex_lock@GLIBC_2.17
+pthread_mutex_unlock
+pthread_mutex_unlock@GLIBC_2.17
+sem_open
+sem_open failed
+sem_open@GLIBC_2.34
+shm_open
+shm_open failed
+shm_open@GLIBC_2.34
+socket
+socket is created..
+socket@GLIBC_2.17
+uart2_server.c

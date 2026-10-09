@@ -1,0 +1,28 @@
+=== FILE TYPE ===
+/home/debian/beagle_capture_20260810_142109/binaries/sdcard_flasher: ELF 64-bit LSB pie executable, ARM aarch64, version 1 (SYSV), dynamically linked, interpreter /lib/ld-linux-aarch64.so.1, BuildID[sha1]=28fc0e852d10f94c1292e4621bc320813dece0e6, for GNU/Linux 3.7.0, not stripped
+
+=== FUNCTION SYMBOLS ===
+                 w _ITM_deregisterTMCloneTable
+                 w _ITM_registerTMCloneTable
+                 w __cxa_finalize@GLIBC_2.17
+0000000000000a00 t __do_global_dtors_aux
+                 w __gmon_start__
+0000000000000b4c T _fini
+00000000000007f8 T _init
+0000000000000940 T _start
+0000000000000974 t call_weak_fn
+0000000000020078 W data_start
+0000000000000990 t deregister_tm_clones
+0000000000000a50 t frame_dummy
+0000000000000a54 T main
+00000000000009c0 t register_tm_clones
+
+=== INTERESTING STRINGS ===
+    append root=/dev/mmcblk0p3 ro rootfstype=ext4 resume=/dev/mmcblk0p2 rootwait net.ifnames=0 quiet
+    append root=/dev/mmcblk0p3 ro rootfstype=ext4 rootwait net.ifnames=0 init=/usr/sbin/init-beagle-flasher
+crtstuff.c
+fopen
+fopen@GLIBC_2.17
+perror
+perror@GLIBC_2.17
+set_flasher_extlinux.c

@@ -1,0 +1,6 @@
+[Unit]
+Description=Daily time and RTC sync
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/bash -c "timedatectl set-ntp true && sleep 15 && hwclock -w"

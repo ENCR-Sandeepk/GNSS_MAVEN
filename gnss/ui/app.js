@@ -53,6 +53,11 @@ let scanInterval = null;
 // Deviation reporting axis (along / transverse)
 let axisEnable = null;
 let axisAngle = null;
+let tempEnable = null;
+let structureType = null;
+let tempDistance = null;
+let tempRefTemp = null;
+let tempCoeff = null;
 
 // Diagnostics
 let debugEnable = null;
@@ -168,6 +173,19 @@ function updateAxisAngleVisibility() {
         cb.addEventListener('change', updateAxisAngleVisibility);
 })();
 
+// Show the temperature-correction fields only when the checkbox is ticked
+function updateTempVisibility() {
+    const cb = document.getElementById('tempEnable');
+    const sec = document.getElementById('tempSection');
+    if (cb && sec)
+        sec.style.display = cb.checked ? 'block' : 'none';
+}
+(function () {
+    const cb = document.getElementById('tempEnable');
+    if (cb)
+        cb.addEventListener('change', updateTempVisibility);
+})();
+
 function loadGnssSettings() {
     fetch('/load_gnss_receiver_settings')
             .then(resp => {
@@ -206,6 +224,12 @@ function loadGnssSettings() {
 
                 axisEnable = params.get('axisEnable') || null;
                 axisAngle = params.get('axisAngle') || null;
+
+                tempEnable = params.get('tempEnable') || null;
+                structureType = params.get('structureType') || null;
+                tempDistance = params.get('tempDistance') || null;
+                tempRefTemp = params.get('tempRefTemp') || null;
+                tempCoeff = params.get('tempCoeff') || null;
 
                 debugEnable = params.get('debugEnable') || null;
                 if (debugEnable !== null) {
@@ -300,6 +324,18 @@ function loadGnssSettings() {
                 if (axisAngle !== null && document.getElementById('axisAngle'))
                     document.getElementById('axisAngle').value = axisAngle;
                 updateAxisAngleVisibility();
+
+                if (tempEnable !== null && document.getElementById('tempEnable'))
+                    document.getElementById('tempEnable').checked = (tempEnable === "true");
+                if (structureType !== null && document.getElementById('structureType'))
+                    document.getElementById('structureType').value = structureType;
+                if (tempDistance !== null && document.getElementById('tempDistance'))
+                    document.getElementById('tempDistance').value = tempDistance;
+                if (tempRefTemp !== null && document.getElementById('tempRefTemp'))
+                    document.getElementById('tempRefTemp').value = tempRefTemp;
+                if (tempCoeff !== null && document.getElementById('tempCoeff'))
+                    document.getElementById('tempCoeff').value = tempCoeff;
+                updateTempVisibility();
 
                 if (ftpEnable !== null) {
                     const el = document.querySelector('#ftpUploadEnable');
@@ -566,6 +602,12 @@ function updateGnssModeSections() {
     } else {
         burstSettings.classList.add('hidden');
     }
+    // Scan Interval + Scan Start Time apply only in Continuous mode (rover section
+    // itself is already hidden for base). In Burst mode the schedule comes from the
+    // burst window/interval, so hide them.
+    const scanTiming = document.getElementById('scanTimingSection');
+    if (scanTiming)
+        scanTiming.style.display = (gnssMode === 'burst') ? 'none' : 'block';
 }
 
 
@@ -692,23 +734,25 @@ function saveMainConfiguration() {
 
         const hh = document.getElementById('hours').value;
         const mm = document.getElementById('minutes').value;
-
-        if (!hh) {
-            showCustomAlert("Error", 'Please select HH value of Scan Start Time before saving.');
-            return;
-        }
-        if (!mm) {
-            showCustomAlert("Error", 'Please select MM value of Scan Start Time before saving.');
-            return;
-        }
-        scan_start_time = `${hh.toString().padStart(2, "0")}:${mm.toString().padStart(2, "0")}`;
-
         const scanInt = document.getElementById('scanInterval').value;
-        if (!scanInt) {
-            showCustomAlert("Error", 'Please select Scan Interval value before saving.');
-            return;
+
+        // Scan timing is only shown/used in Continuous mode; don't block a Burst save on it.
+        if (gnssMode !== 'burst') {
+            if (!hh) {
+                showCustomAlert("Error", 'Please select HH value of Scan Start Time before saving.');
+                return;
+            }
+            if (!mm) {
+                showCustomAlert("Error", 'Please select MM value of Scan Start Time before saving.');
+                return;
+            }
+            if (!scanInt) {
+                showCustomAlert("Error", 'Please select Scan Interval value before saving.');
+                return;
+            }
         }
-        scanInterval = scanInt;
+        scan_start_time = `${(hh || "00").toString().padStart(2, "0")}:${(mm || "00").toString().padStart(2, "0")}`;
+        scanInterval = scanInt || "1min";
 
         // Deviation reporting axis (along / transverse)
         const axisEnableChecked = document.getElementById('axisEnable').checked;
@@ -723,6 +767,34 @@ function saveMainConfiguration() {
             axisAngle = axisAngleVal;
         } else {
             axisAngle = "0";
+        }
+
+        // Temperature correction
+        tempEnable = document.getElementById('tempEnable').checked;
+        structureType = document.getElementById('structureType').value;
+        if (tempEnable) {
+            const d = document.getElementById('tempDistance').value.trim();
+            const r = document.getElementById('tempRefTemp').value.trim();
+            const c = document.getElementById('tempCoeff').value.trim();
+            if (d === "" || isNaN(Number(d)) || Number(d) < 0) {
+                showCustomAlert("Error", 'Please enter a valid Distance from Fixed Bearing (m).');
+                return;
+            }
+            if (r === "" || isNaN(Number(r))) {
+                showCustomAlert("Error", 'Please enter a valid Reference Temperature (°C).');
+                return;
+            }
+            if (c === "" || isNaN(Number(c))) {
+                showCustomAlert("Error", 'Please enter a valid Structure Thermal Coefficient (PPM/°C).');
+                return;
+            }
+            tempDistance = d;
+            tempRefTemp = r;
+            tempCoeff = c;
+        } else {
+            tempDistance = tempDistance || "0";
+            tempRefTemp = tempRefTemp || "0";
+            tempCoeff = tempCoeff || "0";
         }
 
         const ftpUploadEnable = document.getElementById('ftpUploadEnable').checked;
@@ -809,6 +881,11 @@ function saveMainConfiguration() {
             encodeData("scanInterval", scanInterval) + "&" +
             encodeData("axisEnable", axisEnable) + "&" +
             encodeData("axisAngle", axisAngle) + "&" +
+            encodeData("tempEnable", tempEnable) + "&" +
+            encodeData("structureType", structureType) + "&" +
+            encodeData("tempDistance", tempDistance) + "&" +
+            encodeData("tempRefTemp", tempRefTemp) + "&" +
+            encodeData("tempCoeff", tempCoeff) + "&" +
             encodeData("debugEnable", debugEnable) + "&" +
             encodeData("ftpEnable", ftpEnable) + "&" +
             encodeData("ftpIP", ftpIP) + "&" +
@@ -891,77 +968,13 @@ function closeAxisInfo() {
     document.getElementById("axisInfoOverlay").style.display = "none";
 }
 
-// ---- WiFi Settings ----
-function loadWifiSettings() {
-    fetch('/load_wifi')
-            .then(resp => {
-                if (!resp.ok)
-                    throw new Error('No WiFi settings found');
-                return resp.text();
-            })
-            .then(txt => {
-                if (!txt || txt.trim() === '' || txt.trim() === 'NO_DATA')
-                    return;
-
-                const params = new URLSearchParams(txt.trim());
-                const ssid = params.get('wifiSSID');
-                const pass = params.get('wifiPassword');
-
-                if (ssid && document.getElementById('wifiSSID'))
-                    document.getElementById('wifiSSID').value = ssid;
-                if (pass && document.getElementById('wifiPassword'))
-                    document.getElementById('wifiPassword').value = pass;
-
-                var statusDiv = document.getElementById('wifiStatus');
-                if (ssid) {
-                    statusDiv.style.display = 'block';
-                    statusDiv.style.background = '#d4edda';
-                    statusDiv.style.color = '#155724';
-                    statusDiv.textContent = 'Current WiFi SSID: ' + ssid;
-                }
-            })
-            .catch(function () {
-                // No WiFi settings saved yet — normal on first boot
-            });
+function openTempInfo() {
+    document.getElementById("tempInfoOverlay").style.display = "flex";
 }
 
-function saveWifiSettings() {
-    var ssid = document.getElementById('wifiSSID').value.trim();
-    var pass = document.getElementById('wifiPassword').value.trim();
-
-    if (!ssid) {
-        showCustomAlert("Error", "Please enter a WiFi SSID.");
-        return;
-    }
-    if (!pass || pass.length < 8) {
-        showCustomAlert("Error", "WiFi password must be at least 8 characters long.");
-        return;
-    }
-
-    var data = encodeData('wifiSSID', ssid) + '&' + encodeData('wifiPassword', pass);
-
-    fetch('/save_wifi', {
-        method: 'POST',
-        headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-        body: data
-    })
-            .then(function (res) {
-                return res.text();
-            })
-            .then(function (msg) {
-                showCustomAlert("Success", "WiFi settings saved successfully!");
-                var statusDiv = document.getElementById('wifiStatus');
-                statusDiv.style.display = 'block';
-                statusDiv.style.background = '#d4edda';
-                statusDiv.style.color = '#155724';
-                statusDiv.textContent = 'Current WiFi SSID: ' + ssid;
-            })
-            .catch(function (err) {
-                showCustomAlert("Error", "Failed to save WiFi settings: " + err);
-            });
+function closeTempInfo() {
+    document.getElementById("tempInfoOverlay").style.display = "none";
 }
-
-window.addEventListener('load', loadWifiSettings);
 
 // ---- IP Settings ----
 function loadIpSetting() {

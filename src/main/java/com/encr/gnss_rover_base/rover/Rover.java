@@ -125,6 +125,16 @@ public class Rover {
                     Variable.axis_angle_deg = 0.0;
                 }
 
+                // Temperature correction settings (stored only; not yet applied to the data)
+                Variable.temp_enable = "true".equalsIgnoreCase(Variable.config.getOrDefault(Constant.KEY_tempEnable, "false").trim());
+                String sType = Variable.config.getOrDefault(Constant.KEY_structureType, "bridge").trim();
+                Variable.structure_type = (sType.isEmpty() || "null".equalsIgnoreCase(sType)) ? "bridge" : sType;
+                Variable.temp_distance_m = configDouble(Constant.KEY_tempDistance, 0.0);
+                Variable.temp_ref_c = configDouble(Constant.KEY_tempRefTemp, 0.0);
+                Variable.temp_coeff_ppm = configDouble(Constant.KEY_tempCoeff, 0.0);
+                Tool.dbg("Rover", "temp correction: enable=" + Variable.temp_enable + " type=" + Variable.structure_type
+                        + " L=" + Variable.temp_distance_m + "m Tref=" + Variable.temp_ref_c + "C alpha=" + Variable.temp_coeff_ppm + "ppm/C");
+
                 String ftpEnable = Variable.config.getOrDefault(Constant.KEY_ftpEnable, "false").trim();
                 String ftpIp = Variable.config.getOrDefault(Constant.KEY_ftpIP, "").trim();
                 String ftpPort = Variable.config.getOrDefault(Constant.KEY_ftpPort, "21").trim();
@@ -799,6 +809,19 @@ public class Rover {
         double n = -sinLat * cosLon * dX - sinLat * sinLon * dY + cosLat * dZ;
         double u = cosLat * cosLon * dX + cosLat * sinLon * dY + sinLat * dZ;
         return new double[]{e, n, u};
+    }
+
+    // Read a numeric config value; missing, empty, "null" or malformed -> default.
+    private static double configDouble(String key, double def) {
+        try {
+            String v = Variable.config.getOrDefault(key, "").trim();
+            if (v.isEmpty() || "null".equalsIgnoreCase(v)) {
+                return def;
+            }
+            return Double.parseDouble(v);
+        } catch (Exception e) {
+            return def;
+        }
     }
 
     private static void updateBatteryVoltageAndTemp() {

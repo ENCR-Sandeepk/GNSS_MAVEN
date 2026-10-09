@@ -1,0 +1,6 @@
+[Unit]
+Description=Modem Status Collector
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/modem_manager

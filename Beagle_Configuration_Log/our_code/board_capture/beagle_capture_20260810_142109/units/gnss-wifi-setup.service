@@ -1,0 +1,19 @@
+[Unit]
+Description=Set WiFi AP SSID from device serial number
+# Run AFTER network interfaces are up but BEFORE hostapd starts
+After=network-pre.target
+Before=hostapd.service
+Wants=network-pre.target
+
+[Service]
+Type=oneshot
+# Set working directory to where the serial file is stored
+# WorkingDirectory must point to where ./gnss/.sys_cal.dat is (parent of gnss folder)
+WorkingDirectory=/home/debian
+ExecStart=/home/debian/wifi_setup/wifi_setup
+RemainAfterExit=yes
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

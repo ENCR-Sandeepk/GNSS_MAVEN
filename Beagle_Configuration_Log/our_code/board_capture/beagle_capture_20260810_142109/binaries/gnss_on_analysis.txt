@@ -1,0 +1,31 @@
+=== FILE TYPE ===
+/home/debian/beagle_capture_20260810_142109/binaries/gnss_on: ELF 64-bit LSB pie executable, ARM aarch64, version 1 (SYSV), dynamically linked, interpreter /lib/ld-linux-aarch64.so.1, BuildID[sha1]=67ffa48d9ef2ab513f8118c8df9e5c2fcf3aeeef, for GNU/Linux 3.7.0, not stripped
+
+=== FUNCTION SYMBOLS ===
+                 w _ITM_deregisterTMCloneTable
+                 w _ITM_registerTMCloneTable
+                 w __cxa_finalize@GLIBC_2.17
+0000000000000900 t __do_global_dtors_aux
+                 w __gmon_start__
+00000000000009fc T _fini
+0000000000000738 T _init
+0000000000000840 T _start
+0000000000000874 t call_weak_fn
+0000000000020050 W data_start
+0000000000000890 t deregister_tm_clones
+0000000000000950 t frame_dummy
+0000000000000954 T main
+00000000000008c0 t register_tm_clones
+
+=== INTERESTING STRINGS ===
+chip1
+crtstuff.c
+gnss_on.c
+gpiochip3
+gpiod_chip_close
+gpiod_chip_get_line
+gpiod_chip_open_by_name
+gpiod_line_release
+gpiod_line_request_output
+gpiod_line_set_value
+libgpiod.so.2

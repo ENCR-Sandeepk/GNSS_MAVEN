@@ -1,0 +1,54 @@
+=== FILE TYPE ===
+/home/debian/beagle_capture_20260810_142109/binaries/gnss_gpio: ELF 64-bit LSB pie executable, ARM aarch64, version 1 (SYSV), dynamically linked, interpreter /lib/ld-linux-aarch64.so.1, BuildID[sha1]=e32f3b8b0e4f3b7907fd5e1d5f73ce93b4b48366, for GNU/Linux 3.7.0, not stripped
+
+=== FUNCTION SYMBOLS ===
+                 w _ITM_deregisterTMCloneTable
+                 w _ITM_registerTMCloneTable
+                 w __cxa_finalize@GLIBC_2.17
+0000000000000c00 t __do_global_dtors_aux
+                 w __gmon_start__
+0000000000002208 T _fini
+0000000000000998 T _init
+0000000000000b40 T _start
+0000000000000b74 t call_weak_fn
+00000000000200a0 W data_start
+0000000000000b90 t deregister_tm_clones
+0000000000000c50 t frame_dummy
+0000000000001c98 T gpio_init_thread
+0000000000000c54 T is_intrnet_available
+0000000000000ca8 T led_thread
+0000000000001df8 T main
+00000000000019d4 T ping_thread
+0000000000001d80 T push_button_in_thread
+0000000000000bc0 t register_tm_clones
+
+=== INTERESTING STRINGS ===
+Network FAIL
+chip
+crtstuff.c
+error
+gnss_gpio_main.c
+gpio config done
+gpio initialized
+gpio-input
+gpio_init_thread
+gpiochip3
+gpiod_chip_close
+gpiod_chip_get_line
+gpiod_chip_open_by_name
+gpiod_line_get_value
+gpiod_line_release
+gpiod_line_request_input
+gpiod_line_request_output
+gpiod_line_set_value
+led_thread
+libgpiod.so.2
+ping -c 1 -W 3 %s > /dev/null 2>&1
+ping_thread
+pthread_create
+pthread_create@GLIBC_2.34
+pthread_join
+pthread_join@GLIBC_2.34
+push_button_in_thread
+pwr_cycle_count=%d, off
+retry=%d 

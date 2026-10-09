@@ -33,6 +33,13 @@ public class Constant {
     public static final String KEY_axisEnable = "axisEnable";
     public static final String KEY_axisAngle = "axisAngle";
 
+    // Temperature correction (UI: Rover Settings -> Temperature Correction)
+    public static final String KEY_tempEnable = "tempEnable";
+    public static final String KEY_structureType = "structureType";
+    public static final String KEY_tempDistance = "tempDistance";   // m, from fixed bearing
+    public static final String KEY_tempRefTemp = "tempRefTemp";     // deg C
+    public static final String KEY_tempCoeff = "tempCoeff";         // PPM / deg C
+
     public static final String KEY_debugEnable = "debugEnable";
 
     public static final String KEY_deviceType = "deviceType";
@@ -155,15 +162,6 @@ public class Constant {
     // gnss/files_for_upload/ and gnss/files_for_upload/archive/.
     public static final int DATA_RETENTION_DAYS = 90;
 
-    // ================= System status codes reported to controller: STATCODE,<code> =================
-    // Hardware STATCODE max = 9. We use only 1..6; 7..9 are reserved for future use.
-    // One coarse lifecycle shared by both base and rover.
-    //   1 BOOT      -> program up / config loaded
-    //   2 ACQUIRING -> started; connecting/surveying, no valid data yet
-    //   3 RUNNING_OK-> operating normally with valid data (base streaming / rover RTK fix)
-    //   4 SLEEP     -> going to sleep (burst mode)
-    //   5 ERROR     -> any error (config / NTRIP / base-coord fail)
-    //   6 STOPPED   -> thread stopped (not a sleep)
     public static final int STAT_BOOT = 3;
     public static final int STAT_ACQUIRING = 4;
     public static final int STAT_RUNNING_OK = 5;

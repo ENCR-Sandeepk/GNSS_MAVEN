@@ -1,0 +1,39 @@
+total 132
+drwxr-xr-x 13 root root 4096 May  9 11:23 .
+drwxr-xr-x  7 root root 4096 Aug  3 14:37 ..
+drwxr-xr-x  2 root root 4096 Mar  5  2025 basic.target.requires
+drwxr-xr-x  2 root root 4096 Aug 15  2025 bluetooth.target.wants
+-rw-r--r--  1 root root  161 Apr 14  2025 bring-up-eth2.service
+-rw-r--r--  1 root root   99 Nov 12  2025 daily-reboot.service
+-rw-r--r--  1 root root  132 Nov 12  2025 daily-reboot.timer
+-rw-r--r--  1 root root  147 Nov 12  2025 daily-timesync.service
+-rw-r--r--  1 root root  149 Nov 12  2025 daily-timesync.timer
+lrwxrwxrwx  1 root root   37 Aug 15  2025 dbus-org.bluez.service -> /lib/systemd/system/bluetooth.service
+lrwxrwxrwx  1 root root   40 Mar  5  2025 dbus-org.freedesktop.Avahi.service -> /lib/systemd/system/avahi-daemon.service
+lrwxrwxrwx  1 root root   44 Mar  5  2025 dbus-org.freedesktop.network1.service -> /lib/systemd/system/systemd-networkd.service
+lrwxrwxrwx  1 root root   45 Mar  5  2025 dbus-org.freedesktop.timesync1.service -> /lib/systemd/system/systemd-timesyncd.service
+drwxr-xr-x  2 root root 4096 Mar  5  2025 default.target.wants
+drwxr-xr-x  2 root root 4096 Mar  5  2025 getty.target.wants
+-rw-r--r--  1 root root  276 Apr 14 10:09 gnss-watchdog.service
+-rw-r--r--  1 root root  348 Mar 12 18:05 gnss-wifi-connect.service
+-rw-r--r--  1 root root  499 Nov 22  2025 gnss-wifi-setup.service
+-rw-r--r--  1 root root  546 Mar 12 18:05 gnss-wifi-setup.service
+-rw-r--r--  1 root root  294 Oct  9  2025 gnss.service
+-rw-r--r--  1 root root  348 Nov 11  2025 gnss_gpio.service
+-rw-r--r--  1 root root  234 Nov 12  2025 gnss_gui_server.service
+drwxr-xr-x  2 root root 4096 Mar  5  2025 graphical.target.wants
+-rw-r--r--  1 root root  212 Mar 17 15:45 ip-manager.service
+-rw-r--r--  1 root root  300 Apr  3 14:19 mcu_server.service
+-rw-r--r--  1 root root  171 Nov 17  2025 modem_init.service
+-rw-r--r--  1 root root  105 Nov 17  2025 modem_status.service
+-rw-r--r--  1 root root  135 Nov 17  2025 modem_status.timer
+drwxr-xr-x  2 root root 4096 May  9 11:21 multi-user.target.wants
+-rw-r--r--  1 root root  253 Nov 12  2025 net-timesync.service
+drwxr-xr-x  2 root root 4096 Apr  3 14:06 network-online.target.wants
+-rw-r--r--  1 root root  253 Jun  3 12:34 quectel-check.service
+-rw-r--r--  1 root root  201 Apr  4  2025 serial-bridge.service
+drwxr-xr-x  2 root root 4096 Mar  5  2025 sockets.target.wants
+lrwxrwxrwx  1 root root   31 Mar  5  2025 sshd.service -> /lib/systemd/system/ssh.service
+drwxr-xr-x  2 root root 4096 Mar  5  2025 sysinit.target.wants
+drwxr-xr-x  2 root root 4096 Mar  5  2025 systemd-networkd-wait-online.service.d
+drwxr-xr-x  2 root root 4096 Nov 12  2025 timers.target.wants

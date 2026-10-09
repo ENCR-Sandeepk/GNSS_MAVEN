@@ -1,0 +1,17 @@
+[Unit]
+Description=MCU Server
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+ExecStart=/usr/local/bin/mcu_server
+Restart=always
+RestartSec=2
+User=debian
+WorkingDirectory=/usr/local/bin
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

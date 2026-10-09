@@ -1,0 +1,14 @@
+[Unit]
+Description=GNSS Hardware Watchdog Service
+After=multi-user.target
+
+[Service]
+Type=simple
+ExecStartPre=/bin/sh -c 'while [ ! -e /dev/watchdog1 ]; do sleep 1; done'
+ExecStart=/opt/gnss/watchdog
+Restart=always
+RestartSec=2
+User=root
+
+[Install]
+WantedBy=multi-user.target

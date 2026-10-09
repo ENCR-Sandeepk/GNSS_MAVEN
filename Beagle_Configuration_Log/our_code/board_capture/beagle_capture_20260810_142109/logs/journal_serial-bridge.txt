@@ -1,0 +1,55 @@
+Aug 08 09:28:27 BeagleBone systemd[1]: Started serial-bridge.service - Serial-to-LAN Bridge.
+Aug 08 09:52:04 BeagleBone systemd[1]: Stopping serial-bridge.service - Serial-to-LAN Bridge...
+Aug 08 09:52:05 BeagleBone systemd[1]: serial-bridge.service: Deactivated successfully.
+Aug 08 09:52:05 BeagleBone systemd[1]: Stopped serial-bridge.service - Serial-to-LAN Bridge.
+Aug 08 09:52:05 BeagleBone systemd[1]: serial-bridge.service: Consumed 4.776s CPU time.
+-- Boot 08abc5dbae424199a416618b43b70449 --
+Aug 08 10:28:26 BeagleBone systemd[1]: Started serial-bridge.service - Serial-to-LAN Bridge.
+Aug 08 10:52:04 BeagleBone systemd[1]: Stopping serial-bridge.service - Serial-to-LAN Bridge...
+Aug 08 10:52:04 BeagleBone systemd[1]: serial-bridge.service: Deactivated successfully.
+Aug 08 10:52:04 BeagleBone systemd[1]: Stopped serial-bridge.service - Serial-to-LAN Bridge.
+Aug 08 10:52:04 BeagleBone systemd[1]: serial-bridge.service: Consumed 4.859s CPU time.
+-- Boot e3f2445135a94c3a848bbc60c1935553 --
+Aug 08 11:28:26 BeagleBone systemd[1]: Started serial-bridge.service - Serial-to-LAN Bridge.
+Aug 08 11:52:04 BeagleBone systemd[1]: Stopping serial-bridge.service - Serial-to-LAN Bridge...
+Aug 08 11:52:04 BeagleBone systemd[1]: serial-bridge.service: Deactivated successfully.
+Aug 08 11:52:04 BeagleBone systemd[1]: Stopped serial-bridge.service - Serial-to-LAN Bridge.
+Aug 08 11:52:04 BeagleBone systemd[1]: serial-bridge.service: Consumed 4.789s CPU time.
+-- Boot c4607bf868d3479f96d6523c9010e067 --
+Aug 08 12:28:26 BeagleBone systemd[1]: Started serial-bridge.service - Serial-to-LAN Bridge.
+Aug 08 12:52:05 BeagleBone systemd[1]: Stopping serial-bridge.service - Serial-to-LAN Bridge...
+Aug 08 12:52:05 BeagleBone systemd[1]: serial-bridge.service: Deactivated successfully.
+Aug 08 12:52:05 BeagleBone systemd[1]: Stopped serial-bridge.service - Serial-to-LAN Bridge.
+Aug 08 12:52:05 BeagleBone systemd[1]: serial-bridge.service: Consumed 4.945s CPU time.
+-- Boot 5bebedc873c84777b9f2be94d65065d3 --
+Aug 08 13:28:26 BeagleBone systemd[1]: Started serial-bridge.service - Serial-to-LAN Bridge.
+Aug 08 13:52:04 BeagleBone systemd[1]: Stopping serial-bridge.service - Serial-to-LAN Bridge...
+Aug 08 13:52:05 BeagleBone systemd[1]: serial-bridge.service: Deactivated successfully.
+Aug 08 13:52:05 BeagleBone systemd[1]: Stopped serial-bridge.service - Serial-to-LAN Bridge.
+Aug 08 13:52:05 BeagleBone systemd[1]: serial-bridge.service: Consumed 4.714s CPU time.
+-- Boot bc56492bf833454297d0021c768d423e --
+Aug 08 14:28:26 BeagleBone systemd[1]: Started serial-bridge.service - Serial-to-LAN Bridge.
+Aug 08 14:52:04 BeagleBone systemd[1]: Stopping serial-bridge.service - Serial-to-LAN Bridge...
+Aug 08 14:52:04 BeagleBone systemd[1]: serial-bridge.service: Deactivated successfully.
+Aug 08 14:52:04 BeagleBone systemd[1]: Stopped serial-bridge.service - Serial-to-LAN Bridge.
+Aug 08 14:52:04 BeagleBone systemd[1]: serial-bridge.service: Consumed 4.779s CPU time.
+-- Boot 38eaeb50b6294128be65d977de4f84cf --
+Aug 08 15:22:26 BeagleBone systemd[1]: Started serial-bridge.service - Serial-to-LAN Bridge.
+Aug 08 16:06:12 BeagleBone systemd[1]: Stopping serial-bridge.service - Serial-to-LAN Bridge...
+Aug 08 16:06:12 BeagleBone systemd[1]: serial-bridge.service: Deactivated successfully.
+Aug 08 16:06:12 BeagleBone systemd[1]: Stopped serial-bridge.service - Serial-to-LAN Bridge.
+Aug 08 16:06:12 BeagleBone systemd[1]: serial-bridge.service: Consumed 12.750s CPU time.
+-- Boot 8f4eb06727a64bbe9960fd494681bcd6 --
+Aug 08 16:06:40 BeagleBone systemd[1]: Started serial-bridge.service - Serial-to-LAN Bridge.
+Aug 08 16:21:27 BeagleBone systemd[1]: Stopping serial-bridge.service - Serial-to-LAN Bridge...
+Aug 08 16:21:27 BeagleBone systemd[1]: serial-bridge.service: Deactivated successfully.
+Aug 08 16:21:27 BeagleBone systemd[1]: Stopped serial-bridge.service - Serial-to-LAN Bridge.
+Aug 08 16:21:27 BeagleBone systemd[1]: serial-bridge.service: Consumed 4.346s CPU time.
+-- Boot cb47b2796c9645c58d9bd9495c854ff7 --
+Aug 08 16:28:27 BeagleBone systemd[1]: Started serial-bridge.service - Serial-to-LAN Bridge.
+Aug 08 16:52:04 BeagleBone systemd[1]: Stopping serial-bridge.service - Serial-to-LAN Bridge...
+Aug 08 16:52:04 BeagleBone systemd[1]: serial-bridge.service: Deactivated successfully.
+Aug 08 16:52:04 BeagleBone systemd[1]: Stopped serial-bridge.service - Serial-to-LAN Bridge.
+Aug 08 16:52:04 BeagleBone systemd[1]: serial-bridge.service: Consumed 7.973s CPU time.
+-- Boot a6d204b879d943349a48d68d3e0a1509 --
+Aug 10 11:31:31 BeagleBone systemd[1]: Started serial-bridge.service - Serial-to-LAN Bridge.

@@ -1,0 +1,54 @@
+=== FILE TYPE ===
+/home/debian/beagle_capture_20260810_142109/binaries/ip_manager: ELF 64-bit LSB pie executable, ARM aarch64, version 1 (SYSV), dynamically linked, interpreter /lib/ld-linux-aarch64.so.1, BuildID[sha1]=8f369dac5af45e9bf8eb06e312342b735beb118d, for GNU/Linux 3.7.0, not stripped
+
+=== FUNCTION SYMBOLS ===
+                 w _ITM_deregisterTMCloneTable
+                 w _ITM_registerTMCloneTable
+                 w __cxa_finalize@GLIBC_2.17
+0000000000000bc0 t __do_global_dtors_aux
+                 w __gmon_start__
+000000000000133c T _fini
+0000000000000948 T _init
+0000000000000b00 T _start
+0000000000000b34 t call_weak_fn
+00000000000200a8 W data_start
+0000000000000f74 t delete_old_additional_ips
+0000000000000b50 t deregister_tm_clones
+0000000000000c10 t frame_dummy
+000000000000108c T main
+0000000000000d20 t read_file_line
+0000000000000b80 t register_tm_clones
+0000000000000f24 t run_cmd
+0000000000000dac t split_ip_port
+0000000000000c14 t trim
+0000000000000eb4 t write_ip_port_file
+
+=== INTERESTING STRINGS ===
+%s:%s
+/home/debian/gnss/config/ip_port.txt
+/home/debian/gnss/config/ip_setting.txt
+Command failed with code %d
+Configured  : %s:%s
+Default IP  : %s
+Failed to read %s
+Failed to read existing IPs
+Failed to update %s
+Invalid format in %s. Expected: IP:PORT
+RUN: %s
+Stored file : %s
+crtstuff.c
+eth0
+fopen
+fopen@GLIBC_2.17
+ip -o -4 addr show dev %s | awk '{print $4}' | cut -d/ -f1
+ip addr add %s/%s dev %s 2>/dev/null
+ip addr del %s/%s dev %s 2>/dev/null
+ip_manager.c
+perror
+perror@GLIBC_2.17
+popen
+popen@GLIBC_2.17
+read_file_line
+split_ip_port
+systemctl restart %s
+write_ip_port_file

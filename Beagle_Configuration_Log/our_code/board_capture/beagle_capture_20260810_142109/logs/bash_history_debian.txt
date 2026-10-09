@@ -1,0 +1,2000 @@
+######################################################################
+# 23. QUECTEL / MODEM
+######################################################################
+
+run_section "23. QUECTEL / MODEM INFORMATION"
+
+run_shell 'dmesg | grep -i -E "quectel|ec200|modem|wwan|qmi|mbim|usb"'
+run_shell 'journalctl -k --no-pager | grep -i -E "quectel|ec200|modem|wwan|qmi|mbim|usb" | tail -300'
+
+run_shell 'ls -lah /dev/cdc* 2>&1'
+run_shell 'ls -lah /dev/ttyUSB* 2>&1'
+run_shell 'ls -lah /dev/ttyACM* 2>&1'
+
+run_cmd ip link
+
+
+######################################################################
+# 24. GPIO
+######################################################################
+
+run_section "24. GPIO INFORMATION"
+
+run_shell 'ls -lah /dev/gpiochip* 2>&1'
+run_shell 'which gpioinfo'
+run_shell 'gpioinfo 2>&1'
+run_shell 'ls -lah /sys/class/gpio 2>&1'
+run_shell 'find /sys/class/gpio -maxdepth 2 -type f -print 2>&1'
+
+
+######################################################################
+# 25. DEVICE TREE
+######################################################################
+
+run_section "25. DEVICE TREE"
+
+run_cmd cat /proc/device-tree/model
+run_cmd cat /proc/device-tree/compatible
+
+run_shell 'find /proc/device-tree -maxdepth 2 -type f -print 2>/dev/null | head -300'
+
+
+######################################################################
+# 26. KERNEL MODULES
+######################################################################
+
+run_section "26. KERNEL MODULES"
+
+run_cmd lsmod
+run_cmd cat /proc/modules
+
+
+######################################################################
+# 27. UDEV RULES
+######################################################################
+
+run_section "27. UDEV RULES"
+
+run_shell 'find /etc/udev/rules.d -type f -maxdepth 2 -print -exec sh -c "echo ===== \$1 =====; cat \$1" _ {} \;'
+run_shell 'find /lib/udev/rules.d -type f -maxdepth 2 -print | head -300'
+
+
+######################################################################
+# 28. GNSS DIRECTORY
+######################################################################
+
+run_section "28. /opt/gnss DIRECTORY"
+
+run_shell 'ls -lah /opt/gnss 2>&1'
+run_shell 'find /opt/gnss -maxdepth 1 -printf "%M %u %g %s %TY-%Tm-%Td %TH:%TM %p\n" 2>&1'
+run_shell 'find /opt/gnss -maxdepth 2 -type d -print 2>&1'
+run_shell 'find /opt/gnss -maxdepth 2 -type f -printf "%M %u %g %s %TY-%Tm-%Td %TH:%TM %p\n" 2>&1'
+
+
+######################################################################
+# 29. GNSS RELATED FILES
+######################################################################
+
+run_section "29. GNSS RELATED FILES"
+
+run_shell 'find /opt -iname "*gnss*" -o -iname "*ntrip*" -o -iname "*rtk*" 2>/dev/null'
+run_shell 'find /etc -iname "*gnss*" -o -iname "*ntrip*" -o -iname "*rtk*" 2>/dev/null'
+
+
+######################################################################
+# 30. SHELL SCRIPTS IN GNSS AREA
+######################################################################
+
+run_section "30. GNSS SHELL SCRIPTS"
+
+run_shell 'find /opt/gnss -type f \( -name "*.sh" -o -name "*.bash" \) -print -exec sh -c "echo; echo ===== SCRIPT: \$1 =====; cat \$1" _ {} \;'
+
+
+######################################################################
+# 31. GNSS CONFIGURATION FILES
+######################################################################
+
+run_section "31. GNSS CONFIGURATION FILES"
+
+run_shell 'find /opt/gnss -type f \( -name "*.conf" -o -name "*.cfg" -o -name "*.ini" -o -name "*.json" -o -name "*.properties" -o -name "*.yaml" -o -name "*.yml" -o -name "*.xml" \) -print'
+
+
+######################################################################
+# 32. OTHER IMPORTANT APPLICATION DIRECTORIES
+######################################################################
+
+run_section "32. /OPT DIRECTORY"
+
+run_shell 'ls -lah /opt'
+run_shell 'find /opt -maxdepth 2 -type d -print'
+
+
+######################################################################
+# 33. HOME DIRECTORY
+######################################################################
+
+run_section "33. DEBIAN HOME DIRECTORY"
+
+run_shell 'ls -lah /home/debian'
+run_shell 'find /home/debian -maxdepth 2 -type f -printf "%M %u %g %s %TY-%Tm-%Td %TH:%TM %p\n" 2>/dev/null | head -500'
+
+
+######################################################################
+# 34. DOCKER
+######################################################################
+
+run_section "34. DOCKER INFORMATION"
+
+run_cmd docker version
+run_cmd docker info
+run_cmd docker ps -a
+run_cmd docker images
+run_cmd docker network ls
+run_cmd docker volume ls
+
+run_shell 'docker ps --format "table {{.Names}}\t{{.Image}}\t{{.Status}}\t{{.Ports}}"'
+
+
+######################################################################
+# 35. NODE-RED
+######################################################################
+
+run_section "35. NODE-RED"
+
+run_cmd systemctl status nodered.service --no-pager
+
+run_shell 'systemctl cat nodered.service --no-pager'
+run_shell 'systemctl show nodered.service --no-pager'
+
+run_shell 'ls -lah /home/debian/.node-red 2>&1'
+run_shell 'find /home/debian/.node-red -maxdepth 2 -type f -printf "%M %u %g %s %TY-%Tm-%Td %TH:%TM %p\n" 2>/dev/null | head -500'
+
+
+######################################################################
+# 36. NGINX
+######################################################################
+
+run_section "36. NGINX"
+
+run_cmd nginx -t
+run_cmd nginx -V
+run_shell 'systemctl status nginx.service --no-pager'
+run_shell 'systemctl cat nginx.service --no-pager'
+
+run_shell 'ls -lah /etc/nginx'
+run_shell 'find /etc/nginx -maxdepth 3 -type f -print'
+
+
+######################################################################
+# 37. SSH / REMOTE ACCESS
+######################################################################
+
+run_section "37. SSH"
+
+run_shell 'systemctl status ssh.service --no-pager'
+run_shell 'systemctl cat ssh.service --no-pager'
+run_shell 'sshd -T 2>/dev/null | grep -E "^(port|listenaddress|permitrootlogin|passwordauthentication|pubkeyauthentication)"'
+
+
+######################################################################
+# 38. USERS AND GROUPS
+######################################################################
+
+run_section "38. USERS AND GROUPS"
+
+run_cmd who
+run_cmd w
+run_cmd id
+run_cmd getent passwd
+run_cmd getent group
+
+
+######################################################################
+# 39. ENVIRONMENT
+######################################################################
+
+run_section "39. BASIC ENVIRONMENT"
+
+run_cmd env
+run_cmd systemctl show-environment
+
+
+######################################################################
+# 40. MOUNTS / USB STORAGE
+######################################################################
+
+run_section "40. MOUNTS AND STORAGE DEVICES"
+
+run_cmd lsblk
+run_cmd blkid
+run_cmd findmnt
+
+
+######################################################################
+# 41. INSTALLED PACKAGES RELATED TO DEVELOPMENT / NETWORKING
+######################################################################
+
+run_section "41. IMPORTANT INSTALLED PACKAGES"
+
+run_shell 'dpkg -l | grep -Ei "java|openjdk|docker|nginx|node|nodejs|python|gcc|g\+\+|maven|network|modem|quectel|serial|gpio|systemd" 2>/dev/null'
+
+
+######################################################################
+# 42. JAVA
+######################################################################
+
+run_section "42. JAVA INFORMATION"
+
+run_shell 'java -version'
+run_shell 'javac -version'
+run_shell 'which java'
+run_shell 'readlink -f "$(which java)" 2>/dev/null'
+run_shell 'find /opt /home/debian -type f \( -name "*.jar" -o -name "*.war" \) -printf "%s %TY-%Tm-%Td %TH:%TM %p\n" 2>/dev/null | head -500'
+
+
+######################################################################
+# 43. IMPORTANT EXECUTABLES
+######################################################################
+
+run_section "43. CUSTOM EXECUTABLES"
+
+run_shell 'find /opt /usr/local/bin /usr/local/sbin /home/debian -maxdepth 4 -type f -executable -printf "%M %u %g %s %TY-%Tm-%Td %TH:%TM %p\n" 2>/dev/null | head -1000'
+
+
+######################################################################
+# 44. JOURNAL SIZE
+######################################################################
+
+run_section "44. JOURNAL INFORMATION"
+
+run_cmd journalctl --disk-usage
+run_cmd journalctl --list-boots
+
+
+######################################################################
+# 45. BOOT TARGETS
+######################################################################
+
+run_section "45. BOOT TARGETS"
+
+run_cmd systemctl get-default
+run_cmd systemctl list-dependencies multi-user.target --no-pager
+run_shell 'ls -lah /etc/systemd/system/multi-user.target.wants'
+
+
+######################################################################
+# 46. FINAL SUMMARY
+######################################################################
+
+run_section "46. FINAL SUMMARY"
+
+echo "Hostname:"
+hostname
+
+echo
+echo "Date:"
+date
+
+echo
+echo "OS:"
+grep PRETTY_NAME /etc/os-release
+
+echo
+echo "Kernel:"
+uname -r
+
+echo
+echo "Architecture:"
+uname -m
+
+echo
+echo "Hardware:"
+cat /proc/device-tree/model 2>/dev/null || true
+
+echo
+echo "Running service count:"
+systemctl list-units --type=service --state=running --no-legend | wc -l
+
+echo
+echo "Failed service count:"
+systemctl --failed --no-legend | grep -v '^$' | tail -n +2 | wc -l
+
+echo
+echo "Listening TCP ports:"
+ss -ltn 2>/dev/null
+
+echo
+echo "Listening UDP ports:"
+ss -lun 2>/dev/null
+
+echo
+echo "Inventory file:"
+echo "$OUTPUT"
+
+echo
+echo "######################################################################"
+echo "# INVENTORY COLLECTION COMPLETE"
+echo "######################################################################"
+
+SCRIPT
+
+echo
+echo "======================================================================"
+echo "COLLECTION FINISHED"
+echo "======================================================================"
+echo
+echo "Inventory file:"
+echo "$HOME/beagle_inventory/beagle_full_inventory.txt"
+echo
+echo "File size:"
+ls -lh "$HOME/beagle_inventory/beagle_full_inventory.txt"
+echo
+echo "Line count:"
+wc -l "$HOME/beagle_inventory/beagle_full_inventory.txt"
+ls -lh ~/beagle_inventory/beagle_full_inventory.txt
+wc -l ~/beagle_inventory/beagle_full_inventory.txt
+5000 /home/debian/beagle_inventory/beagle_full_inventory.txt
+hostname -I
+scp debian@192.168.10.100:/home/debian/beagle_inventory/beagle_full_inventory.txt "$HOME\Desktop\"
+scp debian@192.168.10.100:/home/debian/beagle_inventory/beagle_full_inventory.txt "D:\"
+ls
+cd beagle_inventory/
+ls
+cat > ~/beagle_inventory/collect_application_details.sh <<'EOF'
+#!/bin/bash
+
+OUT="$HOME/beagle_inventory/application_details_$(date +%Y%m%d_%H%M%S).txt"
+
+exec > >(tee "$OUT") 2>&1
+
+echo "============================================================"
+echo " BEAGLE PLAY APPLICATION / SERVICE DEEP INVENTORY"
+echo " Started: $(date)"
+echo " Host: $(hostname)"
+echo "============================================================"
+
+echo
+echo "============================================================"
+echo "1. BASIC SYSTEM INFORMATION"
+echo "============================================================"
+
+date
+hostname
+cat /etc/os-release
+uname -a
+uptime
+whoami
+id
+
+echo
+echo "============================================================"
+echo "2. CPU / MEMORY / STORAGE"
+echo "============================================================"
+
+lscpu
+echo
+free -h
+echo
+df -h
+echo
+lsblk -f
+
+echo
+echo "============================================================"
+echo "3. ALL SYSTEMD SERVICES - COMPLETE LIST"
+echo "============================================================"
+
+systemctl list-unit-files --type=service --no-pager
+
+echo
+echo "============================================================"
+echo "4. ALL RUNNING SERVICES"
+echo "============================================================"
+
+systemctl list-units --type=service --state=running --no-pager
+
+echo
+echo "============================================================"
+echo "5. FAILED SERVICES"
+echo "============================================================"
+
+systemctl --failed --no-pager
+
+echo
+echo "============================================================"
+echo "6. ALL CUSTOM SYSTEMD SERVICE FILES"
+echo "============================================================"
+
+for f in /etc/systemd/system/*.service; do
+    if [ -f "$f" ]; then
+        echo
+        echo "------------------------------------------------------------"
+        echo "FILE: $f"
+        echo "------------------------------------------------------------"
+        cat "$f"
+    fi
+done
+
+echo
+echo "============================================================"
+echo "7. CUSTOM SYSTEMD TIMERS"
+echo "============================================================"
+
+for f in /etc/systemd/system/*.timer; do
+    if [ -f "$f" ]; then
+        echo
+        echo "------------------------------------------------------------"
+        echo "FILE: $f"
+        echo "------------------------------------------------------------"
+        cat "$f"
+    fi
+done
+
+echo
+echo "============================================================"
+echo "8. SYSTEMD SERVICE DETAILS - CUSTOM SERVICES"
+echo "============================================================"
+
+CUSTOM_SERVICES="
+gnss.service
+gnss-watchdog.service
+gnss_gpio.service
+gnss_gui_server.service
+gnss-wifi-setup.service
+gnss-wifi-connect.service
+ip-manager.service
+mcu_server.service
+serial-bridge.service
+quectel-check.service
+modem_init.service
+modem_status.service
+daily-reboot.service
+daily-timesync.service
+net-timesync.service
+"
+
+for s in $CUSTOM_SERVICES; do
+    echo
+    echo "------------------------------------------------------------"
+    echo "SERVICE: $s"
+    echo "------------------------------------------------------------"
+
+    systemctl status "$s" --no-pager -l 2>&1 || true
+
+    echo
+    echo "SYSTEMCTL SHOW:"
+    systemctl show "$s" \
+        -p Id \
+        -p Description \
+        -p LoadState \
+        -p ActiveState \
+        -p SubState \
+        -p UnitFileState \
+        -p FragmentPath \
+        -p ExecStart \
+        -p ExecStartPre \
+        -p ExecStartPost \
+        -p ExecStop \
+        -p Restart \
+        -p RestartSec \
+        -p User \
+        -p Group \
+        -p WorkingDirectory \
+        -p Environment \
+        -p After \
+        -p Before \
+        -p Requires \
+        -p Wants \
+        -p Conflicts \
+        -p ConditionPathExists \
+        -p Documentation 2>&1 || true
+
+    echo
+    echo "RECENT JOURNAL:"
+    journalctl -u "$s" -n 100 --no-pager 2>&1 || true
+done
+
+echo
+echo "============================================================"
+echo "9. /OPT/GNSS DIRECTORY"
+echo "============================================================"
+
+ls -lahR /opt/gnss 2>&1
+
+echo
+echo "============================================================"
+echo "10. CONTENT OF /OPT/GNSS TEXT/SCRIPT FILES"
+echo "============================================================"
+
+find /opt/gnss -type f \( \
+    -name "*.sh" -o \
+    -name "*.txt" -o \
+    -name "*.conf" -o \
+    -name "*.cfg" -o \
+    -name "*.ini" -o \
+    -name "*.json" -o \
+    -name "*.xml" -o \
+    -name "*.properties" \
+\) -print 2>/dev/null | while read -r f
+do
+    echo
+    echo "------------------------------------------------------------"
+    echo "FILE: $f"
+    echo "------------------------------------------------------------"
+    cat "$f" 2>&1
+done
+
+echo
+echo "============================================================"
+echo "11. /OPT/GNSS FILE INFORMATION"
+echo "============================================================"
+
+find /opt/gnss -type f -print0 2>/dev/null | while IFS= read -r -d '' f
+do
+    echo
+    echo "------------------------------------------------------------"
+    echo "FILE: $f"
+    echo "------------------------------------------------------------"
+    ls -lh "$f"
+    file "$f"
+done
+
+echo
+echo "============================================================"
+echo "12. HOME DIRECTORY - RELEVANT FILES"
+echo "============================================================"
+
+find /home/debian -maxdepth 3 -type f \( \
+    -name "*.jar" -o \
+    -name "*.sh" -o \
+    -name "*.c" -o \
+    -name "*.cpp" -o \
+    -name "*.h" -o \
+    -name "*.txt" -o \
+    -name "*.conf" -o \
+    -name "*.cfg" -o \
+    -name "*.json" -o \
+    -name "*.xml" -o \
+    -name "*.properties" \
+\) -print 2>/dev/null | sort
+
+echo
+echo "============================================================"
+echo "13. GNSS JAVA APPLICATION"
+echo "============================================================"
+
+echo "JAR files:"
+find /home/debian -maxdepth 3 -type f -name "*.jar" -ls 2>/dev/null
+
+echo
+echo "GNSS_Rover_Base.jar:"
+ls -lh /home/debian/GNSS_Rover_Base.jar 2>&1
+file /home/debian/GNSS_Rover_Base.jar 2>&1
+sha256sum /home/debian/GNSS_Rover_Base.jar 2>&1
+
+echo
+echo "Java version:"
+java -version 2>&1
+
+echo
+echo "JAR CONTENTS:"
+jar tf /home/debian/GNSS_Rover_Base.jar 2>&1
+
+echo
+echo "JAR MANIFEST:"
+unzip -p /home/debian/GNSS_Rover_Base.jar META-INF/MANIFEST.MF 2>&1 || true
+
+echo
+echo "JAR CONFIGURATION/TEXT FILES:"
+jar tf /home/debian/GNSS_Rover_Base.jar 2>/dev/null | \
+grep -Ei '\.(properties|json|xml|txt|conf|cfg|yaml|yml|ini)$' || true
+
+echo
+echo "JAR STRINGS - GNSS / NETWORK / SERIAL RELATED:"
+strings /home/debian/GNSS_Rover_Base.jar 2>/dev/null | \
+grep -Ei 'tty|serial|uart|gnss|gps|ntrip|rtcm|gga|tcp|udp|http|https|mqtt|port|socket|config|properties|json' | \
+head -n 1000 || true
+
+echo
+echo "============================================================"
+echo "14. JAVA PROCESS CURRENTLY RUNNING"
+echo "============================================================"
+
+ps auxww | grep -Ei 'java|GNSS' | grep -v grep || true
+
+echo
+echo "============================================================"
+echo "15. JAVA PROCESS OPEN FILES"
+echo "============================================================"
+
+for pid in $(pgrep -f 'GNSS_Rover_Base.jar' 2>/dev/null); do
+    echo
+    echo "PID: $pid"
+    ps -fp "$pid"
+    echo
+    echo "OPEN FILES:"
+    ls -l /proc/"$pid"/fd 2>&1 || true
+    echo
+    echo "COMMAND LINE:"
+    tr '\0' ' ' < /proc/"$pid"/cmdline 2>/dev/null
+    echo
+done
+
+echo
+echo "============================================================"
+echo "16. NATIVE APPLICATIONS"
+echo "============================================================"
+
+NATIVE_APPS="
+/opt/gnss/gnss_gpio
+/opt/gnss/watchdog
+/opt/gnss/ip_manager
+/home/debian/gnss_gui_server
+/usr/local/bin/mcu_server
+/usr/local/bin/serial_bridge
+/usr/local/bin/quectel_check
+/usr/local/bin/modem_manager
+"
+
+for f in $NATIVE_APPS; do
+    echo
+    echo "------------------------------------------------------------"
+    echo "APPLICATION: $f"
+    echo "------------------------------------------------------------"
+
+    if [ -e "$f" ]; then
+        ls -lh "$f"
+        file "$f"
+        sha256sum "$f"
+
+        echo
+        echo "LDD:"
+        ldd "$f" 2>&1 || true
+
+        echo
+        echo "STRINGS - RELEVANT:"
+        strings "$f" 2>/dev/null | \
+        grep -Ei 'tty|serial|uart|gpio|gnss|gps|ntrip|rtcm|tcp|udp|http|https|mqtt|socket|port|ip|wifi|modem|quectel|watchdog|config|json|xml|conf|log' | \
+        head -n 1000 || true
+    else
+        echo "FILE DOES NOT EXIST"
+    fi
+done
+
+echo
+echo "============================================================"
+echo "17. ALL /USR/LOCAL/BIN CUSTOM PROGRAMS"
+echo "============================================================"
+
+find /usr/local/bin -maxdepth 1 -type f -printf '%M %u %g %s %TY-%Tm-%Td %TH:%TM %p\n' 2>/dev/null | sort
+
+echo
+echo "============================================================"
+echo "18. ALL /USR/LOCAL/SBIN CUSTOM PROGRAMS"
+echo "============================================================"
+
+find /usr/local/sbin -maxdepth 1 -type f -printf '%M %u %g %s %TY-%Tm-%Td %TH:%TM %p\n' 2>/dev/null | sort
+
+echo
+echo "============================================================"
+echo "19. RELEVANT SHELL SCRIPTS"
+echo "============================================================"
+
+find /home/debian /opt/gnss /usr/local/bin /usr/local/sbin \
+    -type f \( -name "*.sh" -o -name "*.bash" \) -print 2>/dev/null | sort | while read -r f
+do
+    echo
+    echo "------------------------------------------------------------"
+    echo "SCRIPT: $f"
+    echo "------------------------------------------------------------"
+    ls -lh "$f"
+    cat "$f" 2>&1
+done
+
+echo
+echo "============================================================"
+echo "20. NETWORK INTERFACES"
+echo "============================================================"
+
+ip -br addr
+echo
+ip addr
+echo
+ip route
+echo
+ip rule
+echo
+ip link
+
+echo
+echo "============================================================"
+echo "21. NETWORKMANAGER INFORMATION"
+echo "============================================================"
+
+nmcli general status 2>&1 || true
+echo
+nmcli device status 2>&1 || true
+echo
+nmcli connection show 2>&1 || true
+
+echo
+echo "============================================================"
+echo "22. SYSTEMD-NETWORKD INFORMATION"
+echo "============================================================"
+
+networkctl list 2>&1 || true
+
+echo
+networkctl status --all 2>&1 || true
+
+echo
+echo "NETWORKD CONFIGURATION:"
+find /etc/systemd/network -type f -maxdepth 2 -print 2>/dev/null | sort | while read -r f
+do
+    echo
+    echo "------------------------------------------------------------"
+    echo "FILE: $f"
+    echo "------------------------------------------------------------"
+    cat "$f"
+done
+
+echo
+echo "============================================================"
+echo "23. HOSTAPD CONFIGURATION"
+echo "============================================================"
+
+find /etc/hostapd -type f -maxdepth 2 -print 2>/dev/null | sort | while read -r f
+do
+    echo
+    echo "------------------------------------------------------------"
+    echo "FILE: $f"
+    echo "------------------------------------------------------------"
+    cat "$f"
+done
+
+echo
+echo "============================================================"
+echo "24. IWD CONFIGURATION"
+echo "============================================================"
+
+find /etc/iwd -type f -maxdepth 3 -print 2>/dev/null | sort | while read -r f
+do
+    echo
+    echo "------------------------------------------------------------"
+    echo "FILE: $f"
+    echo "------------------------------------------------------------"
+    cat "$f"
+done
+
+echo
+echo "============================================================"
+echo "25. DNSMASQ CONFIGURATION"
+echo "============================================================"
+
+find /etc/dnsmasq* -maxdepth 3 -type f -print 2>/dev/null | sort | while read -r f
+do
+    echo
+    echo "------------------------------------------------------------"
+    echo "FILE: $f"
+    echo "------------------------------------------------------------"
+    cat "$f"
+done
+
+echo
+echo "============================================================"
+echo "26. NGINX CONFIGURATION"
+echo "============================================================"
+
+nginx -T 2>&1 || true
+
+echo
+echo "============================================================"
+echo "27. NODE-RED INFORMATION"
+echo "============================================================"
+
+systemctl status nodered --no-pager -l 2>&1 || true
+
+echo
+find /home/debian/.node-red -maxdepth 2 -type f -print 2>/dev/null | sort | while read -r f
+do
+    echo
+    echo "FILE: $f"
+    case "$f" in
+        *.json|*.js|*.txt|*.conf)
+            cat "$f" 2>&1
+            ;;
+        *)
+            ls -lh "$f"
+            ;;
+    esac
+done
+
+echo
+echo "============================================================"
+echo "28. DOCKER INFORMATION"
+echo "============================================================"
+
+docker version 2>&1 || true
+echo
+docker info 2>&1 || true
+echo
+docker ps -a 2>&1 || true
+echo
+docker images 2>&1 || true
+echo
+docker network ls 2>&1 || true
+
+echo
+echo "============================================================"
+echo "29. LISTENING TCP/UDP PORTS"
+echo "============================================================"
+
+ss -lntup
+
+echo
+echo "============================================================"
+echo "30. PROCESSES - COMPLETE"
+echo "============================================================"
+
+ps auxww
+
+echo
+echo "============================================================"
+echo "31. SERIAL DEVICES"
+echo "============================================================"
+
+ls -lah /dev/ttyS* /dev/ttyUSB* /dev/ttyACM* /dev/ttyGS* 2>&1 || true
+
+echo
+echo "SERIAL DEVICE DETAILS:"
+udevadm info -q all -n /dev/ttyS0 2>&1 || true
+udevadm info -q all -n /dev/ttyS2 2>&1 || true
+udevadm info -q all -n /dev/ttyS3 2>&1 || true
+udevadm info -q all -n /dev/ttyUSB0 2>&1 || true
+udevadm info -q all -n /dev/ttyUSB1 2>&1 || true
+udevadm info -q all -n /dev/ttyUSB2 2>&1 || true
+udevadm info -q all -n /dev/ttyUSB3 2>&1 || true
+
+echo
+echo "============================================================"
+echo "32. PROCESSES USING SERIAL DEVICES"
+echo "============================================================"
+
+for d in /dev/ttyS* /dev/ttyUSB* /dev/ttyACM* /dev/ttyGS*; do
+    if [ -e "$d" ]; then
+        echo
+        echo "DEVICE: $d"
+        fuser -v "$d" 2>&1 || true
+        lsof "$d" 2>&1 || true
+    fi
+done
+
+echo
+echo "============================================================"
+echo "33. USB DEVICES"
+echo "============================================================"
+
+lsusb 2>&1 || true
+echo
+lsusb -t 2>&1 || true
+
+echo
+echo "============================================================"
+echo "34. USB MODEM INFORMATION"
+echo "============================================================"
+
+usb-devices 2>&1 | grep -A 25 -B 3 -Ei 'Quectel|EC25|EG25' || true
+
+echo
+echo "============================================================"
+echo "35. MODEM CONFIGURATION / LOGS"
+echo "============================================================"
+
+find /etc -maxdepth 3 -type f \( \
+    -iname "*modem*" -o \
+    -iname "*quectel*" \
+\) -print 2>/dev/null | sort | while read -r f
+do
+    echo
+    echo "FILE: $f"
+    cat "$f" 2>&1
+done
+
+echo
+echo "============================================================"
+echo "36. GPIO INFORMATION"
+echo "============================================================"
+
+echo "GPIO CHIP INFORMATION:"
+gpiodetect 2>&1 || true
+
+echo
+echo "GPIO LINE INFORMATION:"
+gpioinfo 2>&1 || true
+
+echo
+echo "GPIO RELATED PROCESSES:"
+ps auxww | grep -Ei 'gpio|gnss_gpio' | grep -v grep || true
+
+echo
+echo "============================================================"
+echo "37. DEVICE TREE - IMPORTANT HARDWARE INFORMATION"
+echo "============================================================"
+
+echo "MODEL:"
+cat /proc/device-tree/model 2>/dev/null || true
+
+echo
+echo "COMPATIBLE:"
+tr '\0' '\n' < /proc/device-tree/compatible 2>/dev/null || true
+
+echo
+echo "DEVICE TREE SERIAL:"
+cat /proc/device-tree/serial-number 2>/dev/null || true
+
+echo
+echo "============================================================"
+echo "38. UART / SERIAL KERNEL INFORMATION"
+echo "============================================================"
+
+dmesg | grep -Ei 'tty|uart|serial' 2>&1 || true
+
+echo
+echo "============================================================"
+echo "39. GPIO KERNEL INFORMATION"
+echo "============================================================"
+
+dmesg | grep -Ei 'gpio|gpiochip' 2>&1 || true
+
+echo
+echo "============================================================"
+echo "40. GNSS / GPS KERNEL INFORMATION"
+echo "============================================================"
+
+dmesg | grep -Ei 'gnss|gps|nmea|rtcm' 2>&1 || true
+
+echo
+echo "============================================================"
+echo "41. NETWORK KERNEL INFORMATION"
+echo "============================================================"
+
+dmesg | grep -Ei 'eth|network|wifi|wlan|usb' 2>&1 | tail -n 500
+
+echo
+echo "============================================================"
+echo "42. GNSS SERVICE JOURNAL - LAST 500 LINES"
+echo "============================================================"
+
+journalctl -u gnss.service -n 500 --no-pager 2>&1
+
+echo
+echo "============================================================"
+echo "43. SERIAL BRIDGE JOURNAL - LAST 500 LINES"
+echo "============================================================"
+
+journalctl -u serial-bridge.service -n 500 --no-pager 2>&1
+
+echo
+echo "============================================================"
+echo "44. MCU SERVER JOURNAL - LAST 500 LINES"
+echo "============================================================"
+
+journalctl -u mcu_server.service -n 500 --no-pager 2>&1
+
+echo
+echo "============================================================"
+echo "45. GNSS GUI SERVER JOURNAL - LAST 500 LINES"
+echo "============================================================"
+
+journalctl -u gnss_gui_server.service -n 500 --no-pager 2>&1
+
+echo
+echo "============================================================"
+echo "46. MODEM JOURNALS"
+echo "============================================================"
+
+journalctl -u modem_init.service -n 200 --no-pager 2>&1 || true
+journalctl -u modem_status.service -n 200 --no-pager 2>&1 || true
+journalctl -u quectel-check.service -n 200 --no-pager 2>&1 || true
+
+echo
+echo "============================================================"
+echo "47. WIFI JOURNALS"
+echo "============================================================"
+
+journalctl -u gnss-wifi-setup.service -n 200 --no-pager 2>&1 || true
+journalctl -u gnss-wifi-connect.service -n 200 --no-pager 2>&1 || true
+journalctl -u hostapd.service -n 200 --no-pager 2>&1 || true
+journalctl -u iwd.service -n 200 --no-pager 2>&1 || true
+
+echo
+echo "============================================================"
+echo "48. IP MANAGER JOURNAL"
+echo "============================================================"
+
+journalctl -u ip-manager.service -n 500 --no-pager 2>&1 || true
+
+echo
+echo "============================================================"
+echo "49. CRON / SCHEDULED TASKS"
+echo "============================================================"
+
+echo "SYSTEM CRONTAB:"
+cat /etc/crontab 2>&1 || true
+
+echo
+echo "CRON.D:"
+find /etc/cron.d -type f -maxdepth 1 -print 2>/dev/null | sort | while read -r f
+do
+    echo
+    echo "FILE: $f"
+    cat "$f"
+done
+
+echo
+echo "USER CRONTAB:"
+crontab -l 2>&1 || true
+
+echo
+echo "============================================================"
+echo "50. SYSTEMD TIMERS"
+echo "============================================================"
+
+systemctl list-timers --all --no-pager
+
+echo
+echo "============================================================"
+echo "51. ENVIRONMENT / PATH"
+echo "============================================================"
+
+echo "PATH=$PATH"
+echo
+env | sort
+
+echo
+echo "============================================================"
+echo "52. IMPORTANT CONFIGURATION FILES"
+echo "============================================================"
+
+for f in \
+    /etc/default/* \
+    /etc/environment \
+    /etc/hosts \
+    /etc/hostname \
+    /etc/resolv.conf
+do
+    if [ -f "$f" ]; then
+        echo
+        echo "------------------------------------------------------------"
+        echo "FILE: $f"
+        echo "------------------------------------------------------------"
+        cat "$f" 2>&1
+    fi
+done
+
+echo
+echo "============================================================"
+echo "53. /HOME/DEBIAN IMPORTANT FILES"
+echo "============================================================"
+
+ls -lah /home/debian
+
+echo
+echo "============================================================"
+echo "54. SOURCE CODE FILES"
+echo "============================================================"
+
+find /home/debian /opt/gnss /usr/local \
+    -type f \( \
+    -name "*.c" -o \
+    -name "*.cpp" -o \
+    -name "*.h" -o \
+    -name "*.hpp" \
+    \) -print 2>/dev/null | sort
+
+echo
+echo "============================================================"
+echo "55. SERVER.C IF PRESENT"
+echo "============================================================"
+
+if [ -f /home/debian/server.c ]; then
+    cat /home/debian/server.c
+fi
+
+echo
+echo "============================================================"
+echo "56. SERIAL BRIDGE STRINGS / SYMBOLS IF PRESENT"
+echo "============================================================"
+
+for f in \
+    /home/debian/serial_bridge_strings.txt \
+    /home/debian/serial_bridge_symbols.txt
+do
+    if [ -f "$f" ]; then
+        echo
+        echo "------------------------------------------------------------"
+        echo "FILE: $f"
+        echo "------------------------------------------------------------"
+        cat "$f"
+    fi
+done
+
+echo
+echo "============================================================"
+echo "57. GNSS APPLICATION RELATED FILE SEARCH"
+echo "============================================================"
+
+find /home/debian /opt /usr/local /etc \
+    -type f \( \
+    -iname "*gnss*" -o \
+    -iname "*ntrip*" -o \
+    -iname "*rtcm*" -o \
+    -iname "*rover*" -o \
+    -iname "*base*" \
+    \) -print 2>/dev/null | sort
+
+echo
+echo "============================================================"
+echo "58. FILE PERMISSIONS / OWNERSHIP OF CUSTOM APPLICATIONS"
+echo "============================================================"
+
+for f in \
+    /opt/gnss/* \
+    /home/debian/GNSS_Rover_Base.jar \
+    /home/debian/gnss_gui_server \
+    /usr/local/bin/mcu_server \
+    /usr/local/bin/serial_bridge \
+    /usr/local/bin/quectel_check \
+    /usr/local/bin/modem_manager \
+    /usr/local/bin/modem_init.sh
+do
+    if [ -e "$f" ]; then
+        stat "$f" 2>&1
+    fi
+done
+
+echo
+echo "============================================================"
+echo "59. FINAL SUMMARY"
+echo "============================================================"
+
+echo "Hostname:"
+hostname
+
+echo
+echo "Kernel:"
+uname -a
+
+echo
+echo "Running services:"
+systemctl list-units --type=service --state=running --no-pager | wc -l
+
+echo
+echo "Failed services:"
+systemctl --failed --no-pager | grep -c "failed" || true
+
+echo
+echo "Listening ports:"
+ss -lntup 2>/dev/null | wc -l
+
+echo
+echo "Serial devices:"
+ls /dev/ttyS* /dev/ttyUSB* /dev/ttyACM* /dev/ttyGS* 2>/dev/null | wc -l
+
+echo
+echo "Inventory file:"
+echo "$OUT"
+
+echo
+echo "============================================================"
+echo " INVENTORY COMPLETE"
+echo " Finished: $(date)"
+echo "============================================================"
+
+EOF
+
+chmod +x ~/beagle_inventory/collect_application_details.sh
+~/beagle_inventory/collect_application_details.sh
+scp debian@192.168.10.100:/home/debian/beagle_inventory/application_details_*.txt .
+ls
+cat > ~/beagle_inventory/deep_service_trace.sh <<'EOF'
+#!/bin/bash
+
+OUT="$HOME/beagle_inventory/deep_service_trace_$(date +%Y%m%d_%H%M%S).txt"
+
+exec > >(tee "$OUT") 2>&1
+
+echo "======================================================================"
+echo " BEAGLEPLAY DEEP SERVICE / PROGRAM TRACE"
+echo " Started: $(date)"
+echo " Host: $(hostname)"
+echo "======================================================================"
+
+SERVICES="
+gnss.service
+gnss-watchdog.service
+gnss_gpio.service
+gnss_gui_server.service
+gnss-wifi-setup.service
+gnss-wifi-connect.service
+ip-manager.service
+mcu_server.service
+serial-bridge.service
+quectel-check.service
+modem_init.service
+modem_status.service
+daily-reboot.service
+daily-timesync.service
+net-timesync.service
+"
+
+echo
+echo "======================================================================"
+echo "1. CUSTOM SERVICE UNIT FILES"
+echo "======================================================================"
+
+for S in $SERVICES
+do
+    echo
+    echo "######################################################################"
+    echo "SERVICE: $S"
+    echo "######################################################################"
+
+    echo
+    echo "----- systemctl cat -----"
+    systemctl cat "$S" 2>&1
+
+    echo
+    echo "----- systemctl show important properties -----"
+    systemctl show "$S" \
+        -p Id \
+        -p Description \
+        -p LoadState \
+        -p ActiveState \
+        -p SubState \
+        -p FragmentPath \
+        -p DropInPaths \
+        -p ExecStartPre \
+        -p ExecStart \
+        -p ExecStartPost \
+        -p ExecStop \
+        -p User \
+        -p Group \
+        -p WorkingDirectory \
+        -p Environment \
+        -p Restart \
+        -p RestartSec \
+        -p After \
+        -p Before \
+        -p Requires \
+        -p Wants \
+        -p Conflicts \
+        2>&1
+
+    echo
+    echo "----- status -----"
+    systemctl status "$S" --no-pager --full 2>&1
+
+    echo
+    echo "----- dependencies -----"
+    systemctl list-dependencies "$S" --no-pager 2>&1
+
+    echo
+    echo "----- reverse dependencies -----"
+    systemctl list-dependencies --reverse "$S" --no-pager 2>&1
+
+done
+
+
+echo
+echo "======================================================================"
+echo "2. CUSTOM EXECUTABLES"
+echo "======================================================================"
+
+PROGRAMS="
+/opt/gnss/start_gnss.sh
+/opt/gnss/gnss_gpio
+/opt/gnss/watchdog
+/home/debian/gnss_gui_server
+/home/debian/wifi_setup/wifi_setup
+/home/debian/wifi_setup/wifi_connect
+/usr/local/bin/mcu_server
+/usr/local/bin/serial_bridge
+/usr/local/bin/quectel_check
+/usr/local/bin/modem_manager
+/usr/local/bin/modem_init.sh
+"
+
+for P in $PROGRAMS
+do
+    echo
+    echo "######################################################################"
+    echo "PROGRAM: $P"
+    echo "######################################################################"
+
+    if [ -e "$P" ]; then
+
+        echo
+        echo "----- ls -l -----"
+        ls -lah "$P" 2>&1
+
+        echo
+        echo "----- file -----"
+        file "$P" 2>&1
+
+        echo
+        echo "----- real path -----"
+        readlink -f "$P" 2>&1
+
+        echo
+        echo "----- permissions -----"
+        stat "$P" 2>&1
+
+        echo
+        echo "----- ldd -----"
+        ldd "$P" 2>&1
+
+        echo
+        echo "----- strings: configuration/file/path hints -----"
+        strings "$P" 2>/dev/null | \
+            grep -Ei \
+            '(/etc/|/opt/|/home/|/usr/|\.conf|\.cfg|\.ini|\.json|\.xml|\.txt|\.csv|\.log|/dev/tty|/dev/gpio|/dev/watchdog|tcp|udp|port|mqtt|serial|uart|gpio|watchdog|modem|quectel|wifi|hostapd)' \
+            | head -300
+
+    else
+        echo "NOT FOUND: $P"
+    fi
+
+done
+
+
+echo
+echo "======================================================================"
+echo "3. ALL CUSTOM FILES UNDER /OPT/GNSS"
+echo "======================================================================"
+
+find /opt/gnss -maxdepth 3 -type f -printf '%M %u %g %s %TY-%Tm-%Td %TH:%TM %p\n' 2>/dev/null
+
+
+echo
+echo "======================================================================"
+echo "4. ALL CUSTOM FILES UNDER /HOME/DEBIAN"
+echo "======================================================================"
+
+find /home/debian/wifi_setup -maxdepth 3 -type f \
+    -printf '%M %u %g %s %TY-%Tm-%Td %TH:%TM %p\n' 2>/dev/null
+
+echo
+find /home/debian -maxdepth 2 \
+    \( -name 'gnss_gui_server' -o -name '*.jar' -o -name '*.sh' \) \
+    -type f -printf '%M %u %g %s %TY-%Tm-%Td %TH:%TM %p\n' 2>/dev/null
+
+
+echo
+echo "======================================================================"
+echo "5. CUSTOM /USR/LOCAL/BIN FILES"
+echo "======================================================================"
+
+ls -lah /usr/local/bin/ 2>&1
+
+
+echo
+echo "======================================================================"
+echo "6. RUNNING PROCESSES FOR CUSTOM PROGRAMS"
+echo "======================================================================"
+
+ps auxww | grep -E \
+'GNSS_Rover_Base|start_gnss|gnss_gpio|watchdog|gnss_gui_server|wifi_setup|wifi_connect|mcu_server|serial_bridge|quectel_check|modem_manager|modem_init' \
+| grep -v grep
+
+
+echo
+echo "======================================================================"
+echo "7. OPEN FILES OF CUSTOM RUNNING PROCESSES"
+echo "======================================================================"
+
+for NAME in \
+gnss_gpio \
+watchdog \
+gnss_gui_server \
+mcu_server \
+serial_bridge \
+quectel_check \
+modem_manager
+do
+    echo
+    echo "----- PROCESS: $NAME -----"
+
+    PIDS=$(pgrep -x "$NAME" 2>/dev/null)
+
+    for PID in $PIDS
+    do
+        echo "PID=$PID"
+        ps -fp "$PID" 2>&1
+        lsof -p "$PID" 2>&1
+    done
+done
+
+
+echo
+echo "======================================================================"
+echo "8. NETWORK LISTENING PORTS"
+echo "======================================================================"
+
+ss -lntup 2>&1
+
+
+echo
+echo "======================================================================"
+echo "9. NETWORK CONNECTIONS OF CUSTOM PROGRAMS"
+echo "======================================================================"
+
+for NAME in \
+gnss_gpio \
+watchdog \
+gnss_gui_server \
+mcu_server \
+serial_bridge \
+quectel_check \
+modem_manager
+do
+    PIDS=$(pgrep -x "$NAME" 2>/dev/null)
+
+    for PID in $PIDS
+    do
+        echo
+        echo "----- PID $PID : $NAME -----"
+        ss -ntup 2>/dev/null | grep "pid=$PID,"
+    done
+done
+
+
+echo
+echo "======================================================================"
+echo "10. SERIAL DEVICES"
+echo "======================================================================"
+
+ls -lah /dev/ttyS* /dev/ttyUSB* /dev/ttyACM* /dev/ttyGS* 2>/dev/null
+
+echo
+echo "----- Serial device users -----"
+fuser -v /dev/ttyS* /dev/ttyUSB* /dev/ttyACM* /dev/ttyGS* 2>&1
+
+
+echo
+echo "======================================================================"
+echo "11. WATCHDOG DEVICES"
+echo "======================================================================"
+
+ls -lah /dev/watchdog* 2>/dev/null
+fuser -v /dev/watchdog* 2>&1
+
+
+echo
+echo "======================================================================"
+echo "12. GPIO INFORMATION"
+echo "======================================================================"
+
+if command -v gpioinfo >/dev/null 2>&1
+then
+    gpioinfo 2>&1
+else
+    echo "gpioinfo command not installed"
+fi
+
+
+echo
+echo "======================================================================"
+echo "13. CUSTOM PROGRAM DEVICE ACCESS"
+echo "======================================================================"
+
+for NAME in \
+gnss_gpio \
+watchdog \
+gnss_gui_server \
+mcu_server \
+serial_bridge \
+quectel_check \
+modem_manager
+do
+    PIDS=$(pgrep -x "$NAME" 2>/dev/null)
+
+    for PID in $PIDS
+    do
+        echo
+        echo "----- PID $PID : $NAME -----"
+        ls -l /proc/$PID/fd 2>/dev/null
+        echo
+        echo "Resolved descriptors:"
+        for FD in /proc/$PID/fd/*
+        do
+            readlink "$FD" 2>/dev/null
+        done
+    done
+done
+
+
+echo
+echo "======================================================================"
+echo "14. CUSTOM CONFIGURATION DIRECTORIES"
+echo "======================================================================"
+
+for D in \
+/opt/gnss \
+/home/debian/wifi_setup \
+/home/debian \
+/etc/gnss \
+/etc/hostapd \
+/etc/NetworkManager \
+/etc/systemd/system
+do
+    echo
+    echo "----- DIRECTORY: $D -----"
+    if [ -d "$D" ]; then
+        find "$D" -maxdepth 2 -type f \
+            -printf '%M %u %g %s %TY-%Tm-%Td %TH:%TM %p\n' 2>/dev/null
+    else
+        echo "Directory does not exist"
+    fi
+done
+
+
+echo
+echo "======================================================================"
+echo "15. GNSS JAR INFORMATION"
+echo "======================================================================"
+
+find /home/debian /opt/gnss -type f \
+    \( -iname '*GNSS*' -o -iname '*.jar' \) \
+    -printf '%M %u %g %s %TY-%Tm-%Td %TH:%TM %p\n' 2>/dev/null
+
+
+echo
+echo "======================================================================"
+echo "16. CURRENT JAVA PROCESSES"
+echo "======================================================================"
+
+ps auxww | grep -i java | grep -v grep
+
+
+echo
+echo "======================================================================"
+echo "17. SYSTEMD JOURNAL FOR ALL CUSTOM SERVICES - CURRENT BOOT"
+echo "======================================================================"
+
+for S in $SERVICES
+do
+    echo
+    echo "######################################################################"
+    echo "JOURNAL: $S"
+    echo "######################################################################"
+
+    journalctl -u "$S" -b --no-pager 2>&1
+done
+
+
+echo
+echo "======================================================================"
+echo "18. DONE"
+echo "======================================================================"
+
+echo "Output file:"
+echo "$OUT"
+
+EOF
+
+chmod +x ~/beagle_inventory/deep_service_trace.sh
+sudo ~/beagle_inventory/deep_service_trace.sh
+echo
+echo "============================================================"
+echo "TRACE COMPLETE"
+echo "============================================================"
+echo "The log file is:"
+echo "$HOME/beagle_inventory/deep_service_trace_"*.txt
+ls -lh ~/beagle_inventory/deep_service_trace_*.txt
+ls
+cd beagle_inventory/
+ls
+ls -lh ~/beagle_inventory/deep_service_trace_*.txt
+cat > ~/beagle_inventory/deep_service_trace.sh <<'EOF'
+#!/bin/bash
+
+OUT="$HOME/beagle_inventory/deep_service_trace_$(date +%Y%m%d_%H%M%S).txt"
+
+exec > >(tee "$OUT") 2>&1
+
+echo "======================================================================"
+echo " BEAGLEPLAY DEEP SERVICE / PROGRAM TRACE"
+echo " Started: $(date)"
+echo " Host: $(hostname)"
+echo "======================================================================"
+
+SERVICES="
+gnss.service
+gnss-watchdog.service
+gnss_gpio.service
+gnss_gui_server.service
+gnss-wifi-setup.service
+gnss-wifi-connect.service
+ip-manager.service
+mcu_server.service
+serial-bridge.service
+quectel-check.service
+modem_init.service
+modem_status.service
+daily-reboot.service
+daily-timesync.service
+net-timesync.service
+"
+
+echo
+echo "======================================================================"
+echo "1. CUSTOM SERVICE UNIT FILES"
+echo "======================================================================"
+
+for S in $SERVICES
+do
+    echo
+    echo "######################################################################"
+    echo "SERVICE: $S"
+    echo "######################################################################"
+
+    echo
+    echo "----- systemctl cat -----"
+    systemctl cat "$S" 2>&1
+
+    echo
+    echo "----- systemctl show important properties -----"
+    systemctl show "$S" \
+        -p Id \
+        -p Description \
+        -p LoadState \
+        -p ActiveState \
+        -p SubState \
+        -p FragmentPath \
+        -p DropInPaths \
+        -p ExecStartPre \
+        -p ExecStart \
+        -p ExecStartPost \
+        -p ExecStop \
+        -p User \
+        -p Group \
+        -p WorkingDirectory \
+        -p Environment \
+        -p Restart \
+        -p RestartSec \
+        -p After \
+        -p Before \
+        -p Requires \
+        -p Wants \
+        -p Conflicts \
+        2>&1
+
+    echo
+    echo "----- status -----"
+    systemctl status "$S" --no-pager --full 2>&1
+
+    echo
+    echo "----- dependencies -----"
+    systemctl list-dependencies "$S" --no-pager 2>&1
+
+    echo
+    echo "----- reverse dependencies -----"
+    systemctl list-dependencies --reverse "$S" --no-pager 2>&1
+
+done
+
+
+echo
+echo "======================================================================"
+echo "2. CUSTOM EXECUTABLES"
+echo "======================================================================"
+
+PROGRAMS="
+/opt/gnss/start_gnss.sh
+/opt/gnss/gnss_gpio
+/opt/gnss/watchdog
+/home/debian/gnss_gui_server
+/home/debian/wifi_setup/wifi_setup
+/home/debian/wifi_setup/wifi_connect
+/usr/local/bin/mcu_server
+/usr/local/bin/serial_bridge
+/usr/local/bin/quectel_check
+/usr/local/bin/modem_manager
+/usr/local/bin/modem_init.sh
+"
+
+for P in $PROGRAMS
+do
+    echo
+    echo "######################################################################"
+    echo "PROGRAM: $P"
+    echo "######################################################################"
+
+    if [ -e "$P" ]; then
+
+        echo
+        echo "----- ls -l -----"
+        ls -lah "$P" 2>&1
+
+        echo
+        echo "----- file -----"
+        file "$P" 2>&1
+
+        echo
+        echo "----- real path -----"
+        readlink -f "$P" 2>&1
+
+        echo
+        echo "----- permissions -----"
+        stat "$P" 2>&1
+
+        echo
+        echo "----- ldd -----"
+        ldd "$P" 2>&1
+
+        echo
+        echo "----- strings: configuration/file/path hints -----"
+        strings "$P" 2>/dev/null | \
+            grep -Ei \
+            '(/etc/|/opt/|/home/|/usr/|\.conf|\.cfg|\.ini|\.json|\.xml|\.txt|\.csv|\.log|/dev/tty|/dev/gpio|/dev/watchdog|tcp|udp|port|mqtt|serial|uart|gpio|watchdog|modem|quectel|wifi|hostapd)' \
+            | head -300
+
+    else
+        echo "NOT FOUND: $P"
+    fi
+
+done
+
+
+echo
+echo "======================================================================"
+echo "3. ALL CUSTOM FILES UNDER /OPT/GNSS"
+echo "======================================================================"
+
+find /opt/gnss -maxdepth 3 -type f -printf '%M %u %g %s %TY-%Tm-%Td %TH:%TM %p\n' 2>/dev/null
+
+
+echo
+echo "======================================================================"
+echo "4. ALL CUSTOM FILES UNDER /HOME/DEBIAN"
+echo "======================================================================"
+
+find /home/debian/wifi_setup -maxdepth 3 -type f \
+    -printf '%M %u %g %s %TY-%Tm-%Td %TH:%TM %p\n' 2>/dev/null
+
+echo
+find /home/debian -maxdepth 2 \
+    \( -name 'gnss_gui_server' -o -name '*.jar' -o -name '*.sh' \) \
+    -type f -printf '%M %u %g %s %TY-%Tm-%Td %TH:%TM %p\n' 2>/dev/null
+
+
+echo
+echo "======================================================================"
+echo "5. CUSTOM /USR/LOCAL/BIN FILES"
+echo "======================================================================"
+
+ls -lah /usr/local/bin/ 2>&1
+
+
+echo
+echo "======================================================================"
+echo "6. RUNNING PROCESSES FOR CUSTOM PROGRAMS"
+echo "======================================================================"
+
+ps auxww | grep -E \
+'GNSS_Rover_Base|start_gnss|gnss_gpio|watchdog|gnss_gui_server|wifi_setup|wifi_connect|mcu_server|serial_bridge|quectel_check|modem_manager|modem_init' \
+| grep -v grep
+
+
+echo
+echo "======================================================================"
+echo "7. OPEN FILES OF CUSTOM RUNNING PROCESSES"
+echo "======================================================================"
+
+for NAME in \
+gnss_gpio \
+watchdog \
+gnss_gui_server \
+mcu_server \
+serial_bridge \
+quectel_check \
+modem_manager
+do
+    echo
+    echo "----- PROCESS: $NAME -----"
+
+    PIDS=$(pgrep -x "$NAME" 2>/dev/null)
+
+    for PID in $PIDS
+    do
+        echo "PID=$PID"
+        ps -fp "$PID" 2>&1
+        lsof -p "$PID" 2>&1
+    done
+done
+
+
+echo
+echo "======================================================================"
+echo "8. NETWORK LISTENING PORTS"
+echo "======================================================================"
+
+ss -lntup 2>&1
+
+
+echo
+echo "======================================================================"
+echo "9. NETWORK CONNECTIONS OF CUSTOM PROGRAMS"
+echo "======================================================================"
+
+for NAME in \
+gnss_gpio \
+watchdog \
+gnss_gui_server \
+mcu_server \
+serial_bridge \
+quectel_check \
+modem_manager
+do
+    PIDS=$(pgrep -x "$NAME" 2>/dev/null)
+
+    for PID in $PIDS
+    do
+        echo
+        echo "----- PID $PID : $NAME -----"
+        ss -ntup 2>/dev/null | grep "pid=$PID,"
+    done
+done
+
+
+echo
+echo "======================================================================"
+echo "10. SERIAL DEVICES"
+echo "======================================================================"
+
+ls -lah /dev/ttyS* /dev/ttyUSB* /dev/ttyACM* /dev/ttyGS* 2>/dev/null
+
+echo
+echo "----- Serial device users -----"
+fuser -v /dev/ttyS* /dev/ttyUSB* /dev/ttyACM* /dev/ttyGS* 2>&1
+
+
+echo
+echo "======================================================================"
+echo "11. WATCHDOG DEVICES"
+echo "======================================================================"
+
+ls -lah /dev/watchdog* 2>/dev/null
+fuser -v /dev/watchdog* 2>&1
+
+
+echo
+echo "======================================================================"
+echo "12. GPIO INFORMATION"
+echo "======================================================================"
+
+if command -v gpioinfo >/dev/null 2>&1
+then
+    gpioinfo 2>&1
+else
+    echo "gpioinfo command not installed"
+fi
+
+
+echo
+echo "======================================================================"
+echo "13. CUSTOM PROGRAM DEVICE ACCESS"
+echo "======================================================================"
+
+for NAME in \
+gnss_gpio \
+watchdog \
+gnss_gui_server \
+mcu_server \
+serial_bridge \
+quectel_check \
+modem_manager
+do
+    PIDS=$(pgrep -x "$NAME" 2>/dev/null)
+
+    for PID in $PIDS
+    do
+        echo
+        echo "----- PID $PID : $NAME -----"
+        ls -l /proc/$PID/fd 2>/dev/null
+        echo
+        echo "Resolved descriptors:"
+        for FD in /proc/$PID/fd/*
+        do
+            readlink "$FD" 2>/dev/null
+        done
+    done
+done
+
+
+echo
+echo "======================================================================"
+echo "14. CUSTOM CONFIGURATION DIRECTORIES"
+echo "======================================================================"
+
+for D in \
+/opt/gnss \
+/home/debian/wifi_setup \
+/home/debian \
+/etc/gnss \
+/etc/hostapd \
+/etc/NetworkManager \
+/etc/systemd/system
+do
+    echo
+    echo "----- DIRECTORY: $D -----"
+    if [ -d "$D" ]; then
+        find "$D" -maxdepth 2 -type f \
+            -printf '%M %u %g %s %TY-%Tm-%Td %TH:%TM %p\n' 2>/dev/null
+    else
+        echo "Directory does not exist"
+    fi
+done
+
+
+echo
+echo "======================================================================"
+echo "15. GNSS JAR INFORMATION"
+echo "======================================================================"
+
+find /home/debian /opt/gnss -type f \
+    \( -iname '*GNSS*' -o -iname '*.jar' \) \
+    -printf '%M %u %g %s %TY-%Tm-%Td %TH:%TM %p\n' 2>/dev/null
+
+
+echo
+echo "======================================================================"
+echo "16. CURRENT JAVA PROCESSES"
+echo "======================================================================"
+
+ps auxww | grep -i java | grep -v grep
+
+
+echo
+echo "======================================================================"
+echo "17. SYSTEMD JOURNAL FOR ALL CUSTOM SERVICES - CURRENT BOOT"
+echo "======================================================================"
+
+for S in $SERVICES
+do
+    echo
+    echo "######################################################################"
+    echo "JOURNAL: $S"
+    echo "######################################################################"
+
+    journalctl -u "$S" -b --no-pager 2>&1
+done
+
+
+echo
+echo "======================================================================"
+echo "18. DONE"
+echo "======================================================================"
+
+echo "Output file:"
+echo "$OUT"
+
+EOF
+
+chmod +x ~/beagle_inventory/deep_service_trace.sh
+sudo ~/beagle_inventory/deep_service_trace.sh
+echo
+echo "============================================================"
+echo "TRACE COMPLETE"
+echo "============================================================"
+echo "The log file is:"
+echo "$HOME/beagle_inventory/deep_service_trace_"*.txt
+ls -lh ~/beagle_inventory/deep_service_trace_*.txt
+ls -lh ~/beagle_inventory/deep_service_trace.sh
+sudo ~/beagle_inventory/deep_service_trace.sh
+ls -lh ~/beagle_inventory/deep_service_trace_*.txt
+sudo bash -x ~/beagle_inventory/deep_service_trace.sh 2>&1 | tee ~/beagle_inventory/trace_debug.txt
+ls -lh ~/beagle_inventory/trace_debug.txt
+tail -100 ~/beagle_inventory/trace_debug.txt
+grep -nE "ERROR|error|failed|FAILED|No such file|Permission denied|command not found" ~/beagle_inventory/trace_debug.txt | tail -100

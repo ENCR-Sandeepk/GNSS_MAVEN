@@ -1,0 +1,16 @@
+[Unit]
+Description=GNSS Java Base Station Auto Start
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=debian
+WorkingDirectory=/opt/gnss
+ExecStart=/opt/gnss/start_gnss.sh
+Restart=always
+RestartSec=10
+SuccessExitStatus=143
+
+[Install]
+WantedBy=multi-user.target

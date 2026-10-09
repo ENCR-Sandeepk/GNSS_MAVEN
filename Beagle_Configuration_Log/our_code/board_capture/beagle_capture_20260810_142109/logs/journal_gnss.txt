@@ -1,0 +1,300 @@
+Aug 10 14:17:31 BeagleBone start_gnss.sh[1276]: [DBG][STATCODE] sending STATCODE,5 (connected=true)
+Aug 10 14:17:31 BeagleBone start_gnss.sh[1276]: CMD 1 : $STATCODE,5
+Aug 10 14:17:31 BeagleBone start_gnss.sh[1276]: [DBG][TCP] RLY <- $1000
+Aug 10 14:17:31 BeagleBone start_gnss.sh[1276]: RLY 1 : $1000
+Aug 10 14:17:31 BeagleBone start_gnss.sh[1276]: [DBG][Base] connecting: receiver=192.168.10.100:2000 NTRIP=122.15.209.75:7000
+Aug 10 14:17:32 BeagleBone start_gnss.sh[1276]: [2026-08-10 08:47:32] Connected to server NTRIP
+Aug 10 14:17:32 BeagleBone start_gnss.sh[1276]: [2026-08-10 08:47:32] Connected to base GNSS 192.168.10.100:2000
+Aug 10 14:17:34 BeagleBone start_gnss.sh[1276]: CMD 1 : $WATCHDOG,"ENABLE"
+Aug 10 14:17:34 BeagleBone start_gnss.sh[1276]: [2026-08-10 08:47:34] Sent reset command to Base
+Aug 10 14:17:34 BeagleBone start_gnss.sh[1276]: [DBG][TCP] RLY <- $1000
+Aug 10 14:17:34 BeagleBone start_gnss.sh[1276]: RLY 1 : $1000
+Aug 10 14:17:34 BeagleBone start_gnss.sh[1276]: Reply: $1000
+Aug 10 14:17:44 BeagleBone start_gnss.sh[1276]: [2026-08-10 08:47:44] Sent config to base: unlogall
+Aug 10 14:17:44 BeagleBone start_gnss.sh[1276]: [2026-08-10 08:47:44] Sent config to base: FIX position 26.83602570 80.89195486 138.8682
+Aug 10 14:17:44 BeagleBone start_gnss.sh[1276]: [2026-08-10 08:47:44] Sent config to base: log com1 rtcm1074b ontime 1
+Aug 10 14:17:45 BeagleBone start_gnss.sh[1276]: [2026-08-10 08:47:45] Sent config to base: log com1 rtcm1084b ontime 1
+Aug 10 14:17:45 BeagleBone start_gnss.sh[1276]: [2026-08-10 08:47:45] Sent config to base: log com1 rtcm1094b ontime 1
+Aug 10 14:17:45 BeagleBone start_gnss.sh[1276]: [2026-08-10 08:47:45] Sent config to base: log com1 rtcm1114b ontime 1
+Aug 10 14:17:45 BeagleBone start_gnss.sh[1276]: [2026-08-10 08:47:45] Sent config to base: log com1 rtcm1124b ontime 1
+Aug 10 14:17:46 BeagleBone start_gnss.sh[1276]: [2026-08-10 08:47:46] Sent config to base: log com1 rtcm1005b ontime 5
+Aug 10 14:17:46 BeagleBone start_gnss.sh[1276]: [2026-08-10 08:47:46] Sent config to base: log com1 rtcm1033b ontime 10
+Aug 10 14:17:46 BeagleBone start_gnss.sh[1276]: [2026-08-10 08:47:46] Sent config to base: log com1 gpgga ontime 1
+Aug 10 14:17:46 BeagleBone start_gnss.sh[1276]: [2026-08-10 08:47:46] Sent config to base: saveconfig
+Aug 10 14:17:47 BeagleBone start_gnss.sh[1276]: [2026-08-10 08:47:47] Sent config to base:
+Aug 10 14:17:57 BeagleBone start_gnss.sh[1276]: [2026-08-10 08:47:57] SOURCE rejected by server: ERROR unknown mount
+Aug 10 14:17:57 BeagleBone start_gnss.sh[1276]: [2026-08-10 08:47:57] Base error: SOURCE rejected: ERROR unknown mount
+Aug 10 14:17:57 BeagleBone start_gnss.sh[1276]: [DBG][STATCODE] sending STATCODE,7 (connected=true)
+Aug 10 14:17:57 BeagleBone start_gnss.sh[1276]: CMD 1 : $STATCODE,7
+Aug 10 14:17:57 BeagleBone start_gnss.sh[1276]: [DBG][TCP] RLY <- $1000
+Aug 10 14:17:57 BeagleBone start_gnss.sh[1276]: RLY 1 : $1000
+Aug 10 14:17:57 BeagleBone start_gnss.sh[1276]: java.io.IOException: SOURCE rejected: ERROR unknown mount
+Aug 10 14:17:57 BeagleBone start_gnss.sh[1276]:         at com.encr.gnss_rover_base.base.Base.startBase(Base.java:227)
+Aug 10 14:17:57 BeagleBone start_gnss.sh[1276]:         at com.encr.gnss_rover_base.MainController.lambda$startBase$0(MainController.java:440)
+Aug 10 14:17:57 BeagleBone start_gnss.sh[1276]:         at java.base/java.lang.Thread.run(Thread.java:840)
+Aug 10 14:17:57 BeagleBone start_gnss.sh[1276]: [2026-08-10 08:47:57] Reconnecting in 1000 ms
+Aug 10 14:17:58 BeagleBone start_gnss.sh[1276]: [DBG][STATCODE] sending STATCODE,5 (connected=true)
+Aug 10 14:17:58 BeagleBone start_gnss.sh[1276]: CMD 1 : $STATCODE,5
+Aug 10 14:17:58 BeagleBone start_gnss.sh[1276]: [DBG][TCP] RLY <- $1000
+Aug 10 14:17:58 BeagleBone start_gnss.sh[1276]: RLY 1 : $1000
+Aug 10 14:17:58 BeagleBone start_gnss.sh[1276]: [DBG][Base] connecting: receiver=192.168.10.100:2000 NTRIP=122.15.209.75:7000
+Aug 10 14:17:58 BeagleBone start_gnss.sh[1276]: [2026-08-10 08:47:58] Connected to server NTRIP
+Aug 10 14:17:58 BeagleBone start_gnss.sh[1276]: [2026-08-10 08:47:58] Connected to base GNSS 192.168.10.100:2000
+Aug 10 14:18:00 BeagleBone start_gnss.sh[1276]: [2026-08-10 08:48:00] Sent reset command to Base
+Aug 10 14:18:04 BeagleBone start_gnss.sh[1276]: CMD 1 : $WATCHDOG,"ENABLE"
+Aug 10 14:18:04 BeagleBone start_gnss.sh[1276]: [DBG][TCP] RLY <- $1000
+Aug 10 14:18:04 BeagleBone start_gnss.sh[1276]: RLY 1 : $1000
+Aug 10 14:18:04 BeagleBone start_gnss.sh[1276]: Reply: $1000
+Aug 10 14:18:11 BeagleBone start_gnss.sh[1276]: [2026-08-10 08:48:11] Sent config to base: unlogall
+Aug 10 14:18:11 BeagleBone start_gnss.sh[1276]: [2026-08-10 08:48:11] Sent config to base: FIX position 26.83602570 80.89195486 138.8682
+Aug 10 14:18:11 BeagleBone start_gnss.sh[1276]: [2026-08-10 08:48:11] Sent config to base: log com1 rtcm1074b ontime 1
+Aug 10 14:18:11 BeagleBone start_gnss.sh[1276]: [2026-08-10 08:48:11] Sent config to base: log com1 rtcm1084b ontime 1
+Aug 10 14:18:12 BeagleBone start_gnss.sh[1276]: [2026-08-10 08:48:12] Sent config to base: log com1 rtcm1094b ontime 1
+Aug 10 14:18:12 BeagleBone start_gnss.sh[1276]: [2026-08-10 08:48:12] Sent config to base: log com1 rtcm1114b ontime 1
+Aug 10 14:18:12 BeagleBone start_gnss.sh[1276]: [2026-08-10 08:48:12] Sent config to base: log com1 rtcm1124b ontime 1
+Aug 10 14:18:12 BeagleBone start_gnss.sh[1276]: [2026-08-10 08:48:12] Sent config to base: log com1 rtcm1005b ontime 5
+Aug 10 14:18:13 BeagleBone start_gnss.sh[1276]: [2026-08-10 08:48:13] Sent config to base: log com1 rtcm1033b ontime 10
+Aug 10 14:18:13 BeagleBone start_gnss.sh[1276]: [2026-08-10 08:48:13] Sent config to base: log com1 gpgga ontime 1
+Aug 10 14:18:13 BeagleBone start_gnss.sh[1276]: [2026-08-10 08:48:13] Sent config to base: saveconfig
+Aug 10 14:18:13 BeagleBone start_gnss.sh[1276]: [2026-08-10 08:48:13] Sent config to base:
+Aug 10 14:18:24 BeagleBone start_gnss.sh[1276]: [2026-08-10 08:48:24] SOURCE rejected by server: ERROR unknown mount
+Aug 10 14:18:24 BeagleBone start_gnss.sh[1276]: [2026-08-10 08:48:24] Base error: SOURCE rejected: ERROR unknown mount
+Aug 10 14:18:24 BeagleBone start_gnss.sh[1276]: [DBG][STATCODE] sending STATCODE,7 (connected=true)
+Aug 10 14:18:24 BeagleBone start_gnss.sh[1276]: CMD 1 : $STATCODE,7
+Aug 10 14:18:24 BeagleBone start_gnss.sh[1276]: [DBG][TCP] RLY <- $1000
+Aug 10 14:18:24 BeagleBone start_gnss.sh[1276]: RLY 1 : $1000
+Aug 10 14:18:24 BeagleBone start_gnss.sh[1276]: java.io.IOException: SOURCE rejected: ERROR unknown mount
+Aug 10 14:18:24 BeagleBone start_gnss.sh[1276]:         at com.encr.gnss_rover_base.base.Base.startBase(Base.java:227)
+Aug 10 14:18:24 BeagleBone start_gnss.sh[1276]:         at com.encr.gnss_rover_base.MainController.lambda$startBase$0(MainController.java:440)
+Aug 10 14:18:24 BeagleBone start_gnss.sh[1276]:         at java.base/java.lang.Thread.run(Thread.java:840)
+Aug 10 14:18:24 BeagleBone start_gnss.sh[1276]: [2026-08-10 08:48:24] Reconnecting in 1000 ms
+Aug 10 14:18:25 BeagleBone start_gnss.sh[1276]: [DBG][STATCODE] sending STATCODE,5 (connected=true)
+Aug 10 14:18:25 BeagleBone start_gnss.sh[1276]: CMD 1 : $STATCODE,5
+Aug 10 14:18:25 BeagleBone start_gnss.sh[1276]: [DBG][TCP] RLY <- $1000
+Aug 10 14:18:25 BeagleBone start_gnss.sh[1276]: RLY 1 : $1000
+Aug 10 14:18:25 BeagleBone start_gnss.sh[1276]: [DBG][Base] connecting: receiver=192.168.10.100:2000 NTRIP=122.15.209.75:7000
+Aug 10 14:18:25 BeagleBone start_gnss.sh[1276]: [2026-08-10 08:48:25] Connected to server NTRIP
+Aug 10 14:18:25 BeagleBone start_gnss.sh[1276]: [2026-08-10 08:48:25] Connected to base GNSS 192.168.10.100:2000
+Aug 10 14:18:27 BeagleBone start_gnss.sh[1276]: [2026-08-10 08:48:27] Sent reset command to Base
+Aug 10 14:18:34 BeagleBone start_gnss.sh[1276]: CMD 1 : $WATCHDOG,"ENABLE"
+Aug 10 14:18:34 BeagleBone start_gnss.sh[1276]: [DBG][TCP] RLY <- $1000
+Aug 10 14:18:34 BeagleBone start_gnss.sh[1276]: RLY 1 : $1000
+Aug 10 14:18:34 BeagleBone start_gnss.sh[1276]: Reply: $1000
+Aug 10 14:18:38 BeagleBone start_gnss.sh[1276]: [2026-08-10 08:48:38] Sent config to base: unlogall
+Aug 10 14:18:38 BeagleBone start_gnss.sh[1276]: [2026-08-10 08:48:38] Sent config to base: FIX position 26.83602570 80.89195486 138.8682
+Aug 10 14:18:38 BeagleBone start_gnss.sh[1276]: [2026-08-10 08:48:38] Sent config to base: log com1 rtcm1074b ontime 1
+Aug 10 14:18:38 BeagleBone start_gnss.sh[1276]: [2026-08-10 08:48:38] Sent config to base: log com1 rtcm1084b ontime 1
+Aug 10 14:18:39 BeagleBone start_gnss.sh[1276]: [2026-08-10 08:48:39] Sent config to base: log com1 rtcm1094b ontime 1
+Aug 10 14:18:39 BeagleBone start_gnss.sh[1276]: [2026-08-10 08:48:39] Sent config to base: log com1 rtcm1114b ontime 1
+Aug 10 14:18:39 BeagleBone start_gnss.sh[1276]: [2026-08-10 08:48:39] Sent config to base: log com1 rtcm1124b ontime 1
+Aug 10 14:18:39 BeagleBone start_gnss.sh[1276]: [2026-08-10 08:48:39] Sent config to base: log com1 rtcm1005b ontime 5
+Aug 10 14:18:40 BeagleBone start_gnss.sh[1276]: [2026-08-10 08:48:40] Sent config to base: log com1 rtcm1033b ontime 10
+Aug 10 14:18:40 BeagleBone start_gnss.sh[1276]: [2026-08-10 08:48:40] Sent config to base: log com1 gpgga ontime 1
+Aug 10 14:18:40 BeagleBone start_gnss.sh[1276]: [2026-08-10 08:48:40] Sent config to base: saveconfig
+Aug 10 14:18:40 BeagleBone start_gnss.sh[1276]: [2026-08-10 08:48:40] Sent config to base:
+Aug 10 14:18:51 BeagleBone start_gnss.sh[1276]: [2026-08-10 08:48:51] SOURCE rejected by server: ERROR unknown mount
+Aug 10 14:18:51 BeagleBone start_gnss.sh[1276]: [2026-08-10 08:48:51] Base error: SOURCE rejected: ERROR unknown mount
+Aug 10 14:18:51 BeagleBone start_gnss.sh[1276]: [DBG][STATCODE] sending STATCODE,7 (connected=true)
+Aug 10 14:18:51 BeagleBone start_gnss.sh[1276]: CMD 1 : $STATCODE,7
+Aug 10 14:18:51 BeagleBone start_gnss.sh[1276]: [DBG][TCP] RLY <- $1000
+Aug 10 14:18:51 BeagleBone start_gnss.sh[1276]: RLY 1 : $1000
+Aug 10 14:18:51 BeagleBone start_gnss.sh[1276]: java.io.IOException: SOURCE rejected: ERROR unknown mount
+Aug 10 14:18:51 BeagleBone start_gnss.sh[1276]:         at com.encr.gnss_rover_base.base.Base.startBase(Base.java:227)
+Aug 10 14:18:51 BeagleBone start_gnss.sh[1276]:         at com.encr.gnss_rover_base.MainController.lambda$startBase$0(MainController.java:440)
+Aug 10 14:18:51 BeagleBone start_gnss.sh[1276]:         at java.base/java.lang.Thread.run(Thread.java:840)
+Aug 10 14:18:51 BeagleBone start_gnss.sh[1276]: [2026-08-10 08:48:51] Reconnecting in 1000 ms
+Aug 10 14:18:52 BeagleBone start_gnss.sh[1276]: [DBG][STATCODE] sending STATCODE,5 (connected=true)
+Aug 10 14:18:52 BeagleBone start_gnss.sh[1276]: CMD 1 : $STATCODE,5
+Aug 10 14:18:52 BeagleBone start_gnss.sh[1276]: [DBG][TCP] RLY <- $1000
+Aug 10 14:18:52 BeagleBone start_gnss.sh[1276]: RLY 1 : $1000
+Aug 10 14:18:52 BeagleBone start_gnss.sh[1276]: [DBG][Base] connecting: receiver=192.168.10.100:2000 NTRIP=122.15.209.75:7000
+Aug 10 14:18:52 BeagleBone start_gnss.sh[1276]: [2026-08-10 08:48:52] Connected to server NTRIP
+Aug 10 14:18:52 BeagleBone start_gnss.sh[1276]: [2026-08-10 08:48:52] Connected to base GNSS 192.168.10.100:2000
+Aug 10 14:18:54 BeagleBone start_gnss.sh[1276]: [2026-08-10 08:48:54] Sent reset command to Base
+Aug 10 14:19:04 BeagleBone start_gnss.sh[1276]: CMD 1 : $WATCHDOG,"ENABLE"
+Aug 10 14:19:04 BeagleBone start_gnss.sh[1276]: [DBG][TCP] RLY <- $1000
+Aug 10 14:19:04 BeagleBone start_gnss.sh[1276]: RLY 1 : $1000
+Aug 10 14:19:04 BeagleBone start_gnss.sh[1276]: Reply: $1000
+Aug 10 14:19:05 BeagleBone start_gnss.sh[1276]: [2026-08-10 08:49:05] Sent config to base: unlogall
+Aug 10 14:19:05 BeagleBone start_gnss.sh[1276]: [2026-08-10 08:49:05] Sent config to base: FIX position 26.83602570 80.89195486 138.8682
+Aug 10 14:19:05 BeagleBone start_gnss.sh[1276]: [2026-08-10 08:49:05] Sent config to base: log com1 rtcm1074b ontime 1
+Aug 10 14:19:05 BeagleBone start_gnss.sh[1276]: [2026-08-10 08:49:05] Sent config to base: log com1 rtcm1084b ontime 1
+Aug 10 14:19:06 BeagleBone start_gnss.sh[1276]: [2026-08-10 08:49:06] Sent config to base: log com1 rtcm1094b ontime 1
+Aug 10 14:19:06 BeagleBone start_gnss.sh[1276]: [2026-08-10 08:49:06] Sent config to base: log com1 rtcm1114b ontime 1
+Aug 10 14:19:06 BeagleBone start_gnss.sh[1276]: [2026-08-10 08:49:06] Sent config to base: log com1 rtcm1124b ontime 1
+Aug 10 14:19:06 BeagleBone start_gnss.sh[1276]: [2026-08-10 08:49:06] Sent config to base: log com1 rtcm1005b ontime 5
+Aug 10 14:19:07 BeagleBone start_gnss.sh[1276]: [2026-08-10 08:49:07] Sent config to base: log com1 rtcm1033b ontime 10
+Aug 10 14:19:07 BeagleBone start_gnss.sh[1276]: [2026-08-10 08:49:07] Sent config to base: log com1 gpgga ontime 1
+Aug 10 14:19:07 BeagleBone start_gnss.sh[1276]: [2026-08-10 08:49:07] Sent config to base: saveconfig
+Aug 10 14:19:07 BeagleBone start_gnss.sh[1276]: [2026-08-10 08:49:07] Sent config to base:
+Aug 10 14:19:18 BeagleBone start_gnss.sh[1276]: [2026-08-10 08:49:18] SOURCE rejected by server: ERROR unknown mount
+Aug 10 14:19:18 BeagleBone start_gnss.sh[1276]: [2026-08-10 08:49:18] Base error: SOURCE rejected: ERROR unknown mount
+Aug 10 14:19:18 BeagleBone start_gnss.sh[1276]: [DBG][STATCODE] sending STATCODE,7 (connected=true)
+Aug 10 14:19:18 BeagleBone start_gnss.sh[1276]: CMD 1 : $STATCODE,7
+Aug 10 14:19:18 BeagleBone start_gnss.sh[1276]: [DBG][TCP] RLY <- $1000
+Aug 10 14:19:18 BeagleBone start_gnss.sh[1276]: RLY 1 : $1000
+Aug 10 14:19:18 BeagleBone start_gnss.sh[1276]: java.io.IOException: SOURCE rejected: ERROR unknown mount
+Aug 10 14:19:18 BeagleBone start_gnss.sh[1276]:         at com.encr.gnss_rover_base.base.Base.startBase(Base.java:227)
+Aug 10 14:19:18 BeagleBone start_gnss.sh[1276]:         at com.encr.gnss_rover_base.MainController.lambda$startBase$0(MainController.java:440)
+Aug 10 14:19:18 BeagleBone start_gnss.sh[1276]:         at java.base/java.lang.Thread.run(Thread.java:840)
+Aug 10 14:19:18 BeagleBone start_gnss.sh[1276]: [2026-08-10 08:49:18] Reconnecting in 1000 ms
+Aug 10 14:19:19 BeagleBone start_gnss.sh[1276]: [DBG][STATCODE] sending STATCODE,5 (connected=true)
+Aug 10 14:19:19 BeagleBone start_gnss.sh[1276]: CMD 1 : $STATCODE,5
+Aug 10 14:19:19 BeagleBone start_gnss.sh[1276]: [DBG][TCP] RLY <- $1000
+Aug 10 14:19:19 BeagleBone start_gnss.sh[1276]: RLY 1 : $1000
+Aug 10 14:19:19 BeagleBone start_gnss.sh[1276]: [DBG][Base] connecting: receiver=192.168.10.100:2000 NTRIP=122.15.209.75:7000
+Aug 10 14:19:19 BeagleBone start_gnss.sh[1276]: [2026-08-10 08:49:19] Connected to server NTRIP
+Aug 10 14:19:19 BeagleBone start_gnss.sh[1276]: [2026-08-10 08:49:19] Connected to base GNSS 192.168.10.100:2000
+Aug 10 14:19:21 BeagleBone start_gnss.sh[1276]: [2026-08-10 08:49:21] Sent reset command to Base
+Aug 10 14:19:32 BeagleBone start_gnss.sh[1276]: [2026-08-10 08:49:32] Sent config to base: unlogall
+Aug 10 14:19:32 BeagleBone start_gnss.sh[1276]: [2026-08-10 08:49:32] Sent config to base: FIX position 26.83602570 80.89195486 138.8682
+Aug 10 14:19:32 BeagleBone start_gnss.sh[1276]: [2026-08-10 08:49:32] Sent config to base: log com1 rtcm1074b ontime 1
+Aug 10 14:19:32 BeagleBone start_gnss.sh[1276]: [2026-08-10 08:49:32] Sent config to base: log com1 rtcm1084b ontime 1
+Aug 10 14:19:33 BeagleBone start_gnss.sh[1276]: [2026-08-10 08:49:33] Sent config to base: log com1 rtcm1094b ontime 1
+Aug 10 14:19:33 BeagleBone start_gnss.sh[1276]: [2026-08-10 08:49:33] Sent config to base: log com1 rtcm1114b ontime 1
+Aug 10 14:19:33 BeagleBone start_gnss.sh[1276]: [2026-08-10 08:49:33] Sent config to base: log com1 rtcm1124b ontime 1
+Aug 10 14:19:33 BeagleBone start_gnss.sh[1276]: [2026-08-10 08:49:33] Sent config to base: log com1 rtcm1005b ontime 5
+Aug 10 14:19:34 BeagleBone start_gnss.sh[1276]: [2026-08-10 08:49:34] Sent config to base: log com1 rtcm1033b ontime 10
+Aug 10 14:19:34 BeagleBone start_gnss.sh[1276]: CMD 1 : $WATCHDOG,"ENABLE"
+Aug 10 14:19:34 BeagleBone start_gnss.sh[1276]: [DBG][TCP] RLY <- $1000
+Aug 10 14:19:34 BeagleBone start_gnss.sh[1276]: RLY 1 : $1000
+Aug 10 14:19:34 BeagleBone start_gnss.sh[1276]: Reply: $1000
+Aug 10 14:19:34 BeagleBone start_gnss.sh[1276]: [2026-08-10 08:49:34] Sent config to base: log com1 gpgga ontime 1
+Aug 10 14:19:34 BeagleBone start_gnss.sh[1276]: [2026-08-10 08:49:34] Sent config to base: saveconfig
+Aug 10 14:19:34 BeagleBone start_gnss.sh[1276]: [2026-08-10 08:49:34] Sent config to base:
+Aug 10 14:19:45 BeagleBone start_gnss.sh[1276]: [2026-08-10 08:49:45] SOURCE rejected by server: ERROR unknown mount
+Aug 10 14:19:45 BeagleBone start_gnss.sh[1276]: [2026-08-10 08:49:45] Base error: SOURCE rejected: ERROR unknown mount
+Aug 10 14:19:45 BeagleBone start_gnss.sh[1276]: [DBG][STATCODE] sending STATCODE,7 (connected=true)
+Aug 10 14:19:45 BeagleBone start_gnss.sh[1276]: CMD 1 : $STATCODE,7
+Aug 10 14:19:45 BeagleBone start_gnss.sh[1276]: [DBG][TCP] RLY <- $1000
+Aug 10 14:19:45 BeagleBone start_gnss.sh[1276]: RLY 1 : $1000
+Aug 10 14:19:45 BeagleBone start_gnss.sh[1276]: java.io.IOException: SOURCE rejected: ERROR unknown mount
+Aug 10 14:19:45 BeagleBone start_gnss.sh[1276]:         at com.encr.gnss_rover_base.base.Base.startBase(Base.java:227)
+Aug 10 14:19:45 BeagleBone start_gnss.sh[1276]:         at com.encr.gnss_rover_base.MainController.lambda$startBase$0(MainController.java:440)
+Aug 10 14:19:45 BeagleBone start_gnss.sh[1276]:         at java.base/java.lang.Thread.run(Thread.java:840)
+Aug 10 14:19:45 BeagleBone start_gnss.sh[1276]: [2026-08-10 08:49:45] Reconnecting in 1000 ms
+Aug 10 14:19:46 BeagleBone start_gnss.sh[1276]: [DBG][STATCODE] sending STATCODE,5 (connected=true)
+Aug 10 14:19:46 BeagleBone start_gnss.sh[1276]: CMD 1 : $STATCODE,5
+Aug 10 14:19:46 BeagleBone start_gnss.sh[1276]: [DBG][TCP] RLY <- $1000
+Aug 10 14:19:46 BeagleBone start_gnss.sh[1276]: RLY 1 : $1000
+Aug 10 14:19:46 BeagleBone start_gnss.sh[1276]: [DBG][Base] connecting: receiver=192.168.10.100:2000 NTRIP=122.15.209.75:7000
+Aug 10 14:19:46 BeagleBone start_gnss.sh[1276]: [2026-08-10 08:49:46] Connected to server NTRIP
+Aug 10 14:19:46 BeagleBone start_gnss.sh[1276]: [2026-08-10 08:49:46] Connected to base GNSS 192.168.10.100:2000
+Aug 10 14:19:48 BeagleBone start_gnss.sh[1276]: [2026-08-10 08:49:48] Sent reset command to Base
+Aug 10 14:19:59 BeagleBone start_gnss.sh[1276]: [2026-08-10 08:49:59] Sent config to base: unlogall
+Aug 10 14:19:59 BeagleBone start_gnss.sh[1276]: [2026-08-10 08:49:59] Sent config to base: FIX position 26.83602570 80.89195486 138.8682
+Aug 10 14:19:59 BeagleBone start_gnss.sh[1276]: [2026-08-10 08:49:59] Sent config to base: log com1 rtcm1074b ontime 1
+Aug 10 14:19:59 BeagleBone start_gnss.sh[1276]: [2026-08-10 08:49:59] Sent config to base: log com1 rtcm1084b ontime 1
+Aug 10 14:20:00 BeagleBone start_gnss.sh[1276]: [2026-08-10 08:50:00] Sent config to base: log com1 rtcm1094b ontime 1
+Aug 10 14:20:00 BeagleBone start_gnss.sh[1276]: [2026-08-10 08:50:00] Sent config to base: log com1 rtcm1114b ontime 1
+Aug 10 14:20:00 BeagleBone start_gnss.sh[1276]: [2026-08-10 08:50:00] Sent config to base: log com1 rtcm1124b ontime 1
+Aug 10 14:20:00 BeagleBone start_gnss.sh[1276]: [2026-08-10 08:50:00] Sent config to base: log com1 rtcm1005b ontime 5
+Aug 10 14:20:01 BeagleBone start_gnss.sh[1276]: [2026-08-10 08:50:01] Sent config to base: log com1 rtcm1033b ontime 10
+Aug 10 14:20:01 BeagleBone start_gnss.sh[1276]: [2026-08-10 08:50:01] Sent config to base: log com1 gpgga ontime 1
+Aug 10 14:20:01 BeagleBone start_gnss.sh[1276]: [2026-08-10 08:50:01] Sent config to base: saveconfig
+Aug 10 14:20:01 BeagleBone start_gnss.sh[1276]: [2026-08-10 08:50:01] Sent config to base:
+Aug 10 14:20:04 BeagleBone start_gnss.sh[1276]: CMD 1 : $WATCHDOG,"ENABLE"
+Aug 10 14:20:04 BeagleBone start_gnss.sh[1276]: [DBG][TCP] RLY <- $1000
+Aug 10 14:20:04 BeagleBone start_gnss.sh[1276]: RLY 1 : $1000
+Aug 10 14:20:04 BeagleBone start_gnss.sh[1276]: Reply: $1000
+Aug 10 14:20:12 BeagleBone start_gnss.sh[1276]: [2026-08-10 08:50:12] SOURCE rejected by server: ERROR unknown mount
+Aug 10 14:20:12 BeagleBone start_gnss.sh[1276]: [2026-08-10 08:50:12] Base error: SOURCE rejected: ERROR unknown mount
+Aug 10 14:20:12 BeagleBone start_gnss.sh[1276]: [DBG][STATCODE] sending STATCODE,7 (connected=true)
+Aug 10 14:20:12 BeagleBone start_gnss.sh[1276]: CMD 1 : $STATCODE,7
+Aug 10 14:20:12 BeagleBone start_gnss.sh[1276]: [DBG][TCP] RLY <- $1000
+Aug 10 14:20:12 BeagleBone start_gnss.sh[1276]: RLY 1 : $1000
+Aug 10 14:20:12 BeagleBone start_gnss.sh[1276]: java.io.IOException: SOURCE rejected: ERROR unknown mount
+Aug 10 14:20:12 BeagleBone start_gnss.sh[1276]:         at com.encr.gnss_rover_base.base.Base.startBase(Base.java:227)
+Aug 10 14:20:12 BeagleBone start_gnss.sh[1276]:         at com.encr.gnss_rover_base.MainController.lambda$startBase$0(MainController.java:440)
+Aug 10 14:20:12 BeagleBone start_gnss.sh[1276]:         at java.base/java.lang.Thread.run(Thread.java:840)
+Aug 10 14:20:12 BeagleBone start_gnss.sh[1276]: [2026-08-10 08:50:12] Reconnecting in 1000 ms
+Aug 10 14:20:13 BeagleBone start_gnss.sh[1276]: [DBG][STATCODE] sending STATCODE,5 (connected=true)
+Aug 10 14:20:13 BeagleBone start_gnss.sh[1276]: CMD 1 : $STATCODE,5
+Aug 10 14:20:13 BeagleBone start_gnss.sh[1276]: [DBG][TCP] RLY <- $1000
+Aug 10 14:20:13 BeagleBone start_gnss.sh[1276]: RLY 1 : $1000
+Aug 10 14:20:13 BeagleBone start_gnss.sh[1276]: [DBG][Base] connecting: receiver=192.168.10.100:2000 NTRIP=122.15.209.75:7000
+Aug 10 14:20:13 BeagleBone start_gnss.sh[1276]: [2026-08-10 08:50:13] Connected to server NTRIP
+Aug 10 14:20:13 BeagleBone start_gnss.sh[1276]: [2026-08-10 08:50:13] Connected to base GNSS 192.168.10.100:2000
+Aug 10 14:20:15 BeagleBone start_gnss.sh[1276]: [2026-08-10 08:50:15] Sent reset command to Base
+Aug 10 14:20:25 BeagleBone start_gnss.sh[1276]: [2026-08-10 08:50:25] Sent config to base: unlogall
+Aug 10 14:20:26 BeagleBone start_gnss.sh[1276]: [2026-08-10 08:50:26] Sent config to base: FIX position 26.83602570 80.89195486 138.8682
+Aug 10 14:20:26 BeagleBone start_gnss.sh[1276]: [2026-08-10 08:50:26] Sent config to base: log com1 rtcm1074b ontime 1
+Aug 10 14:20:26 BeagleBone start_gnss.sh[1276]: [2026-08-10 08:50:26] Sent config to base: log com1 rtcm1084b ontime 1
+Aug 10 14:20:27 BeagleBone start_gnss.sh[1276]: [2026-08-10 08:50:26] Sent config to base: log com1 rtcm1094b ontime 1
+Aug 10 14:20:27 BeagleBone start_gnss.sh[1276]: [2026-08-10 08:50:27] Sent config to base: log com1 rtcm1114b ontime 1
+Aug 10 14:20:27 BeagleBone start_gnss.sh[1276]: [2026-08-10 08:50:27] Sent config to base: log com1 rtcm1124b ontime 1
+Aug 10 14:20:27 BeagleBone start_gnss.sh[1276]: [2026-08-10 08:50:27] Sent config to base: log com1 rtcm1005b ontime 5
+Aug 10 14:20:28 BeagleBone start_gnss.sh[1276]: [2026-08-10 08:50:28] Sent config to base: log com1 rtcm1033b ontime 10
+Aug 10 14:20:28 BeagleBone start_gnss.sh[1276]: [2026-08-10 08:50:28] Sent config to base: log com1 gpgga ontime 1
+Aug 10 14:20:28 BeagleBone start_gnss.sh[1276]: [2026-08-10 08:50:28] Sent config to base: saveconfig
+Aug 10 14:20:28 BeagleBone start_gnss.sh[1276]: [2026-08-10 08:50:28] Sent config to base:
+Aug 10 14:20:34 BeagleBone start_gnss.sh[1276]: CMD 1 : $WATCHDOG,"ENABLE"
+Aug 10 14:20:34 BeagleBone start_gnss.sh[1276]: [DBG][TCP] RLY <- $1000
+Aug 10 14:20:34 BeagleBone start_gnss.sh[1276]: RLY 1 : $1000
+Aug 10 14:20:34 BeagleBone start_gnss.sh[1276]: Reply: $1000
+Aug 10 14:20:39 BeagleBone start_gnss.sh[1276]: [2026-08-10 08:50:39] SOURCE rejected by server: ERROR unknown mount
+Aug 10 14:20:39 BeagleBone start_gnss.sh[1276]: [2026-08-10 08:50:39] Base error: SOURCE rejected: ERROR unknown mount
+Aug 10 14:20:39 BeagleBone start_gnss.sh[1276]: [DBG][STATCODE] sending STATCODE,7 (connected=true)
+Aug 10 14:20:39 BeagleBone start_gnss.sh[1276]: CMD 1 : $STATCODE,7
+Aug 10 14:20:39 BeagleBone start_gnss.sh[1276]: [DBG][TCP] RLY <- $1000
+Aug 10 14:20:39 BeagleBone start_gnss.sh[1276]: RLY 1 : $1000
+Aug 10 14:20:39 BeagleBone start_gnss.sh[1276]: java.io.IOException: SOURCE rejected: ERROR unknown mount
+Aug 10 14:20:39 BeagleBone start_gnss.sh[1276]:         at com.encr.gnss_rover_base.base.Base.startBase(Base.java:227)
+Aug 10 14:20:39 BeagleBone start_gnss.sh[1276]:         at com.encr.gnss_rover_base.MainController.lambda$startBase$0(MainController.java:440)
+Aug 10 14:20:39 BeagleBone start_gnss.sh[1276]:         at java.base/java.lang.Thread.run(Thread.java:840)
+Aug 10 14:20:39 BeagleBone start_gnss.sh[1276]: [2026-08-10 08:50:39] Reconnecting in 1000 ms
+Aug 10 14:20:40 BeagleBone start_gnss.sh[1276]: [DBG][STATCODE] sending STATCODE,5 (connected=true)
+Aug 10 14:20:40 BeagleBone start_gnss.sh[1276]: CMD 1 : $STATCODE,5
+Aug 10 14:20:40 BeagleBone start_gnss.sh[1276]: [DBG][TCP] RLY <- $1000
+Aug 10 14:20:40 BeagleBone start_gnss.sh[1276]: RLY 1 : $1000
+Aug 10 14:20:40 BeagleBone start_gnss.sh[1276]: [DBG][Base] connecting: receiver=192.168.10.100:2000 NTRIP=122.15.209.75:7000
+Aug 10 14:20:40 BeagleBone start_gnss.sh[1276]: [2026-08-10 08:50:40] Connected to server NTRIP
+Aug 10 14:20:40 BeagleBone start_gnss.sh[1276]: [2026-08-10 08:50:40] Connected to base GNSS 192.168.10.100:2000
+Aug 10 14:20:42 BeagleBone start_gnss.sh[1276]: [2026-08-10 08:50:42] Sent reset command to Base
+Aug 10 14:20:52 BeagleBone start_gnss.sh[1276]: [2026-08-10 08:50:52] Sent config to base: unlogall
+Aug 10 14:20:53 BeagleBone start_gnss.sh[1276]: [2026-08-10 08:50:53] Sent config to base: FIX position 26.83602570 80.89195486 138.8682
+Aug 10 14:20:53 BeagleBone start_gnss.sh[1276]: [2026-08-10 08:50:53] Sent config to base: log com1 rtcm1074b ontime 1
+Aug 10 14:20:53 BeagleBone start_gnss.sh[1276]: [2026-08-10 08:50:53] Sent config to base: log com1 rtcm1084b ontime 1
+Aug 10 14:20:53 BeagleBone start_gnss.sh[1276]: [2026-08-10 08:50:53] Sent config to base: log com1 rtcm1094b ontime 1
+Aug 10 14:20:54 BeagleBone start_gnss.sh[1276]: [2026-08-10 08:50:54] Sent config to base: log com1 rtcm1114b ontime 1
+Aug 10 14:20:54 BeagleBone start_gnss.sh[1276]: [2026-08-10 08:50:54] Sent config to base: log com1 rtcm1124b ontime 1
+Aug 10 14:20:54 BeagleBone start_gnss.sh[1276]: [2026-08-10 08:50:54] Sent config to base: log com1 rtcm1005b ontime 5
+Aug 10 14:20:55 BeagleBone start_gnss.sh[1276]: [2026-08-10 08:50:55] Sent config to base: log com1 rtcm1033b ontime 10
+Aug 10 14:20:55 BeagleBone start_gnss.sh[1276]: [2026-08-10 08:50:55] Sent config to base: log com1 gpgga ontime 1
+Aug 10 14:20:55 BeagleBone start_gnss.sh[1276]: [2026-08-10 08:50:55] Sent config to base: saveconfig
+Aug 10 14:20:55 BeagleBone start_gnss.sh[1276]: [2026-08-10 08:50:55] Sent config to base:
+Aug 10 14:21:04 BeagleBone start_gnss.sh[1276]: CMD 1 : $WATCHDOG,"ENABLE"
+Aug 10 14:21:04 BeagleBone start_gnss.sh[1276]: [DBG][TCP] RLY <- $1000
+Aug 10 14:21:04 BeagleBone start_gnss.sh[1276]: RLY 1 : $1000
+Aug 10 14:21:04 BeagleBone start_gnss.sh[1276]: Reply: $1000
+Aug 10 14:21:05 BeagleBone start_gnss.sh[1276]: [2026-08-10 08:51:05] SOURCE rejected by server: ERROR unknown mount
+Aug 10 14:21:05 BeagleBone start_gnss.sh[1276]: [2026-08-10 08:51:05] Base error: SOURCE rejected: ERROR unknown mount
+Aug 10 14:21:05 BeagleBone start_gnss.sh[1276]: [DBG][STATCODE] sending STATCODE,7 (connected=true)
+Aug 10 14:21:06 BeagleBone start_gnss.sh[1276]: CMD 1 : $STATCODE,7
+Aug 10 14:21:06 BeagleBone start_gnss.sh[1276]: [DBG][TCP] RLY <- $1000
+Aug 10 14:21:06 BeagleBone start_gnss.sh[1276]: RLY 1 : $1000
+Aug 10 14:21:06 BeagleBone start_gnss.sh[1276]: java.io.IOException: SOURCE rejected: ERROR unknown mount
+Aug 10 14:21:06 BeagleBone start_gnss.sh[1276]:         at com.encr.gnss_rover_base.base.Base.startBase(Base.java:227)
+Aug 10 14:21:06 BeagleBone start_gnss.sh[1276]:         at com.encr.gnss_rover_base.MainController.lambda$startBase$0(MainController.java:440)
+Aug 10 14:21:06 BeagleBone start_gnss.sh[1276]:         at java.base/java.lang.Thread.run(Thread.java:840)
+Aug 10 14:21:06 BeagleBone start_gnss.sh[1276]: [2026-08-10 08:51:06] Reconnecting in 1000 ms
+Aug 10 14:21:07 BeagleBone start_gnss.sh[1276]: [DBG][STATCODE] sending STATCODE,5 (connected=true)
+Aug 10 14:21:07 BeagleBone start_gnss.sh[1276]: CMD 1 : $STATCODE,5
+Aug 10 14:21:07 BeagleBone start_gnss.sh[1276]: [DBG][TCP] RLY <- $1000
+Aug 10 14:21:07 BeagleBone start_gnss.sh[1276]: RLY 1 : $1000
+Aug 10 14:21:07 BeagleBone start_gnss.sh[1276]: [DBG][Base] connecting: receiver=192.168.10.100:2000 NTRIP=122.15.209.75:7000
+Aug 10 14:21:07 BeagleBone start_gnss.sh[1276]: [2026-08-10 08:51:07] Connected to server NTRIP
+Aug 10 14:21:07 BeagleBone start_gnss.sh[1276]: [2026-08-10 08:51:07] Connected to base GNSS 192.168.10.100:2000
+Aug 10 14:21:09 BeagleBone start_gnss.sh[1276]: [2026-08-10 08:51:09] Sent reset command to Base
+Aug 10 14:21:19 BeagleBone start_gnss.sh[1276]: [2026-08-10 08:51:19] Sent config to base: unlogall
+Aug 10 14:21:20 BeagleBone start_gnss.sh[1276]: [2026-08-10 08:51:20] Sent config to base: FIX position 26.83602570 80.89195486 138.8682
+Aug 10 14:21:20 BeagleBone start_gnss.sh[1276]: [2026-08-10 08:51:20] Sent config to base: log com1 rtcm1074b ontime 1
+Aug 10 14:21:20 BeagleBone start_gnss.sh[1276]: [2026-08-10 08:51:20] Sent config to base: log com1 rtcm1084b ontime 1
+Aug 10 14:21:20 BeagleBone start_gnss.sh[1276]: [2026-08-10 08:51:20] Sent config to base: log com1 rtcm1094b ontime 1
+Aug 10 14:21:21 BeagleBone start_gnss.sh[1276]: [2026-08-10 08:51:21] Sent config to base: log com1 rtcm1114b ontime 1
+Aug 10 14:21:21 BeagleBone start_gnss.sh[1276]: [2026-08-10 08:51:21] Sent config to base: log com1 rtcm1124b ontime 1
+Aug 10 14:21:21 BeagleBone start_gnss.sh[1276]: [2026-08-10 08:51:21] Sent config to base: log com1 rtcm1005b ontime 5
+Aug 10 14:21:21 BeagleBone start_gnss.sh[1276]: [2026-08-10 08:51:21] Sent config to base: log com1 rtcm1033b ontime 10
+Aug 10 14:21:22 BeagleBone start_gnss.sh[1276]: [2026-08-10 08:51:22] Sent config to base: log com1 gpgga ontime 1
+Aug 10 14:21:22 BeagleBone start_gnss.sh[1276]: [2026-08-10 08:51:22] Sent config to base: saveconfig
+Aug 10 14:21:22 BeagleBone start_gnss.sh[1276]: [2026-08-10 08:51:22] Sent config to base:

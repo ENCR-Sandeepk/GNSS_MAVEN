@@ -1,0 +1,47 @@
+=== FILE TYPE ===
+/home/debian/beagle_capture_20260810_142109/binaries/quectel_check: ELF 64-bit LSB pie executable, ARM aarch64, version 1 (SYSV), dynamically linked, interpreter /lib/ld-linux-aarch64.so.1, BuildID[sha1]=ed3b6f0b01622ff60553ddef803071299da2c1a2, for GNU/Linux 3.7.0, not stripped
+
+=== FUNCTION SYMBOLS ===
+                 w _ITM_deregisterTMCloneTable
+                 w _ITM_registerTMCloneTable
+                 w __cxa_finalize@GLIBC_2.17
+0000000000000c40 t __do_global_dtors_aux
+                 w __gmon_start__
+000000000000116c T _fini
+00000000000009c0 T _init
+0000000000000b80 T _start
+0000000000000bb4 t call_weak_fn
+00000000000200b8 W data_start
+0000000000000bd0 t deregister_tm_clones
+0000000000000ef4 T find_first_ttyusb
+0000000000000c90 t frame_dummy
+0000000000000ea4 T iface_exists
+0000000000000ecc T iface_has_ip
+0000000000000f64 T main
+0000000000000c00 t register_tm_clones
+0000000000000d68 T send_at
+0000000000000c94 T setup_serial
+
+=== INTERESTING STRINGS ===
+%s already has IP
+%s not found
+/dev/ttyUSB%d
+AT+QNETDEVCTL=1,1,1
+ERROR
+First ttyUSB port: %s
+IP not received on %s
+IP received on %s
+No ttyUSB port found
+crtstuff.c
+dhclient -r eth2 >/dev/null 2>&1
+dhclient eth2 >/dev/null 2>&1
+eth2
+find_first_ttyusb
+ip -4 addr show eth2 | grep -q 'inet '
+ip link set eth2 up >/dev/null 2>&1
+ip link show eth2 >/dev/null 2>&1
+open
+open@GLIBC_2.17
+perror
+perror@GLIBC_2.17
+quectel_check.c

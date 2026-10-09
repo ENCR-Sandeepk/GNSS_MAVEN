@@ -1,0 +1,19 @@
+[Unit]
+Description=GNSS GPIO Service
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+ExecStart=/opt/gnss/gnss_gpio
+WorkingDirectory=/opt/gnss
+Restart=always
+RestartSec=5
+User=root
+
+# Optional: logs ko journalctl me bhejne ke liye
+# StandardOutput=journal
+# StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

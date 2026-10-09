@@ -1,0 +1,95 @@
+=== FILE TYPE ===
+/home/debian/beagle_capture_20260810_142109/binaries/gnss_gui_server: ELF 64-bit LSB pie executable, ARM aarch64, version 1 (SYSV), dynamically linked, interpreter /lib/ld-linux-aarch64.so.1, BuildID[sha1]=78b2c23e124de7700a1ff6c6bec01817293d5b77, for GNU/Linux 3.7.0, not stripped
+
+=== FUNCTION SYMBOLS ===
+                 w _ITM_deregisterTMCloneTable
+                 w _ITM_registerTMCloneTable
+                 w __cxa_finalize@GLIBC_2.17
+0000000000001540 t __do_global_dtors_aux
+                 w __gmon_start__
+00000000000042fc T _fini
+00000000000010d0 T _init
+0000000000001480 T _start
+0000000000001594 T base64_decode
+00000000000016a0 T base64_encode
+00000000000014b4 t call_weak_fn
+0000000000001d68 T check_basic_auth
+0000000000002748 T cleanup_old_logs
+000000000000404c T client_thread_func
+0000000000001954 T compute_signature
+00000000000201a8 W data_start
+00000000000014d0 t deregister_tm_clones
+0000000000001a48 T encrypt_and_save_serial
+0000000000002b6c T ensure_dir
+0000000000001590 t frame_dummy
+00000000000026d4 T get_daily_log_filename
+0000000000002c88 T get_timestamp
+0000000000003618 T handle_client
+0000000000003270 T handle_post
+0000000000001d4c T is_serial_locked
+0000000000002178 T list_log_files
+0000000000001b20 T load_and_decrypt_serial
+0000000000004080 T main
+0000000000002ed8 T read_file_to_buffer
+0000000000001500 t register_tm_clones
+0000000000003180 T save_to_file
+0000000000001e98 T send_auth_required
+0000000000001edc T serve_admin_page
+0000000000002fe0 T serve_index
+00000000000030b0 T serve_logs
+0000000000001f68 T serve_serial
+0000000000002cfc T urldecode
+0000000000002080 T view_log_file
+0000000000002ad8 T write_log
+00000000000018ac T xor_encrypt_decrypt
+
+=== INTERESTING STRINGS ===
+%Y-%m-%d %H:%M:%S
+%s%s
+%s:%08X
+%s:%s
+%s:2000
+./gnss/config/ip_port.txt
+./gnss/config/ipport.txt
+./gnss/logs/server_log_%Y-%m-%d.txt
+/save_ipport
+<!DOCTYPE html><html><head><meta charset='utf-8'><meta name='viewport' content='width=device-width,initial-scale=1'><title>Admin - Serial Number</title><style>body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;background:#f0f2f5;display:flex;justify-content:center;align-items:center;min-height:100vh;margin:0;}.card{background:white;border-radius:12px;box-shadow:0 4px 20px rgba(0,0,0,0.1);padding:40px;max-width:480px;width:90%;}h1{color:#333;font-size:22px;margin-bottom:8px;}.subtitle{color:#888;font-size:13px;margin-bottom:24px;}label{display:block;font-weight:600;color:#555;margin-bottom:6px;font-size:14px;}input[type=text]{width:100%;padding:12px;border:2px solid #ddd;border-radius:8px;font-size:16px;transition:border-color 0.2s;box-sizing:border-box;}input[type=text]:focus{border-color:#667eea;outline:none;}input:disabled{background:#f5f5f5;color:#999;cursor:not-allowed;}.btn{background:#667eea;color:white;border:none;padding:12px 28px;border-radius:8px;font-size:15px;cursor:pointer;margin-top:16px;width:100%;font-weight:600;}.btn:hover{background:#5a6fd6;}.btn:disabled{background:#ccc;cursor:not-allowed;}.status{margin-top:16px;padding:12px;border-radius:8px;font-size:14px;display:none;}.status.ok{background:#d4edda;color:#155724;display:block;}.status.err{background:#f8d7da;color:#721c24;display:block;}.status.warn{background:#fff3cd;color:#856404;display:block;}.current{background:#e8f4fd;padding:12px;border-radius:8px;margin-bottom:20px;font-size:14px;color:#0c5460;}.locked-badge{display:inline-block;background:#dc3545;color:white;padding:3px 10px;border-radius:12px;font-size:11px;font-weight:700;margin-left:8px;vertical-align:middle;}.unlocked-badge{display:inline-block;background:#28a745;color:white;padding:3px 10px;border-radius:12px;font-size:11px;font-weight:700;margin-left:8px;vertical-align:middle;}</style></head><body><div class='card'><h1>Device Serial Number <span id='badge'></span></h1><p class='subtitle'>Admin access only &mdash; not visible to device users</p><div class='current' id='cur'>Loading...</div><form id='frm'><label for='sn'>Serial Number</label><input type='text' id='sn' name='serial' placeholder='e.g. GNSS-RB-20260001' required maxlength='64'/><button class='btn' id='sbtn' type='submit'>Save Serial Number</button></form><div class='status' id='st'></div></div><script>var isLocked=false;function load(){fetch('/load_serial').then(r=>{if(r.status===200)return r.text();if(r.status===409)return r.text().then(t=>{throw{type:'tamper',msg:t}});throw{type:'none'};}).then(t=>{var s=t.trim();document.getElementById('cur').textContent='Current: '+s;document.getElementById('sn').value=s;isLocked=true;lockForm();}).catch(e=>{if(e&&e.type==='tamper'){document.getElementById('cur').innerHTML='<b style=color:red>WARNING: Serial file has been tampered with!</b>';document.getElementById('badge').innerHTML='<span class=locked-badge>TAMPERED</span>';document.getElementById('sn').disabled=true;document.getElementById('sbtn').disabled=true;}else{document.getElementById('cur').textContent='No serial number set yet.';document.getElementById('badge').innerHTML='<span class=unlocked-badge>OPEN</span>';}});}function lockForm(){document.getElementById('sn').disabled=true;document.getElementById('sbtn').disabled=true;document.getElementById('sbtn').textContent='LOCKED - Cannot Change';document.getElementById('badge').innerHTML='<span class=locked-badge>LOCKED</span>';var st=document.getElementById('st');st.className='status warn';st.textContent='Serial number is permanently set and cannot be changed.';}document.getElementById('frm').onsubmit=function(e){e.preventDefault();if(isLocked)return;var s=document.getElementById('sn').value.trim();if(!s)return;document.getElementById('sbtn').disabled=true;document.getElementById('sbtn').textContent='Saving...';fetch('/save_serial',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:'serial='+encodeURIComponent(s)}).then(r=>r.text().then(t=>({ok:r.ok,status:r.status,text:t}))).then(d=>{var st=document.getElementById('st');if(d.ok){st.className='status ok';st.textContent='Serial number saved and locked permanently!';isLocked=true;lockForm();load();}else if(d.status===403){st.className='status err';st.textContent=d.text;lockForm();}else{st.className='status err';st.textContent='Error: '+d.text;document.getElementById('sbtn').disabled=false;document.getElementById('sbtn').textContent='Save Serial Number';}});};load();</script></body></html>
+<li><a href="/view?file=%s">%s</a></li>
+Accept failed
+Bind failed
+Cannot open log folder
+Content-Length: %d
+Content-Type: %s
+Error opening config file for writing
+Error: Failed to encrypt/save serial number
+Failed to create pthread
+Failed to save serial number
+HTTP/1.1 500 Internal Error
+HTTP/1.1 500 Internal Server Error
+Listen failed
+Serial number set and LOCKED: %s
+Server running on http://localhost:%d
+Socket creation failed
+TAMPERED - Serial file integrity check failed!
+UPDATED: %s
+Unsupported method
+Updated config file: %s
+[%s] %s
+client_thread_func
+crtstuff.c
+fopen
+fopen failed
+fopen@GLIBC_2.17
+listen
+listen@GLIBC_2.17
+opendir
+opendir@GLIBC_2.17
+perror
+perror@GLIBC_2.17
+pthread_create
+pthread_create@GLIBC_2.34
+pthread_detach
+pthread_detach@GLIBC_2.34
+server.c
+socket
+socket@GLIBC_2.17

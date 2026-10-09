@@ -1,0 +1,14 @@
+[Unit]
+Description=Quectel EC200U Auto Connect Check
+After=multi-user.target
+
+[Service]
+Type=simple
+ExecStart=/bin/bash -c 'while true; do /usr/local/bin/quectel_check; sleep 10; done'
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
+
+

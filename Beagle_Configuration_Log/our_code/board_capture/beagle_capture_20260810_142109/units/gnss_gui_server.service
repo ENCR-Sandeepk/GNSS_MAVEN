@@ -1,0 +1,14 @@
+[Unit]
+Description=GNSS GUI Server Service
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=/home/debian/gnss_gui_server
+WorkingDirectory=/home/debian
+Restart=always
+RestartSec=5
+User=debian
+
+[Install]
+WantedBy=multi-user.target

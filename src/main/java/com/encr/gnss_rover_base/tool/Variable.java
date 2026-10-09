@@ -45,6 +45,13 @@ public class Variable {
     public static int scan_interval_sec_in_ms = 60000;
     public static volatile boolean axis_enable = false;
     public static volatile double axis_angle_deg = 0.0;   // azimuth, degrees, CW from North
+
+    // Temperature correction settings (read from config; not yet applied to the data)
+    public static volatile boolean temp_enable = false;
+    public static volatile String structure_type = "bridge";
+    public static volatile double temp_distance_m = 0.0;       // distance from fixed bearing, metres
+    public static volatile double temp_ref_c = 0.0;            // reference temperature, deg C
+    public static volatile double temp_coeff_ppm = 0.0;        // structure thermal coefficient, PPM / deg C
     public static volatile String last_burst_record = null;
     public static volatile boolean rover_got_valid_data = false;   // true once a real RTK fix is processed this wake
     public static volatile boolean rover_baseline_just_established = false;   // set once when a FRESH baseline is computed (not loaded); triggers config-backup upload

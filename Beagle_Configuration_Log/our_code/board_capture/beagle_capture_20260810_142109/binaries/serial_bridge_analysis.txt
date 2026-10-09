@@ -1,0 +1,223 @@
+=== FILE TYPE ===
+/home/debian/beagle_capture_20260810_142109/binaries/serial_bridge: ELF 64-bit LSB executable, ARM aarch64, version 1 (SYSV), dynamically linked, interpreter /lib/ld-linux-aarch64.so.1, for GNU/Linux 3.7.0, BuildID[sha1]=e9adc09ab2dc6db3943d6e7b9c215c07eb8ceef3, with debug_info, not stripped
+
+=== FUNCTION SYMBOLS ===
+                 w _ITM_deregisterTMCloneTable
+                 w _ITM_registerTMCloneTable
+0000000000401058 t __do_global_dtors_aux
+                 w __gmon_start__
+0000000000401868 T __libc_csu_fini
+00000000004017e8 T __libc_csu_init
+000000000040186c T _fini
+0000000000400d18 T _init
+0000000000400f90 T _start
+0000000000400fd8 t call_weak_fn
+0000000000412120 W data_start
+0000000000400ff0 t deregister_tm_clones
+0000000000401088 t frame_dummy
+0000000000401250 T main
+0000000000401020 t register_tm_clones
+000000000040108c T serial_reader
+0000000000401168 T tcp_to_serial
+
+=== INTERESTING STRINGS ===
+../server.c
+.debug_line
+/beagleplay_shm
+/dev/ttyS0
+/home/niraj/eclipse-workspace/serial_bridge/Debug
+/home/niraj/linux_dev/gcc-linaro-7.5.0-2019.12-x86_64_aarch64-linux-gnu/aarch64-linux-gnu/libc/usr/include
+/home/niraj/linux_dev/gcc-linaro-7.5.0-2019.12-x86_64_aarch64-linux-gnu/aarch64-linux-gnu/libc/usr/include/arpa
+/home/niraj/linux_dev/gcc-linaro-7.5.0-2019.12-x86_64_aarch64-linux-gnu/aarch64-linux-gnu/libc/usr/include/asm
+/home/niraj/linux_dev/gcc-linaro-7.5.0-2019.12-x86_64_aarch64-linux-gnu/aarch64-linux-gnu/libc/usr/include/asm-generic
+/home/niraj/linux_dev/gcc-linaro-7.5.0-2019.12-x86_64_aarch64-linux-gnu/aarch64-linux-gnu/libc/usr/include/bits
+/home/niraj/linux_dev/gcc-linaro-7.5.0-2019.12-x86_64_aarch64-linux-gnu/aarch64-linux-gnu/libc/usr/include/bits/types
+/home/niraj/linux_dev/gcc-linaro-7.5.0-2019.12-x86_64_aarch64-linux-gnu/aarch64-linux-gnu/libc/usr/include/gnu
+/home/niraj/linux_dev/gcc-linaro-7.5.0-2019.12-x86_64_aarch64-linux-gnu/aarch64-linux-gnu/libc/usr/include/netinet
+/home/niraj/linux_dev/gcc-linaro-7.5.0-2019.12-x86_64_aarch64-linux-gnu/aarch64-linux-gnu/libc/usr/include/sys
+/home/niraj/linux_dev/gcc-linaro-7.5.0-2019.12-x86_64_aarch64-linux-gnu/bin/../aarch64-linux-gnu/libc/usr/lib/crti.o
+/home/niraj/linux_dev/gcc-linaro-7.5.0-2019.12-x86_64_aarch64-linux-gnu/bin/../aarch64-linux-gnu/libc/usr/lib/crtn.o
+/home/niraj/linux_dev/gcc-linaro-7.5.0-2019.12-x86_64_aarch64-linux-gnu/lib/gcc/aarch64-linux-gnu/7.5.0/include
+/home/tcwg-buildslave/workspace/tcwg-make-release_0/_build/builds/destdir/x86_64-unknown-linux-gnu/lib/gcc/aarch64-linux-gnu/7.5.0/include
+/home/tcwg-buildslave/workspace/tcwg-make-release_0/_build/builds/x86_64-unknown-linux-gnu/aarch64-linux-gnu/glibc.git~release~2.25~master/csu/abi-note.o
+/home/tcwg-buildslave/workspace/tcwg-make-release_0/_build/builds/x86_64-unknown-linux-gnu/aarch64-linux-gnu/glibc.git~release~2.25~master/csu/start.o
+/home/tcwg-buildslave/workspace/tcwg-make-release_0/snapshots/glibc.git~release~2.25~master/csu
+/sem_empty
+/sem_full
+CBAUD 0010017
+CBAUDEX 0010000
+CIBAUD 002003600000
+CLOCK_THREAD_CPUTIME_ID 3
+EXIT_FAILURE 1
+Error getting termios attrs
+Error opening serial port
+Error setting termios attrs
+FOPEN_MAX
+FOPEN_MAX 16
+GNU C11 7.5.0 -march=armv8-a -mlittle-endian -mabi=lp64 -g -O2 -std=gnu11 -fgnu89-inline -fmerge-all-constants -frounding-math -fno-stack-protector -fPIC -ftls-model=initial-exec
+GNU C11 7.5.0 -march=armv8-a -mlittle-endian -mabi=lp64 -g -O2 -std=gnu11 -fgnu89-inline -fmerge-all-constants -frounding-math -fno-stack-protector -ftls-model=initial-exec
+IP_BIND_ADDRESS_NO_PORT 24
+Listening on TCP port %d...
+MAP_FAILED ((void *) -1)
+MSG_FASTOPEN MSG_FASTOPEN
+O_NOCTTY 0400
+PORT 2000
+PTHREAD_BARRIER_SERIAL_THREAD -1
+PTHREAD_CANCELED ((void *) -1)
+PTHREAD_CANCEL_ASYNCHRONOUS PTHREAD_CANCEL_ASYNCHRONOUS
+PTHREAD_CANCEL_DEFERRED PTHREAD_CANCEL_DEFERRED
+PTHREAD_CANCEL_DISABLE PTHREAD_CANCEL_DISABLE
+PTHREAD_CANCEL_ENABLE PTHREAD_CANCEL_ENABLE
+PTHREAD_COND_INITIALIZER { { {0}, {0}, {0, 0}, {0, 0}, 0, 0, {0, 0} } }
+PTHREAD_CREATE_DETACHED PTHREAD_CREATE_DETACHED
+PTHREAD_CREATE_JOINABLE PTHREAD_CREATE_JOINABLE
+PTHREAD_EXPLICIT_SCHED PTHREAD_EXPLICIT_SCHED
+PTHREAD_INHERIT_SCHED PTHREAD_INHERIT_SCHED
+PTHREAD_MUTEX_INITIALIZER { { 0, 0, 0, 0, 0, __PTHREAD_SPINS, { 0, 0 } } }
+PTHREAD_ONCE_INIT 0
+PTHREAD_PROCESS_PRIVATE PTHREAD_PROCESS_PRIVATE
+PTHREAD_PROCESS_SHARED PTHREAD_PROCESS_SHARED
+PTHREAD_RWLOCK_INITIALIZER { { 0, 0, 0, 0, 0, 0, 0, 0, __PTHREAD_RWLOCK_ELISION_EXTRA, 0, 0 } }
+PTHREAD_SCOPE_PROCESS PTHREAD_SCOPE_PROCESS
+PTHREAD_SCOPE_SYSTEM PTHREAD_SCOPE_SYSTEM
+SEM_EMPTY "/sem_empty"
+SEM_FAILED ((sem_t *) 0)
+SEM_FULL "/sem_full"
+SERIAL_PORT "/dev/ttyS0"
+SHM_NAME "/beagleplay_shm"
+SHM_SIZE 1024
+SOL_SOCKET 1
+SO_ATTACH_REUSEPORT_CBPF 51
+SO_ATTACH_REUSEPORT_EBPF 52
+SO_ERROR 4
+SO_OOBINLINE 10
+SO_REUSEPORT 15
+SO_SECURITY_ENCRYPTION_TRANSPORT 23
+S_TYPEISSHM(buf) __S_TYPEISSHM(buf)
+Serial port %s opened successfully.
+TTYDEF_CFLAG (CREAD | CS7 | PARENB | HUPCL)
+TTYDEF_IFLAG (BRKINT | ISTRIP | ICRNL | IMAXBEL | IXON | IXANY)
+TTYDEF_LFLAG (ECHO | ICANON | ISIG | IEXTEN | ECHOE|ECHOKE|ECHOCTL)
+TTYDEF_OFLAG (OPOST | ONLCR | XTABS)
+TTYDEF_SPEED (B9600)
+_BITS_PTHREADTYPES_H 1
+_CS_GNU_LIBPTHREAD_VERSION _CS_GNU_LIBPTHREAD_VERSION
+_IO_LINE_BUF 0x200
+_IO_ferror_unlocked(__fp) (((__fp)->_flags & _IO_ERR_SEEN) != 0)
+_POSIX_RAW_SOCKETS 200809L
+_POSIX_THREADS 200809L
+_POSIX_THREAD_ATTR_STACKADDR 200809L
+_POSIX_THREAD_ATTR_STACKSIZE 200809L
+_POSIX_THREAD_CPUTIME 0
+_POSIX_THREAD_PRIORITY_SCHEDULING 200809L
+_POSIX_THREAD_PRIO_INHERIT 200809L
+_POSIX_THREAD_PRIO_PROTECT 200809L
+_POSIX_THREAD_PROCESS_SHARED 200809L
+_POSIX_THREAD_ROBUST_PRIO_INHERIT 200809L
+_POSIX_THREAD_ROBUST_PRIO_PROTECT -1
+_POSIX_THREAD_SAFE_FUNCTIONS 200809L
+_POSIX_THREAD_SPORADIC_SERVER -1
+_PTHREAD_H 1
+_SC_C_LANG_SUPPORT _SC_C_LANG_SUPPORT
+_SC_C_LANG_SUPPORT_R _SC_C_LANG_SUPPORT_R
+_SC_LEVEL1_DCACHE_LINESIZE _SC_LEVEL1_DCACHE_LINESIZE
+_SC_LEVEL1_ICACHE_LINESIZE _SC_LEVEL1_ICACHE_LINESIZE
+_SC_LEVEL2_CACHE_LINESIZE _SC_LEVEL2_CACHE_LINESIZE
+_SC_LEVEL3_CACHE_LINESIZE _SC_LEVEL3_CACHE_LINESIZE
+_SC_LEVEL4_CACHE_LINESIZE _SC_LEVEL4_CACHE_LINESIZE
+_SC_LINE_MAX _SC_LINE_MAX
+_SC_MQ_OPEN_MAX _SC_MQ_OPEN_MAX
+_SC_OPEN_MAX _SC_OPEN_MAX
+_SC_PII_SOCKET _SC_PII_SOCKET
+_SC_RAW_SOCKETS _SC_RAW_SOCKETS
+_SC_SEM_NSEMS_MAX _SC_SEM_NSEMS_MAX
+_SC_SEM_VALUE_MAX _SC_SEM_VALUE_MAX
+_SC_THREADS _SC_THREADS
+_SC_THREAD_ATTR_STACKADDR _SC_THREAD_ATTR_STACKADDR
+_SC_THREAD_ATTR_STACKSIZE _SC_THREAD_ATTR_STACKSIZE
+_SC_THREAD_CPUTIME _SC_THREAD_CPUTIME
+_SC_THREAD_DESTRUCTOR_ITERATIONS _SC_THREAD_DESTRUCTOR_ITERATIONS
+_SC_THREAD_KEYS_MAX _SC_THREAD_KEYS_MAX
+_SC_THREAD_PRIORITY_SCHEDULING _SC_THREAD_PRIORITY_SCHEDULING
+_SC_THREAD_PRIO_INHERIT _SC_THREAD_PRIO_INHERIT
+_SC_THREAD_PRIO_PROTECT _SC_THREAD_PRIO_PROTECT
+_SC_THREAD_PROCESS_SHARED _SC_THREAD_PROCESS_SHARED
+_SC_THREAD_ROBUST_PRIO_INHERIT _SC_THREAD_ROBUST_PRIO_INHERIT
+_SC_THREAD_ROBUST_PRIO_PROTECT _SC_THREAD_ROBUST_PRIO_PROTECT
+_SC_THREAD_SAFE_FUNCTIONS _SC_THREAD_SAFE_FUNCTIONS
+_SC_THREAD_SPORADIC_SERVER _SC_THREAD_SPORADIC_SERVER
+_SC_THREAD_STACK_MIN _SC_THREAD_STACK_MIN
+_SC_THREAD_THREADS_MAX _SC_THREAD_THREADS_MAX
+_SC_TTY_NAME_MAX _SC_TTY_NAME_MAX
+_SC_XOPEN_CRYPT _SC_XOPEN_CRYPT
+_SC_XOPEN_ENH_I18N _SC_XOPEN_ENH_I18N
+_SC_XOPEN_LEGACY _SC_XOPEN_LEGACY
+_SC_XOPEN_REALTIME _SC_XOPEN_REALTIME
+_SC_XOPEN_REALTIME_THREADS _SC_XOPEN_REALTIME_THREADS
+_SC_XOPEN_SHM _SC_XOPEN_SHM
+_SC_XOPEN_STREAMS _SC_XOPEN_STREAMS
+_SC_XOPEN_UNIX _SC_XOPEN_UNIX
+_SC_XOPEN_VERSION _SC_XOPEN_VERSION
+_SC_XOPEN_XCU_VERSION _SC_XOPEN_XCU_VERSION
+_SC_XOPEN_XPG2 _SC_XOPEN_XPG2
+_SC_XOPEN_XPG3 _SC_XOPEN_XPG3
+_SC_XOPEN_XPG4 _SC_XOPEN_XPG4
+_SYS_SOCKET_H 1
+_SYS_TTYDEFAULTS_H_ 
+_XOPEN_CRYPT 1
+_XOPEN_ENH_I18N 1
+_XOPEN_LEGACY 1
+_XOPEN_REALTIME 1
+_XOPEN_REALTIME_THREADS 1
+_XOPEN_SHM 1
+_XOPEN_UNIX 1
+_XOPEN_VERSION 700
+_XOPEN_XCU_VERSION 4
+_XOPEN_XPG2 1
+_XOPEN_XPG3 1
+_XOPEN_XPG4 1
+__ASM_GENERIC_SOCKET_H 
+__BITS_SOCKET_H 
+__GNUC_STDC_INLINE__ 1
+__MAX_BAUD B4000000
+__NO_INLINE__ 1
+__OPEN_NEEDS_MODE(oflag) (((oflag) & O_CREAT) != 0 || ((oflag) & __O_TMPFILE) == __O_TMPFILE)
+__PTHREAD_MUTEX_HAVE_PREV 1
+__PTHREAD_RWLOCK_ELISION_EXTRA 0
+__PTHREAD_RWLOCK_INT_FLAGS_SHARED 1
+__PTHREAD_SPINS 0
+__SIZEOF_PTHREAD_ATTR_T 64
+__SIZEOF_PTHREAD_BARRIERATTR_T 8
+__SIZEOF_PTHREAD_BARRIER_T 32
+__SIZEOF_PTHREAD_CONDATTR_T 8
+__SIZEOF_PTHREAD_COND_COMPAT_T 48
+__SIZEOF_PTHREAD_COND_T 48
+__SIZEOF_PTHREAD_MUTEXATTR_T 8
+__SIZEOF_PTHREAD_MUTEX_T 48
+__SIZEOF_PTHREAD_RWLOCKATTR_T 8
+__SIZEOF_PTHREAD_RWLOCK_T 56
+__SIZEOF_SEM_T 32
+__STDC_NO_THREADS__ 1
+__SYSMACROS_IMPL_TEMPL(rtype,name,proto) __extension__ __extern_inline __attribute_const__ rtype __NTH (gnu_dev_ ##name proto)
+__S_TYPEISSHM(buf) ((buf)->st_mode - (buf)->st_mode)
+__USE_XOPEN
+__USE_XOPEN2K
+__USE_XOPEN2K 1
+__USE_XOPEN2K8
+__USE_XOPEN2K8 1
+__USE_XOPEN2K8XSI
+__USE_XOPEN2KXSI
+__USE_XOPEN_EXTENDED
+__WNOTHREAD 0x20000000
+__always_inline
+__always_inline __inline __attribute__ ((__always_inline__))
+__attribute_noinline__ __attribute__ ((__noinline__))
+__errordecl(name,msg) extern void name (void) __attribute__((__error__ (msg)))
+__extern_always_inline extern __always_inline __attribute__ ((__gnu_inline__))
+__extern_inline extern __inline __attribute__ ((__gnu_inline__))
+__fortify_function __extern_always_inline __attribute_artificial__
+__have_pthread_attr_t1 
+__pthread_internal_list
+__pthread_list_t
+__pthread_mutex_s
+__socket_type

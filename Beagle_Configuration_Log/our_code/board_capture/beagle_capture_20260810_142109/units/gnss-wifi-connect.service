@@ -1,0 +1,16 @@
+[Unit]
+Description=Connect BeaglePlay to external WiFi for internet access
+After=NetworkManager.service
+Wants=NetworkManager.service
+
+[Service]
+Type=simple
+WorkingDirectory=/home/debian
+ExecStart=/home/debian/wifi_setup/wifi_connect
+Restart=on-failure
+RestartSec=5
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

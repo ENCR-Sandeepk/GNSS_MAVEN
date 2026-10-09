@@ -1,0 +1,13 @@
+[Unit]
+Description=Serial-to-LAN Bridge
+After=network.target
+
+[Service]
+ExecStart=/bin/bash -c "sleep 10; /usr/local/bin/serial_bridge"
+Restart=always
+User=root
+
+[Install]
+WantedBy=multi-user.target
+
+

@@ -1,0 +1,118 @@
+Aug 08 09:28:23 BeagleBone systemd[1]: Starting gnss-wifi-setup.service - Set WiFi AP SSID from device serial number...
+Aug 08 09:28:23 BeagleBone wifi_setup[441]: [wifi_setup] Reading device serial number...
+Aug 08 09:28:23 BeagleBone wifi_setup[441]: [wifi_setup] WARNING: Serial number not programmed. Using default SSID.
+Aug 08 09:28:23 BeagleBone wifi_setup[441]: [wifi_setup] Setting WiFi SSID to: GNSS-Device-Unconfigured
+Aug 08 09:28:23 BeagleBone wifi_setup[441]: [wifi_setup] hostapd.conf updated successfully.
+Aug 08 09:28:23 BeagleBone wifi_setup[441]: [wifi_setup] WiFi AP SSID set to: GNSS-Device-Unconfigured
+Aug 08 09:28:23 BeagleBone wifi_setup[441]: [wifi_setup] hostapd will use this SSID when it starts.
+Aug 08 09:28:24 BeagleBone systemd[1]: Finished gnss-wifi-setup.service - Set WiFi AP SSID from device serial number.
+Aug 08 09:52:05 BeagleBone systemd[1]: gnss-wifi-setup.service: Deactivated successfully.
+Aug 08 09:52:05 BeagleBone systemd[1]: Stopped gnss-wifi-setup.service - Set WiFi AP SSID from device serial number.
+-- Boot 08abc5dbae424199a416618b43b70449 --
+Aug 08 10:28:22 BeagleBone systemd[1]: Starting gnss-wifi-setup.service - Set WiFi AP SSID from device serial number...
+Aug 08 10:28:22 BeagleBone wifi_setup[432]: [wifi_setup] Reading device serial number...
+Aug 08 10:28:22 BeagleBone wifi_setup[432]: [wifi_setup] WARNING: Serial number not programmed. Using default SSID.
+Aug 08 10:28:22 BeagleBone wifi_setup[432]: [wifi_setup] Setting WiFi SSID to: GNSS-Device-Unconfigured
+Aug 08 10:28:22 BeagleBone wifi_setup[432]: [wifi_setup] hostapd.conf updated successfully.
+Aug 08 10:28:22 BeagleBone wifi_setup[432]: [wifi_setup] WiFi AP SSID set to: GNSS-Device-Unconfigured
+Aug 08 10:28:22 BeagleBone wifi_setup[432]: [wifi_setup] hostapd will use this SSID when it starts.
+Aug 08 10:28:23 BeagleBone systemd[1]: Finished gnss-wifi-setup.service - Set WiFi AP SSID from device serial number.
+Aug 08 10:52:04 BeagleBone systemd[1]: gnss-wifi-setup.service: Deactivated successfully.
+Aug 08 10:52:04 BeagleBone systemd[1]: Stopped gnss-wifi-setup.service - Set WiFi AP SSID from device serial number.
+-- Boot e3f2445135a94c3a848bbc60c1935553 --
+Aug 08 11:28:22 BeagleBone systemd[1]: Starting gnss-wifi-setup.service - Set WiFi AP SSID from device serial number...
+Aug 08 11:28:22 BeagleBone wifi_setup[429]: [wifi_setup] Reading device serial number...
+Aug 08 11:28:22 BeagleBone wifi_setup[429]: [wifi_setup] WARNING: Serial number not programmed. Using default SSID.
+Aug 08 11:28:22 BeagleBone wifi_setup[429]: [wifi_setup] Setting WiFi SSID to: GNSS-Device-Unconfigured
+Aug 08 11:28:22 BeagleBone wifi_setup[429]: [wifi_setup] hostapd.conf updated successfully.
+Aug 08 11:28:22 BeagleBone wifi_setup[429]: [wifi_setup] WiFi AP SSID set to: GNSS-Device-Unconfigured
+Aug 08 11:28:22 BeagleBone wifi_setup[429]: [wifi_setup] hostapd will use this SSID when it starts.
+Aug 08 11:28:22 BeagleBone systemd[1]: Finished gnss-wifi-setup.service - Set WiFi AP SSID from device serial number.
+Aug 08 11:52:05 BeagleBone systemd[1]: gnss-wifi-setup.service: Deactivated successfully.
+Aug 08 11:52:05 BeagleBone systemd[1]: Stopped gnss-wifi-setup.service - Set WiFi AP SSID from device serial number.
+-- Boot c4607bf868d3479f96d6523c9010e067 --
+Aug 08 12:28:22 BeagleBone systemd[1]: Starting gnss-wifi-setup.service - Set WiFi AP SSID from device serial number...
+Aug 08 12:28:22 BeagleBone wifi_setup[436]: [wifi_setup] Reading device serial number...
+Aug 08 12:28:22 BeagleBone wifi_setup[436]: [wifi_setup] WARNING: Serial number not programmed. Using default SSID.
+Aug 08 12:28:22 BeagleBone wifi_setup[436]: [wifi_setup] Setting WiFi SSID to: GNSS-Device-Unconfigured
+Aug 08 12:28:22 BeagleBone wifi_setup[436]: [wifi_setup] hostapd.conf updated successfully.
+Aug 08 12:28:22 BeagleBone wifi_setup[436]: [wifi_setup] WiFi AP SSID set to: GNSS-Device-Unconfigured
+Aug 08 12:28:22 BeagleBone wifi_setup[436]: [wifi_setup] hostapd will use this SSID when it starts.
+Aug 08 12:28:23 BeagleBone systemd[1]: Finished gnss-wifi-setup.service - Set WiFi AP SSID from device serial number.
+Aug 08 12:52:05 BeagleBone systemd[1]: gnss-wifi-setup.service: Deactivated successfully.
+Aug 08 12:52:05 BeagleBone systemd[1]: Stopped gnss-wifi-setup.service - Set WiFi AP SSID from device serial number.
+-- Boot 5bebedc873c84777b9f2be94d65065d3 --
+Aug 08 13:28:23 BeagleBone systemd[1]: Starting gnss-wifi-setup.service - Set WiFi AP SSID from device serial number...
+Aug 08 13:28:23 BeagleBone wifi_setup[438]: [wifi_setup] Reading device serial number...
+Aug 08 13:28:23 BeagleBone wifi_setup[438]: [wifi_setup] WARNING: Serial number not programmed. Using default SSID.
+Aug 08 13:28:23 BeagleBone wifi_setup[438]: [wifi_setup] Setting WiFi SSID to: GNSS-Device-Unconfigured
+Aug 08 13:28:23 BeagleBone wifi_setup[438]: [wifi_setup] hostapd.conf updated successfully.
+Aug 08 13:28:23 BeagleBone wifi_setup[438]: [wifi_setup] WiFi AP SSID set to: GNSS-Device-Unconfigured
+Aug 08 13:28:23 BeagleBone wifi_setup[438]: [wifi_setup] hostapd will use this SSID when it starts.
+Aug 08 13:28:23 BeagleBone systemd[1]: Finished gnss-wifi-setup.service - Set WiFi AP SSID from device serial number.
+Aug 08 13:52:05 BeagleBone systemd[1]: gnss-wifi-setup.service: Deactivated successfully.
+Aug 08 13:52:05 BeagleBone systemd[1]: Stopped gnss-wifi-setup.service - Set WiFi AP SSID from device serial number.
+-- Boot bc56492bf833454297d0021c768d423e --
+Aug 08 14:28:22 BeagleBone systemd[1]: Starting gnss-wifi-setup.service - Set WiFi AP SSID from device serial number...
+Aug 08 14:28:22 BeagleBone wifi_setup[423]: [wifi_setup] Reading device serial number...
+Aug 08 14:28:22 BeagleBone wifi_setup[423]: [wifi_setup] WARNING: Serial number not programmed. Using default SSID.
+Aug 08 14:28:22 BeagleBone wifi_setup[423]: [wifi_setup] Setting WiFi SSID to: GNSS-Device-Unconfigured
+Aug 08 14:28:22 BeagleBone wifi_setup[423]: [wifi_setup] hostapd.conf updated successfully.
+Aug 08 14:28:22 BeagleBone wifi_setup[423]: [wifi_setup] WiFi AP SSID set to: GNSS-Device-Unconfigured
+Aug 08 14:28:22 BeagleBone wifi_setup[423]: [wifi_setup] hostapd will use this SSID when it starts.
+Aug 08 14:28:22 BeagleBone systemd[1]: Finished gnss-wifi-setup.service - Set WiFi AP SSID from device serial number.
+Aug 08 14:52:04 BeagleBone systemd[1]: gnss-wifi-setup.service: Deactivated successfully.
+Aug 08 14:52:04 BeagleBone systemd[1]: Stopped gnss-wifi-setup.service - Set WiFi AP SSID from device serial number.
+-- Boot 38eaeb50b6294128be65d977de4f84cf --
+Aug 08 15:22:24 BeagleBone systemd[1]: Starting gnss-wifi-setup.service - Set WiFi AP SSID from device serial number...
+Aug 08 15:22:24 BeagleBone wifi_setup[434]: [wifi_setup] Reading device serial number...
+Aug 08 15:22:24 BeagleBone wifi_setup[434]: [wifi_setup] WARNING: Serial number not programmed. Using default SSID.
+Aug 08 15:22:24 BeagleBone wifi_setup[434]: [wifi_setup] Setting WiFi SSID to: GNSS-Device-Unconfigured
+Aug 08 15:22:24 BeagleBone wifi_setup[434]: [wifi_setup] hostapd.conf updated successfully.
+Aug 08 15:22:24 BeagleBone wifi_setup[434]: [wifi_setup] WiFi AP SSID set to: GNSS-Device-Unconfigured
+Aug 08 15:22:24 BeagleBone wifi_setup[434]: [wifi_setup] hostapd will use this SSID when it starts.
+Aug 08 15:22:24 BeagleBone systemd[1]: Finished gnss-wifi-setup.service - Set WiFi AP SSID from device serial number.
+Aug 08 16:06:12 BeagleBone systemd[1]: gnss-wifi-setup.service: Deactivated successfully.
+Aug 08 16:06:12 BeagleBone systemd[1]: Stopped gnss-wifi-setup.service - Set WiFi AP SSID from device serial number.
+-- Boot 8f4eb06727a64bbe9960fd494681bcd6 --
+Aug 08 16:06:36 BeagleBone systemd[1]: Starting gnss-wifi-setup.service - Set WiFi AP SSID from device serial number...
+Aug 08 16:06:36 BeagleBone wifi_setup[432]: [wifi_setup] Reading device serial number...
+Aug 08 16:06:36 BeagleBone wifi_setup[432]: [wifi_setup] WARNING: Serial number not programmed. Using default SSID.
+Aug 08 16:06:36 BeagleBone wifi_setup[432]: [wifi_setup] Setting WiFi SSID to: GNSS-Device-Unconfigured
+Aug 08 16:06:36 BeagleBone wifi_setup[432]: [wifi_setup] hostapd.conf updated successfully.
+Aug 08 16:06:36 BeagleBone wifi_setup[432]: [wifi_setup] WiFi AP SSID set to: GNSS-Device-Unconfigured
+Aug 08 16:06:36 BeagleBone wifi_setup[432]: [wifi_setup] hostapd will use this SSID when it starts.
+Aug 08 16:06:37 BeagleBone systemd[1]: Finished gnss-wifi-setup.service - Set WiFi AP SSID from device serial number.
+Aug 08 16:21:27 BeagleBone systemd[1]: gnss-wifi-setup.service: Deactivated successfully.
+Aug 08 16:21:27 BeagleBone systemd[1]: Stopped gnss-wifi-setup.service - Set WiFi AP SSID from device serial number.
+-- Boot cb47b2796c9645c58d9bd9495c854ff7 --
+Aug 08 16:28:24 BeagleBone systemd[1]: Starting gnss-wifi-setup.service - Set WiFi AP SSID from device serial number...
+Aug 08 16:28:24 BeagleBone wifi_setup[436]: [wifi_setup] Reading device serial number...
+Aug 08 16:28:24 BeagleBone wifi_setup[436]: [wifi_setup] WARNING: Serial number not programmed. Using default SSID.
+Aug 08 16:28:24 BeagleBone wifi_setup[436]: [wifi_setup] Setting WiFi SSID to: GNSS-Device-Unconfigured
+Aug 08 16:28:24 BeagleBone wifi_setup[436]: [wifi_setup] hostapd.conf updated successfully.
+Aug 08 16:28:24 BeagleBone wifi_setup[436]: [wifi_setup] WiFi AP SSID set to: GNSS-Device-Unconfigured
+Aug 08 16:28:24 BeagleBone wifi_setup[436]: [wifi_setup] hostapd will use this SSID when it starts.
+Aug 08 16:28:24 BeagleBone systemd[1]: Finished gnss-wifi-setup.service - Set WiFi AP SSID from device serial number.
+Aug 08 16:52:04 BeagleBone systemd[1]: gnss-wifi-setup.service: Deactivated successfully.
+Aug 08 16:52:04 BeagleBone systemd[1]: Stopped gnss-wifi-setup.service - Set WiFi AP SSID from device serial number.
+-- Boot 96cf08bd26664f2cb70c0b6b07fb42d3 --
+Aug 10 11:30:33 BeagleBone systemd[1]: Starting gnss-wifi-setup.service - Set WiFi AP SSID from device serial number...
+Aug 10 11:30:34 BeagleBone wifi_setup[429]: [wifi_setup] Reading device serial number...
+Aug 10 11:30:34 BeagleBone wifi_setup[429]: [wifi_setup] WARNING: Serial number not programmed. Using default SSID.
+Aug 10 11:30:34 BeagleBone wifi_setup[429]: [wifi_setup] Setting WiFi SSID to: GNSS-Device-Unconfigured
+Aug 10 11:30:34 BeagleBone wifi_setup[429]: [wifi_setup] hostapd.conf updated successfully.
+Aug 10 11:30:34 BeagleBone wifi_setup[429]: [wifi_setup] WiFi AP SSID set to: GNSS-Device-Unconfigured
+Aug 10 11:30:34 BeagleBone wifi_setup[429]: [wifi_setup] hostapd will use this SSID when it starts.
+Aug 10 11:30:34 BeagleBone systemd[1]: Finished gnss-wifi-setup.service - Set WiFi AP SSID from device serial number.
+Aug 10 11:30:35 BeagleBone systemd[1]: gnss-wifi-setup.service: Deactivated successfully.
+Aug 10 11:30:35 BeagleBone systemd[1]: Stopped gnss-wifi-setup.service - Set WiFi AP SSID from device serial number.
+-- Boot a6d204b879d943349a48d68d3e0a1509 --
+Aug 10 11:31:29 BeagleBone systemd[1]: Starting gnss-wifi-setup.service - Set WiFi AP SSID from device serial number...
+Aug 10 11:31:29 BeagleBone wifi_setup[437]: [wifi_setup] Reading device serial number...
+Aug 10 11:31:29 BeagleBone wifi_setup[437]: [wifi_setup] WARNING: Serial number not programmed. Using default SSID.
+Aug 10 11:31:29 BeagleBone wifi_setup[437]: [wifi_setup] Setting WiFi SSID to: GNSS-Device-Unconfigured
+Aug 10 11:31:29 BeagleBone wifi_setup[437]: [wifi_setup] hostapd.conf updated successfully.
+Aug 10 11:31:29 BeagleBone wifi_setup[437]: [wifi_setup] WiFi AP SSID set to: GNSS-Device-Unconfigured
+Aug 10 11:31:29 BeagleBone wifi_setup[437]: [wifi_setup] hostapd will use this SSID when it starts.
+Aug 10 11:31:29 BeagleBone systemd[1]: Finished gnss-wifi-setup.service - Set WiFi AP SSID from device serial number.

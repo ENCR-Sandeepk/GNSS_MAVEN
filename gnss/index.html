@@ -254,6 +254,8 @@
                             <input type="text" id="roverID" required />
                         </div>
 
+                        <!-- Scan timing: shown only for ROVER in Continuous mode (hidden in Burst) -->
+                        <div id="scanTimingSection">
                         <div class="form-group">
                             <label for="scanInterval">Scan Interval</label>
                             <select id="scanInterval">
@@ -295,6 +297,7 @@
                                 </div>
                             </div>
                         </div>
+                        </div>
 
                         <div class="section-title">Deviation Reporting Axis</div>
 
@@ -310,6 +313,41 @@
                                 <span onclick="openAxisInfo()" style="color:#667eea;cursor:pointer;font-size:12px;">(what is this?)</span>
                             </label>
                             <input type="number" id="axisAngle" min="0" max="360" step="0.1" placeholder="e.g. 45" />
+                        </div>
+
+                        <div class="section-title">Temperature Correction</div>
+
+                        <div class="checkbox-wrapper">
+                            <input type="checkbox" id="tempEnable" />
+                            <label for="tempEnable">Enable temperature correction</label>
+                            <span id="tempInfoIcon" onclick="openTempInfo()" title="What is the fixed bearing distance?"
+                                  style="display:inline-flex;align-items:center;justify-content:center;width:19px;height:19px;margin-left:8px;border-radius:50%;background:#667eea;color:#fff;font-size:13px;font-weight:700;font-family:Georgia,'Times New Roman',serif;font-style:italic;cursor:pointer;user-select:none;">i</span>
+                        </div>
+
+                        <div id="tempSection" style="display:none;">
+                            <div class="form-group">
+                                <label for="structureType">Structure Type</label>
+                                <select id="structureType">
+                                    <option value="bridge">Bridge</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="tempDistance">Distance from Fixed Bearing (m)
+                                    <span onclick="openTempInfo()" style="color:#667eea;cursor:pointer;font-size:12px;">(what is this?)</span>
+                                </label>
+                                <input type="number" id="tempDistance" step="0.001" placeholder="e.g. 25.5" />
+                            </div>
+
+                            <div class="form-group">
+                                <label for="tempRefTemp">Reference Temperature (&deg;C)</label>
+                                <input type="number" id="tempRefTemp" step="0.1" placeholder="e.g. 25" />
+                            </div>
+
+                            <div class="form-group">
+                                <label for="tempCoeff">Structure Thermal Coefficient (PPM/&deg;C)</label>
+                                <input type="number" id="tempCoeff" step="0.01" placeholder="e.g. 12" />
+                            </div>
                         </div>
 
                         <div class="section-title">Data Storage</div>
@@ -394,26 +432,6 @@
                     <button type="button" class="section-save-btn" onclick="saveMainConfiguration()">Save
                         Configuration</button>
                 </form>
-
-                <!-- WiFi Settings Section -->
-                <div class="settings-section">
-                    <div class="section-title">WiFi Settings</div>
-
-                    <div class="form-group">
-                        <label for="wifiSSID">WiFi SSID</label>
-                        <input type="text" id="wifiSSID" placeholder="Enter WiFi network name" />
-                    </div>
-
-                    <div class="form-group">
-                        <label for="wifiPassword">WiFi Password</label>
-                        <input type="password" id="wifiPassword" placeholder="Enter WiFi password" />
-                    </div>
-
-                    <div id="wifiStatus"
-                         style="display:none; padding:10px; border-radius:8px; margin-bottom:12px; font-size:13px;"></div>
-
-                    <button type="button" class="section-save-btn" onclick="saveWifiSettings()">Save WiFi Settings</button>
-                </div>
 
                 <!-- IP Settings Section -->
                 <div class="settings-section">
@@ -549,6 +567,121 @@
                 </div>
                 <div class="alert-footer">
                     <button onclick="closeAxisInfo()">Close</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== Temperature Correction (Distance from Fixed Bearing) — Help dialog ===== -->
+        <div id="tempInfoOverlay" class="alert-overlay" onclick="if(event.target===this) closeTempInfo()">
+            <div class="alert-box" style="max-width:640px;width:92%;">
+                <div class="alert-header">
+                    <span>Distance from Fixed Bearing &mdash; Help</span>
+                </div>
+                <div class="alert-body" style="text-align:left;max-height:72vh;overflow:auto;font-size:13px;line-height:1.55;color:#3a4653;">
+
+                    <div style="text-align:center;margin:4px 0 14px;">
+                        <svg viewBox="0 0 380 230" width="360" style="max-width:100%;" role="img" aria-label="Bridge deck resting on a fixed bearing at one end and an expansion bearing at the other. The GNSS rover is on the deck; L is the horizontal distance from the fixed bearing to the rover antenna. The deck expands away from the fixed bearing.">
+                            <defs>
+                                <marker id="tArrR" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#e0821e"/></marker>
+                                <marker id="tDimL" markerWidth="8" markerHeight="8" refX="1" refY="3" orient="auto"><path d="M6,0 L0,3 L6,6 Z" fill="#667eea"/></marker>
+                                <marker id="tDimR" markerWidth="8" markerHeight="8" refX="5" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#667eea"/></marker>
+                            </defs>
+                            <!-- ground -->
+                            <line x1="10" y1="200" x2="370" y2="200" stroke="#b9c1cb" stroke-width="2"/>
+                            <!-- piers / abutments -->
+                            <rect x="34" y="122" width="30" height="78" fill="#cfd5dc" stroke="#9aa5b1"/>
+                            <rect x="316" y="122" width="30" height="78" fill="#cfd5dc" stroke="#9aa5b1"/>
+                            <!-- deck -->
+                            <rect x="26" y="96" width="314" height="15" fill="#9aa5b1"/>
+                            <text x="183" y="107" text-anchor="middle" font-size="9.5" fill="#fff">BRIDGE DECK</text>
+                            <!-- expansion joint gap -->
+                            <line x1="344" y1="92" x2="344" y2="115" stroke="#6b7684" stroke-width="2" stroke-dasharray="3,2"/>
+                            <!-- fixed bearing (pinned, triangle) -->
+                            <polygon points="38,122 60,122 49,111" fill="#1f2937"/>
+                            <text x="49" y="216" text-anchor="middle" font-size="10" font-weight="700" fill="#1f2937">FIXED</text>
+                            <text x="49" y="227" text-anchor="middle" font-size="9" fill="#6b7684">bearing</text>
+                            <!-- expansion bearing (rollers) -->
+                            <circle cx="324" cy="116.5" r="5" fill="none" stroke="#1f2937" stroke-width="1.6"/>
+                            <circle cx="338" cy="116.5" r="5" fill="none" stroke="#1f2937" stroke-width="1.6"/>
+                            <text x="331" y="216" text-anchor="middle" font-size="10" font-weight="700" fill="#1f2937">EXPANSION</text>
+                            <text x="331" y="227" text-anchor="middle" font-size="9" fill="#6b7684">(free) bearing</text>
+                            <!-- rover antenna on deck -->
+                            <line x1="236" y1="96" x2="236" y2="64" stroke="#374151" stroke-width="2.2"/>
+                            <ellipse cx="236" cy="60" rx="13" ry="6" fill="#667eea"/>
+                            <text x="236" y="48" text-anchor="middle" font-size="10.5" font-weight="700" fill="#667eea">GNSS rover</text>
+                            <!-- thermal expansion direction -->
+                            <line x1="262" y1="84" x2="306" y2="84" stroke="#e0821e" stroke-width="2.4" marker-end="url(#tArrR)"/>
+                            <text x="284" y="78" text-anchor="middle" font-size="9.5" fill="#e0821e">expands</text>
+                            <!-- extension lines -->
+                            <line x1="49" y1="111" x2="49" y2="158" stroke="#667eea" stroke-width="1" stroke-dasharray="3,2"/>
+                            <line x1="236" y1="111" x2="236" y2="158" stroke="#667eea" stroke-width="1" stroke-dasharray="3,2"/>
+                            <!-- dimension L -->
+                            <line x1="53" y1="152" x2="232" y2="152" stroke="#667eea" stroke-width="1.8" marker-start="url(#tDimL)" marker-end="url(#tDimR)"/>
+                            <rect x="104" y="157" width="78" height="17" rx="3" fill="#ffffff"/>
+                            <text x="143" y="170" text-anchor="middle" font-size="12" font-weight="700" fill="#667eea">L (metres)</text>
+                        </svg>
+                    </div>
+
+                    <div style="font-weight:700;margin-bottom:4px;">What is a fixed bearing?</div>
+                    A bridge deck lengthens when it warms up and shortens when it cools. To let it
+                    move safely, the deck sits on <b>bearings</b>. One support is the <b>fixed bearing</b>:
+                    it is pinned and does <b>not</b> let the deck slide along its length. The other
+                    supports are <b>expansion (free / sliding) bearings</b>, which let the deck slide.
+                    So the deck always grows and shrinks <b>away from the fixed bearing</b>.
+
+                    <div style="font-weight:700;margin:10px 0 4px;">Why the distance matters</div>
+                    Thermal movement increases with distance from the fixed bearing.
+                    At the fixed bearing it is zero; at the far end it is largest:
+                    <div style="text-align:center;margin:6px 0;font-family:Consolas,monospace;font-size:13px;color:#1f2937;">
+                        &Delta;L&nbsp;=&nbsp;&alpha;&nbsp;&times;&nbsp;L&nbsp;&times;&nbsp;(T&nbsp;&minus;&nbsp;T<sub>ref</sub>)
+                    </div>
+                    where &alpha; is the Structure Thermal Coefficient, L is the distance you enter here,
+                    T is the current temperature and T<sub>ref</sub> is the Reference Temperature.
+                    The correction removes this temperature movement, so the reported deviation shows
+                    only real structural movement. An inaccurate L leaves part of the temperature
+                    movement in the result.
+
+                    <div style="font-weight:700;margin:10px 0 4px;">What to measure</div>
+                    <ul style="margin:0 0 4px 18px;padding:0;">
+                        <li>The <b>horizontal distance along the deck's length</b> (the longitudinal axis),
+                            in <b>metres</b>.</li>
+                        <li>From the <b>centre of the fixed bearing</b> to the <b>vertical axis of the GNSS
+                            rover antenna</b>.</li>
+                        <li>Measure within the <b>same continuous deck unit</b>. If expansion joints split the
+                            bridge into separate units, use the fixed bearing of the unit the rover sits on.</li>
+                    </ul>
+
+                    <div style="font-weight:700;margin:10px 0 4px;">How to identify the fixed bearing</div>
+                    <ul style="margin:0 0 4px 18px;padding:0;">
+                        <li><b>Bearing schedule / general arrangement drawing:</b> it is marked
+                            &ldquo;Fixed&rdquo;, &ldquo;F&rdquo; or &ldquo;Pinned&rdquo;. Expansion bearings are
+                            marked &ldquo;Free&rdquo;, &ldquo;Guided&rdquo; or &ldquo;E&rdquo;.</li>
+                        <li><b>On site:</b> expansion bearings have a sliding plate (often stainless steel with
+                            PTFE) or slotted holes and a visible movement gap. A fixed bearing has neither.</li>
+                        <li>The <b>expansion joint</b> is normally at the end <b>away</b> from the fixed bearing.</li>
+                    </ul>
+
+                    <div style="font-weight:700;margin:10px 0 4px;">How to obtain the distance</div>
+                    <ul style="margin:0 0 4px 18px;padding:0;">
+                        <li><b>Drawings:</b> add up the span lengths from the fixed bearing to the antenna position.</li>
+                        <li><b>Site measurement:</b> tape or total station along the deck.</li>
+                        <li><b>Survey coordinates:</b> horizontal distance between the fixed bearing and the antenna,
+                            measured along the deck axis.</li>
+                    </ul>
+
+                    <div style="font-weight:700;margin:10px 0 4px;">Example</div>
+                    Steel/concrete deck, &alpha; = 12 PPM/&deg;C, rover <b>40 m</b> from the fixed bearing,
+                    temperature <b>20 &deg;C above</b> the reference:
+                    &Delta;L = 12&times;10<sup>&minus;6</sup> &times; 40 &times; 20 = <b>9.6 mm</b> of movement
+                    that is purely thermal. A 1 m error in L changes this by 0.24 mm.
+
+                    <div style="margin-top:10px;color:#6b7684;">
+                        If the rover is mounted on a pier or abutment rather than on the deck, the deck's thermal
+                        movement does not apply to it &mdash; leave temperature correction disabled.
+                    </div>
+                </div>
+                <div class="alert-footer">
+                    <button onclick="closeTempInfo()">Close</button>
                 </div>
             </div>
         </div>

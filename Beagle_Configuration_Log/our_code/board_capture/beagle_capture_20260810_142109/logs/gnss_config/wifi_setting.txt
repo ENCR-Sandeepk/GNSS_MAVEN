@@ -1,0 +1,1 @@
+wifiSSID=gnss&wifiPassword=12345678

@@ -1,0 +1,10 @@
+[Unit]
+Description=Bring up eth2 if available
+After=network.target
+
+[Service]
+ExecStart=/sbin/ifup eth2
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target

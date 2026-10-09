@@ -1,0 +1,10 @@
+[Unit]
+Description=Modem ECM Boot Initializer
+After=multi-user.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/modem_init.sh
+
+[Install]
+WantedBy=multi-user.target

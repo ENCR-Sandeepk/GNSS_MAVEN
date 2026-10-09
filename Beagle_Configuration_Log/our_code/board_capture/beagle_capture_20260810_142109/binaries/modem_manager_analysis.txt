@@ -1,0 +1,44 @@
+=== FILE TYPE ===
+/home/debian/beagle_capture_20260810_142109/binaries/modem_manager: ELF 64-bit LSB pie executable, ARM aarch64, version 1 (SYSV), dynamically linked, interpreter /lib/ld-linux-aarch64.so.1, BuildID[sha1]=acba5b67d0a2b8d4e7c6d336d32fd2f95f0dbabf, for GNU/Linux 3.7.0, not stripped
+
+=== FUNCTION SYMBOLS ===
+                 w _ITM_deregisterTMCloneTable
+                 w _ITM_registerTMCloneTable
+                 w __cxa_finalize@GLIBC_2.17
+0000000000000d00 t __do_global_dtors_aux
+                 w __gmon_start__
+0000000000001258 T _fini
+0000000000000a60 T _init
+0000000000000c40 T _start
+0000000000000c74 t call_weak_fn
+00000000000200d0 W data_start
+0000000000000c90 t deregister_tm_clones
+0000000000000d54 T extract_clean_line
+0000000000000d50 t frame_dummy
+0000000000000f74 T get_ip
+00000000000010e8 T main
+0000000000000cc0 t register_tm_clones
+0000000000000e68 T send_at
+0000000000001038 T write_full_log
+0000000000001090 T write_status
+
+=== INTERESTING STRINGS ===
+/dev/ttyUSB3
+/home/debian/modem_status.txt
+AT+CPIN?
+AT+CREG?
+AT+CSQ
+AT+QTEMP
+IP: %s
+Network: %s
+SIM: %s
+Signal: %s
+Temperature: %s
+crtstuff.c
+extract_clean_line
+fopen
+fopen@GLIBC_2.17
+ip -4 addr show eth2 | grep inet | awk '{print $2}'
+modem_manager.c
+popen
+popen@GLIBC_2.17

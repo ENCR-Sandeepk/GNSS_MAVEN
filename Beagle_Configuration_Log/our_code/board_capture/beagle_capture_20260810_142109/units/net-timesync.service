@@ -1,0 +1,11 @@
+[Unit]
+Description=Sync time when network comes online
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/bash -c "timedatectl set-ntp true && sleep 10 && hwclock -w"
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,2 @@
+SUBSYSTEM=="net", DRIVERS=="cdc_ether", ACTION=="add", RUN+="/sbin/ip link set dev %k up"
+

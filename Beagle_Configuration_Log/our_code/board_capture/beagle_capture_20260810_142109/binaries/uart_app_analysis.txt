@@ -1,0 +1,31 @@
+=== FILE TYPE ===
+/home/debian/beagle_capture_20260810_142109/binaries/uart_app: ELF 64-bit LSB pie executable, ARM aarch64, version 1 (SYSV), dynamically linked, interpreter /lib/ld-linux-aarch64.so.1, BuildID[sha1]=2d1f057e9fe48b2737a400e705754b7a1474c510, for GNU/Linux 3.7.0, not stripped
+
+=== FUNCTION SYMBOLS ===
+                 w _ITM_deregisterTMCloneTable
+                 w _ITM_registerTMCloneTable
+                 w __cxa_finalize@GLIBC_2.17
+0000000000000b00 t __do_global_dtors_aux
+                 w __gmon_start__
+0000000000000d90 T _fini
+00000000000008d8 T _init
+0000000000000a40 T _start
+0000000000000a74 t call_weak_fn
+0000000000020098 W data_start
+0000000000000a90 t deregister_tm_clones
+0000000000000b50 t frame_dummy
+0000000000000b54 T main
+0000000000000ac0 t register_tm_clones
+
+=== INTERESTING STRINGS ===
+/dev/play/mikrobus/i2c-uart2
+Received: %s
+Sent: %s
+[%ld] %s
+crtstuff.c
+fopen
+fopen@GLIBC_2.17
+open
+perror
+perror@GLIBC_2.17
+uart_app.c
