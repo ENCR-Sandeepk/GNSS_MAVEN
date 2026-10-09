@@ -58,6 +58,9 @@ let structureType = null;
 let tempDistance = null;
 let tempRefTemp = null;
 let tempCoeff = null;
+let tempDirection = null;
+let tempRefMode = null;        // "manual" | "auto"
+let tempBaselineTemp = null;   // recorded by the device when the baseline is established (display only)
 
 // Diagnostics
 let debugEnable = null;
@@ -186,6 +189,23 @@ function updateTempVisibility() {
         cb.addEventListener('change', updateTempVisibility);
 })();
 
+// Manual -> show the Reference Temperature box; Automatic -> show the recorded baseline value
+function updateTempRefModeVisibility() {
+    const sel = document.getElementById('tempRefMode');
+    const manual = document.getElementById('tempRefManualGroup');
+    const auto = document.getElementById('tempRefAutoGroup');
+    if (!sel || !manual || !auto)
+        return;
+    const isAuto = sel.value === 'auto';
+    manual.style.display = isAuto ? 'none' : 'block';
+    auto.style.display = isAuto ? 'block' : 'none';
+}
+(function () {
+    const sel = document.getElementById('tempRefMode');
+    if (sel)
+        sel.addEventListener('change', updateTempRefModeVisibility);
+})();
+
 function loadGnssSettings() {
     fetch('/load_gnss_receiver_settings')
             .then(resp => {
@@ -230,6 +250,9 @@ function loadGnssSettings() {
                 tempDistance = params.get('tempDistance') || null;
                 tempRefTemp = params.get('tempRefTemp') || null;
                 tempCoeff = params.get('tempCoeff') || null;
+                tempDirection = params.get('tempDirection') || null;
+                tempRefMode = params.get('tempRefMode') || null;
+                tempBaselineTemp = params.get('tempBaselineTemp') || null;
 
                 debugEnable = params.get('debugEnable') || null;
                 if (debugEnable !== null) {
@@ -335,7 +358,17 @@ function loadGnssSettings() {
                     document.getElementById('tempRefTemp').value = tempRefTemp;
                 if (tempCoeff !== null && document.getElementById('tempCoeff'))
                     document.getElementById('tempCoeff').value = tempCoeff;
+                if (tempDirection !== null && tempDirection !== 'null' && document.getElementById('tempDirection'))
+                    document.getElementById('tempDirection').value = tempDirection;
+                if (document.getElementById('tempRefMode'))
+                    document.getElementById('tempRefMode').value = (tempRefMode === 'auto') ? 'auto' : 'manual';
+                if (document.getElementById('tempBaselineDisplay')) {
+                    const bt = Number(tempBaselineTemp);
+                    document.getElementById('tempBaselineDisplay').textContent =
+                            (tempBaselineTemp && tempBaselineTemp !== 'null' && !isNaN(bt)) ? (bt.toFixed(2) + ' °C') : 'not recorded yet';
+                }
                 updateTempVisibility();
+                updateTempRefModeVisibility();
 
                 if (ftpEnable !== null) {
                     const el = document.querySelector('#ftpUploadEnable');
@@ -466,6 +499,10 @@ function showPage(page) {
         logsPage.classList.remove('hidden');
         document.getElementById('usernameDisplayLogs').textContent = currentUser;
         loadLogs("log");
+    } else if (page === 'download_data') {
+        logsPage.classList.remove('hidden');
+        document.getElementById('usernameDisplayLogs').textContent = currentUser;
+        loadDataFiles();
     }
     window.scrollTo(0, 0);
 }
@@ -772,16 +809,22 @@ function saveMainConfiguration() {
         // Temperature correction
         tempEnable = document.getElementById('tempEnable').checked;
         structureType = document.getElementById('structureType').value;
+        tempRefMode = document.getElementById('tempRefMode').value === 'auto' ? 'auto' : 'manual';
         if (tempEnable) {
             const d = document.getElementById('tempDistance').value.trim();
+            const dir = document.getElementById('tempDirection').value.trim();
             const r = document.getElementById('tempRefTemp').value.trim();
             const c = document.getElementById('tempCoeff').value.trim();
             if (d === "" || isNaN(Number(d)) || Number(d) < 0) {
                 showCustomAlert("Error", 'Please enter a valid Distance from Fixed Bearing (m).');
                 return;
             }
-            if (r === "" || isNaN(Number(r))) {
-                showCustomAlert("Error", 'Please enter a valid Reference Temperature (°C).');
+            if (dir === "" || isNaN(Number(dir)) || Number(dir) < 0 || Number(dir) > 360) {
+                showCustomAlert("Error", 'Please enter a valid Direction from Fixed Bearing to Rover (0–360 degrees).');
+                return;
+            }
+            if (tempRefMode === 'manual' && (r === "" || isNaN(Number(r)))) {
+                showCustomAlert("Error", 'Please enter a valid Reference Temperature (°C), or choose Automatic.');
                 return;
             }
             if (c === "" || isNaN(Number(c))) {
@@ -789,10 +832,12 @@ function saveMainConfiguration() {
                 return;
             }
             tempDistance = d;
-            tempRefTemp = r;
+            tempDirection = dir;
+            tempRefTemp = (r === "" || isNaN(Number(r))) ? (tempRefTemp || "0") : r;
             tempCoeff = c;
         } else {
             tempDistance = tempDistance || "0";
+            tempDirection = tempDirection || "0";
             tempRefTemp = tempRefTemp || "0";
             tempCoeff = tempCoeff || "0";
         }
@@ -886,6 +931,9 @@ function saveMainConfiguration() {
             encodeData("tempDistance", tempDistance) + "&" +
             encodeData("tempRefTemp", tempRefTemp) + "&" +
             encodeData("tempCoeff", tempCoeff) + "&" +
+            encodeData("tempDirection", tempDirection) + "&" +
+            encodeData("tempRefMode", tempRefMode) + "&" +
+            encodeData("tempBaselineTemp", tempBaselineTemp) + "&" +
             encodeData("debugEnable", debugEnable) + "&" +
             encodeData("ftpEnable", ftpEnable) + "&" +
             encodeData("ftpIP", ftpIP) + "&" +
@@ -943,6 +991,115 @@ document.getElementById('receiver_logsLink').addEventListener('click', () => {
     setLogType("Receiver Logs");
     showPage('receiver_logs');
 });
+
+document.getElementById('downloadDataLink').addEventListener('click', () => {
+    setLogType("Download Data");
+    showPage('download_data');
+});
+
+// ---- Download Data: list CSV files (not-yet-uploaded first, then uploaded) ----
+function formatBytes(n) {
+    n = Number(n) || 0;
+    if (n < 1024)
+        return n + " B";
+    if (n < 1024 * 1024)
+        return (n / 1024).toFixed(1) + " KB";
+    return (n / (1024 * 1024)).toFixed(2) + " MB";
+}
+
+function dataFileSection(title, subtitle, files, emptyText) {
+    const sec = document.createElement('div');
+    sec.style.marginBottom = '18px';
+
+    const h = document.createElement('div');
+    h.className = 'section-title';
+    h.textContent = title + " (" + files.length + ")";
+    sec.appendChild(h);
+
+    if (subtitle) {
+        const s = document.createElement('div');
+        s.style.cssText = 'font-size:12px;color:#6b7684;margin:-4px 0 8px;';
+        s.textContent = subtitle;
+        sec.appendChild(s);
+    }
+
+    if (files.length === 0) {
+        const e = document.createElement('div');
+        e.style.cssText = 'font-size:13px;color:#8a93a0;padding:6px 0;';
+        e.textContent = emptyText;
+        sec.appendChild(e);
+        return sec;
+    }
+
+    const ul = document.createElement('ul');
+    ul.style.cssText = 'list-style:none;margin:0;padding:0;';
+    files.forEach(f => {
+        const li = document.createElement('li');
+        li.style.cssText = 'padding:6px 4px;border-bottom:1px solid #eef0f4;display:flex;justify-content:space-between;align-items:center;gap:10px;';
+
+        const a = document.createElement('a');
+        // server sends Content-Disposition: attachment -> the browser downloads it
+        a.href = '/download?dir=' + encodeURIComponent(f.state) + '&file=' + encodeURIComponent(f.name);
+        a.setAttribute('download', f.name);
+        a.textContent = f.name;              // textContent: no HTML injection from file names
+        a.style.cssText = 'color:#3f4ea8;text-decoration:none;font-family:Consolas,monospace;font-size:13px;word-break:break-all;';
+        li.appendChild(a);
+
+        const meta = document.createElement('span');
+        meta.style.cssText = 'font-size:12px;color:#8a93a0;white-space:nowrap;';
+        meta.textContent = (f.state === 'current' ? 'being recorded · ' : '') + formatBytes(f.size);
+        li.appendChild(meta);
+
+        ul.appendChild(li);
+    });
+    sec.appendChild(ul);
+    return sec;
+}
+
+async function loadDataFiles() {
+    const box = document.getElementById('logsContainer');
+    box.innerHTML = "<b>Loading...</b>";
+    try {
+        const resp = await fetch('/list_data', {cache: 'no-store'});
+        if (!resp.ok)
+            throw new Error('HTTP ' + resp.status);
+        const text = await resp.text();
+
+        const files = text.split('\n').map(l => l.trim()).filter(l => l).map(l => {
+            const p = l.split('\t');
+            return {state: p[0], name: p[1] || '', size: p[2] || 0};
+        }).filter(f => f.name);
+
+        const byNameDesc = (a, b) => (a.name < b.name ? 1 : a.name > b.name ? -1 : 0);   // newest first
+        const notUploaded = files.filter(f => f.state === 'current' || f.state === 'pending').sort(byNameDesc);
+        const uploaded = files.filter(f => f.state === 'uploaded').sort(byNameDesc);
+
+        box.innerHTML = "";
+        const hint = document.createElement('div');
+        hint.style.cssText = 'font-size:13px;color:#3a4653;margin-bottom:14px;';
+        hint.textContent = 'Click a file name to download it to this computer. Newest files are listed first.';
+        box.appendChild(hint);
+
+        box.appendChild(dataFileSection('Not Yet Uploaded',
+                'Waiting for FTP upload, or still being recorded.',
+                notUploaded, 'No files waiting — everything has been uploaded.'));
+
+        const sep = document.createElement('hr');
+        sep.style.cssText = 'border:none;border-top:2px solid #d5daf5;margin:6px 0 18px;';
+        box.appendChild(sep);
+
+        const deleteMode = (uploadFileAction === 'delete');
+        box.appendChild(dataFileSection('Uploaded',
+                'Already sent to the FTP server (kept on the device for 90 days).',
+                uploaded,
+                deleteMode
+                ? 'None kept: Upload File Action is set to "Delete After Upload", so files are removed from the device once uploaded.'
+                : 'No uploaded files on the device yet.'));
+    } catch (err) {
+        box.innerHTML = '<span style="color:red">Error loading data file list</span>';
+        console.error(err);
+    }
+}
 
 document.getElementById('backToConfigLink').addEventListener('click', () => {
     showPage('config');

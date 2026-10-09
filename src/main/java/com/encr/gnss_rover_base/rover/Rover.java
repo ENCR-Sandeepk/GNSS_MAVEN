@@ -6,6 +6,7 @@ package com.encr.gnss_rover_base.rover;
  */
 import com.encr.gnss_rover_base.MainController;
 import com.encr.gnss_rover_base.avg.SingleRoverAverageManager;
+import com.encr.gnss_rover_base.avg.TemperatureAverageManager;
 import com.encr.gnss_rover_base.calculation.GGAtoECEF_Converter;
 import com.encr.gnss_rover_base.controller.TcpClientService;
 import com.encr.gnss_rover_base.ftp.ConfigBackupManager;
@@ -52,6 +53,7 @@ public class Rover {
     };
 
     private static SingleRoverAverageManager roverManager;
+    private static TemperatureAverageManager tempManager;
     private static Path jarDir;
     private static Path csvPath;
 
@@ -132,8 +134,12 @@ public class Rover {
                 Variable.temp_distance_m = configDouble(Constant.KEY_tempDistance, 0.0);
                 Variable.temp_ref_c = configDouble(Constant.KEY_tempRefTemp, 0.0);
                 Variable.temp_coeff_ppm = configDouble(Constant.KEY_tempCoeff, 0.0);
+                Variable.temp_direction_deg = configDouble(Constant.KEY_tempDirection, 0.0);
+                Variable.temp_ref_mode = "auto".equalsIgnoreCase(Variable.config.getOrDefault(Constant.KEY_tempRefMode, "manual").trim())
+                        ? "auto" : "manual";
                 Tool.dbg("Rover", "temp correction: enable=" + Variable.temp_enable + " type=" + Variable.structure_type
-                        + " L=" + Variable.temp_distance_m + "m Tref=" + Variable.temp_ref_c + "C alpha=" + Variable.temp_coeff_ppm + "ppm/C");
+                        + " L=" + Variable.temp_distance_m + "m dir=" + Variable.temp_direction_deg + "deg Tref("
+                        + Variable.temp_ref_mode + ")=" + Variable.temp_ref_c + "C alpha=" + Variable.temp_coeff_ppm + "ppm/C");
 
                 String ftpEnable = Variable.config.getOrDefault(Constant.KEY_ftpEnable, "false").trim();
                 String ftpIp = Variable.config.getOrDefault(Constant.KEY_ftpIP, "").trim();
@@ -229,6 +235,12 @@ public class Rover {
                 } else {
                     roverManager = new SingleRoverAverageManager(jarDir, Variable.base_line_duration);
                 }
+                // Temperature average over the SAME span as the GNSS average (continuous or
+                // burst-adjusted base_line_duration above), fed in lockstep with roverManager.
+                tempManager = new TemperatureAverageManager(jarDir, Variable.base_line_duration);
+                // Baseline temperature (Automatic reference mode). Survives restarts / burst wakes;
+                // deleted with rover_files by Reset Base Reading (which runs before this point).
+                Variable.temp_baseline_c = readBaselineTemp();
 
                 // Connect to NTRIP
                 connectAndRunStreams(ip, Integer.parseInt(port), mount, user, pass);
@@ -464,6 +476,10 @@ public class Rover {
                             }
                         }
                         roverManager.addSample(north, east, alt);
+                        // One temperature sample per GNSS sample -> identical data points/windows.
+                        if (tempManager != null) {
+                            tempManager.addSample(parseTemperature(Variable.temperature));
+                        }
 
                         Variable.rover_got_valid_data = true;
 
@@ -473,6 +489,18 @@ public class Rover {
                         // future wakes) until the config+state zip truly reaches the server.
                         if (Variable.rover_baseline_just_established) {
                             Variable.rover_baseline_just_established = false;
+                            // Record the average temperature over the SAME span the baseline was
+                            // averaged over (temp windows close in lockstep with GNSS windows).
+                            // Used as T_ref in Automatic reference-temperature mode.
+                            if (tempManager != null) {
+                                double tb = tempManager.getAverage();
+                                if (!Double.isNaN(tb)) {
+                                    Variable.temp_baseline_c = tb;
+                                    writeBaselineTemp(tb);
+                                    MainController.update_control_file_temp_baseline(String.format(java.util.Locale.US, "%.2f", tb));
+                                    Tool.dbg("Rover", "baseline temperature recorded: " + tb + " C");
+                                }
+                            }
                             String stamp = Tool.convert_ms_into_date(System.currentTimeMillis(),
                                     Constant.DATE_TIME_FORMAT_FOR_FILE_NAME);
                             String serverIp = Variable.config.getOrDefault(Constant.KEY_ip, "").trim();
@@ -528,6 +556,16 @@ public class Rover {
                         double dN = enu[1];   // North
                         double dU = enu[2];   // Up
 
+                        // Temperature correction: remove the deck's thermal lengthening (horizontal,
+                        // along the bridge, away from the fixed bearing) using the AVERAGED temperature
+                        // over the same span as this averaged position. Up is not corrected.
+                        double[] thermal = thermalDisplacementEN(tempManager != null ? tempManager.getAverage() : Double.NaN);
+                        if (thermal != null) {
+                            dE -= thermal[0];
+                            dN -= thermal[1];
+                            Tool.dbg("Rover", "temp correction applied: dE-=" + thermal[0] + " m, dN-=" + thermal[1] + " m");
+                        }
+
                         if (Variable.axis_enable) {
                             // Rotate horizontal (N,E) onto the user's reference axis.
                             // theta = azimuth clockwise from True North.
@@ -573,9 +611,11 @@ public class Rover {
                     // time to write CSV?
                     if (Variable.scan_start_time_in_ms <= System.currentTimeMillis()) {
 
+                        double avgTemp = (tempManager != null) ? tempManager.getAverage() : Double.NaN;
                         String dataLine = Tool.convert_ms_into_date(Variable.scan_start_time_in_ms, Variable.date_time_format.trim())
                                 + DataServices.getData_static(outputParts.clone(), Variable.reportGeodeticValues)
-                                + "," + Variable.battery + "," + Variable.temperature;
+                                + "," + Variable.battery + "," + Variable.temperature
+                                + "," + (Double.isNaN(avgTemp) ? "--" : String.format(java.util.Locale.US, "%.2f", avgTemp));
 
                         if (Variable.is_burst_mode) {
                             // Burst: keep only the LAST record; it is flushed once, at sleep time.
@@ -809,6 +849,67 @@ public class Rover {
         double n = -sinLat * cosLon * dX - sinLat * sinLon * dY + cosLat * dZ;
         double u = cosLat * cosLon * dX + cosLat * sinLon * dY + sinLat * dZ;
         return new double[]{e, n, u};
+    }
+
+    private static Path baselineTempFile() {
+        return jarDir.resolve("gnss").resolve("rover_files").resolve("baseline_temp.txt");
+    }
+
+    private static double readBaselineTemp() {
+        try {
+            Path f = baselineTempFile();
+            if (!Files.exists(f)) {
+                return Double.NaN;
+            }
+            return Double.parseDouble(new String(Files.readAllBytes(f), StandardCharsets.UTF_8).trim());
+        } catch (Exception e) {
+            return Double.NaN;
+        }
+    }
+
+    private static void writeBaselineTemp(double t) {
+        try {
+            Files.createDirectories(baselineTempFile().getParent());
+            Files.write(baselineTempFile(), String.valueOf(t).getBytes(StandardCharsets.UTF_8));
+        } catch (Exception e) {
+            System.err.println(ts() + " Failed to save baseline temperature: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Thermal movement of the deck at the rover, as an East/North displacement in metres:
+     *   dL = alpha[ppm]*1e-6 * L[m] * (T - Tref)   along the bridge, away from the fixed bearing.
+     * Returns {dEast, dNorth}, or null when correction is off or any input is missing
+     * (in which case the data is reported uncorrected).
+     */
+    private static double[] thermalDisplacementEN(double avgTemp) {
+        if (!Variable.temp_enable) {
+            return null;
+        }
+        double tRef = "auto".equals(Variable.temp_ref_mode) ? Variable.temp_baseline_c : Variable.temp_ref_c;
+        if (Double.isNaN(avgTemp) || Double.isNaN(tRef)) {
+            return null;
+        }
+        double dL = Variable.temp_coeff_ppm * 1e-6 * Variable.temp_distance_m * (avgTemp - tRef);
+        double az = Math.toRadians(Variable.temp_direction_deg);
+        return new double[]{dL * Math.sin(az), dL * Math.cos(az)};
+    }
+
+    // Variable.temperature is the raw MONPARA text ("--" until first read). Pull the
+    // number out of it; anything unreadable -> NaN (sample still advances the window).
+    private static double parseTemperature(String raw) {
+        if (raw == null) {
+            return Double.NaN;
+        }
+        java.util.regex.Matcher m = java.util.regex.Pattern.compile("-?\\d+(\\.\\d+)?").matcher(raw);
+        if (!m.find()) {
+            return Double.NaN;
+        }
+        try {
+            return Double.parseDouble(m.group());
+        } catch (NumberFormatException e) {
+            return Double.NaN;
+        }
     }
 
     // Read a numeric config value; missing, empty, "null" or malformed -> default.

@@ -39,6 +39,9 @@ public class Constant {
     public static final String KEY_tempDistance = "tempDistance";   // m, from fixed bearing
     public static final String KEY_tempRefTemp = "tempRefTemp";     // deg C
     public static final String KEY_tempCoeff = "tempCoeff";         // PPM / deg C
+    public static final String KEY_tempDirection = "tempDirection"; // deg, azimuth from fixed bearing to rover (CW from True North)
+    public static final String KEY_tempRefMode = "tempRefMode";     // "manual" | "auto"
+    public static final String KEY_tempBaselineTemp = "tempBaselineTemp"; // display copy of the recorded baseline temperature
 
     public static final String KEY_debugEnable = "debugEnable";
 

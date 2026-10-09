@@ -419,6 +419,184 @@ void serve_serial(socket_t client) {
     }
 }
 
+/* =====================================================================
+ *  Data-file download (UI: "Download Data")
+ *    GET /list_data                      -> one line per CSV:  <state>\t<name>\t<bytes>\n
+ *                                           state = current | pending | uploaded
+ *    GET /download?dir=<state>&file=<n>  -> the CSV as an attachment
+ *  Only the three data folders below are reachable, only *.csv names,
+ *  and names containing '/', '\' or ".." are rejected.
+ * ===================================================================== */
+#define DATA_DIR_CURRENT  "./gnss/data_files/"                 /* file being written      */
+#define DATA_DIR_PENDING  "./gnss/files_for_upload/"           /* waiting for FTP upload  */
+#define DATA_DIR_UPLOADED "./gnss/files_for_upload/archive/"   /* uploaded (archive mode) */
+
+/* send() may write only part of a large buffer; loop until everything is sent. */
+static int send_all(socket_t s, const char *buf, size_t len) {
+    size_t sent = 0;
+    while (sent < len) {
+        int n = send(s, buf + sent, (int)(len - sent), 0);
+        if (n <= 0) return -1;
+        sent += (size_t)n;
+    }
+    return 0;
+}
+
+static int is_csv_name(const char *n) {
+    size_t l = strlen(n);
+    if (l < 5) return 0;
+    const char *e = n + l - 4;
+    return e[0] == '.' && tolower((unsigned char)e[1]) == 'c'
+        && tolower((unsigned char)e[2]) == 's' && tolower((unsigned char)e[3]) == 'v';
+}
+
+static int safe_data_name(const char *n) {
+    return n[0] != '\0' && !strstr(n, "..") && !strchr(n, '/') && !strchr(n, '\\') && is_csv_name(n);
+}
+
+/* growable text buffer: the archive can hold thousands of files, so no fixed cap */
+typedef struct { char *buf; size_t len, cap; } textbuf;
+
+static void tb_append(textbuf *t, const char *s) {
+    size_t n = strlen(s);
+    if (t->len + n + 1 > t->cap) {
+        size_t nc = t->cap ? t->cap : 4096;
+        while (t->len + n + 1 > nc) nc *= 2;
+        char *nb = realloc(t->buf, nc);
+        if (!nb) return;
+        t->buf = nb;
+        t->cap = nc;
+    }
+    memcpy(t->buf + t->len, s, n + 1);
+    t->len += n;
+}
+
+typedef struct { char name[256]; unsigned long long size; } datafile;
+
+static int datafile_cmp_desc(const void *a, const void *b) {
+    return strcmp(((const datafile *)b)->name, ((const datafile *)a)->name);   /* newest first */
+}
+
+/* Append "<state>\t<name>\t<size>\n" for every CSV in dir, newest first. */
+static void list_data_dir(textbuf *out, const char *dir, const char *state) {
+    datafile *files = NULL;
+    size_t count = 0, cap = 0;
+
+#ifdef _WIN32
+    char pattern[512];
+    snprintf(pattern, sizeof(pattern), "%s*.csv", dir);
+    WIN32_FIND_DATAA ffd;
+    HANDLE h = FindFirstFileA(pattern, &ffd);
+    if (h != INVALID_HANDLE_VALUE) {
+        do {
+            if (ffd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) continue;
+            if (!safe_data_name(ffd.cFileName)) continue;
+            if (count == cap) {
+                size_t nc = cap ? cap * 2 : 64;
+                datafile *nf = realloc(files, nc * sizeof(datafile));
+                if (!nf) break;
+                files = nf; cap = nc;
+            }
+            snprintf(files[count].name, sizeof(files[count].name), "%s", ffd.cFileName);
+            files[count].size = ((unsigned long long)ffd.nFileSizeHigh << 32) | ffd.nFileSizeLow;
+            count++;
+        } while (FindNextFileA(h, &ffd));
+        FindClose(h);
+    }
+#else
+    DIR *d = opendir(dir);
+    if (d) {
+        struct dirent *de;
+        while ((de = readdir(d)) != NULL) {
+            if (!safe_data_name(de->d_name)) continue;
+            char full[768];
+            snprintf(full, sizeof(full), "%s%s", dir, de->d_name);
+            struct stat st;
+            if (stat(full, &st) != 0 || !S_ISREG(st.st_mode)) continue;
+            if (count == cap) {
+                size_t nc = cap ? cap * 2 : 64;
+                datafile *nf = realloc(files, nc * sizeof(datafile));
+                if (!nf) break;
+                files = nf; cap = nc;
+            }
+            snprintf(files[count].name, sizeof(files[count].name), "%s", de->d_name);
+            files[count].size = (unsigned long long)st.st_size;
+            count++;
+        }
+        closedir(d);
+    }
+#endif
+
+    if (count > 1) qsort(files, count, sizeof(datafile), datafile_cmp_desc);
+    for (size_t i = 0; i < count; i++) {
+        char line[320];
+        snprintf(line, sizeof(line), "%s\t%s\t%llu\n", state, files[i].name, files[i].size);
+        tb_append(out, line);
+    }
+    free(files);
+}
+
+void serve_data_list(socket_t client) {
+    textbuf t = {0};
+    tb_append(&t, "");                       /* guarantees a valid (possibly empty) buffer */
+    list_data_dir(&t, DATA_DIR_CURRENT,  "current");
+    list_data_dir(&t, DATA_DIR_PENDING,  "pending");
+    list_data_dir(&t, DATA_DIR_UPLOADED, "uploaded");
+
+    char header[256];
+    snprintf(header, sizeof(header),
+             "HTTP/1.1 200 OK\r\n"
+             "Content-Type: text/plain; charset=utf-8\r\n"
+             "Cache-Control: no-store\r\n"
+             "Content-Length: %zu\r\n\r\n", t.len);
+    send_all(client, header, strlen(header));
+    if (t.len) send_all(client, t.buf, t.len);
+    free(t.buf);
+}
+
+/* query = "dir=<state>&file=<name>" (text after "/download?") */
+void serve_data_download(socket_t client, const char *query) {
+    char dirKey[16] = {0}, enc[256] = {0}, file[256] = {0};
+    if (sscanf(query, "dir=%15[^&]&file=%255[^ &]", dirKey, enc) != 2) {
+        const char *r = "HTTP/1.1 400 Bad Request\r\nContent-Type: text/plain\r\n\r\nBad request";
+        send(client, r, (int)strlen(r), 0);
+        return;
+    }
+    urldecode(enc, file);
+
+    const char *base = NULL;
+    if (strcmp(dirKey, "current") == 0)       base = DATA_DIR_CURRENT;
+    else if (strcmp(dirKey, "pending") == 0)  base = DATA_DIR_PENDING;
+    else if (strcmp(dirKey, "uploaded") == 0) base = DATA_DIR_UPLOADED;
+
+    if (!base || !safe_data_name(file)) {
+        const char *r = "HTTP/1.1 403 Forbidden\r\nContent-Type: text/plain\r\n\r\nForbidden";
+        send(client, r, (int)strlen(r), 0);
+        return;
+    }
+
+    char path[512];
+    snprintf(path, sizeof(path), "%s%s", base, file);
+    size_t len = 0;
+    char *data = read_file_to_buffer(path, &len);
+    if (!data) {
+        const char *r = "HTTP/1.1 404 Not Found\r\nContent-Type: text/plain\r\n\r\nFile not found (it may have just been uploaded or moved)";
+        send(client, r, (int)strlen(r), 0);
+        return;
+    }
+
+    char header[512];
+    snprintf(header, sizeof(header),
+             "HTTP/1.1 200 OK\r\n"
+             "Content-Type: text/csv; charset=utf-8\r\n"
+             "Content-Disposition: attachment; filename=\"%s\"\r\n"
+             "Cache-Control: no-store\r\n"
+             "Content-Length: %zu\r\n\r\n", file, len);
+    if (send_all(client, header, strlen(header)) == 0 && len > 0)
+        send_all(client, data, len);
+    free(data);
+}
+
 void view_log_file(socket_t client, const char *filename) {
     char path[512];
     snprintf(path, sizeof(path), "%s%s", LOG_DIR, filename);
@@ -1005,6 +1183,10 @@ void handle_client(socket_t client_sock) {
                 free(fdata);
             }
         }
+    } else if (strncmp(buffer + 4, "/list_data", 10) == 0) {
+        serve_data_list(client_sock);
+    } else if (strncmp(buffer + 4, "/download?", 10) == 0) {
+        serve_data_download(client_sock, buffer + 14);   /* text after "GET /download?" */
     } else if (strncmp(buffer + 4, "/list?type=", 11) == 0) {
     char type[32];
     sscanf(buffer + 15, "%31[^ ]", type);

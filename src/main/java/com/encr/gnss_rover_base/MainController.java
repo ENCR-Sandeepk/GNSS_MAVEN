@@ -562,6 +562,8 @@ public class MainController {
 
             // 2. Replace resetBaseReading value
             content = content.replaceAll("resetBaseReading=[^&]*", "resetBaseReading=false");
+            // the baseline is being re-established, so its recorded temperature is no longer valid
+            content = content.replaceAll("tempBaselineTemp=[^&]*", "tempBaselineTemp=null");
 
             // 3. Write updated content back to file
             Files.write(CONTROL_FILE_PATH, content.getBytes());
@@ -572,6 +574,25 @@ public class MainController {
             e.printStackTrace();
         }
 
+    }
+
+    /**
+     * Writes the recorded baseline temperature into the config file so the UI can
+     * display it (Automatic reference-temperature mode). Display copy only: the value
+     * actually used is gnss/rover_files/baseline_temp.txt.
+     */
+    public static synchronized void update_control_file_temp_baseline(String value) {
+        try {
+            String content = new String(Files.readAllBytes(CONTROL_FILE_PATH)).trim();
+            if (content.contains("tempBaselineTemp=")) {
+                content = content.replaceAll("tempBaselineTemp=[^&]*", "tempBaselineTemp=" + value);
+            } else {
+                content = content + "&tempBaselineTemp=" + value;
+            }
+            Files.write(CONTROL_FILE_PATH, content.getBytes());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public static long safeLastModified(File file) {

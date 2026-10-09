@@ -1,5 +1,6 @@
 D:\ClaudeWorkSpace\GNSS_Rover_Base\src\main\java\com\encr\gnss_rover_base\avg\BaseAverageManager.java
 D:\ClaudeWorkSpace\GNSS_Rover_Base\src\main\java\com\encr\gnss_rover_base\avg\SingleRoverAverageManager.java
+D:\ClaudeWorkSpace\GNSS_Rover_Base\src\main\java\com\encr\gnss_rover_base\avg\TemperatureAverageManager.java
 D:\ClaudeWorkSpace\GNSS_Rover_Base\src\main\java\com\encr\gnss_rover_base\base\Base.java
 D:\ClaudeWorkSpace\GNSS_Rover_Base\src\main\java\com\encr\gnss_rover_base\base\BaseAveragerECEF.java
 D:\ClaudeWorkSpace\GNSS_Rover_Base\src\main\java\com\encr\gnss_rover_base\base\GNSSAutoECEFCollector.java

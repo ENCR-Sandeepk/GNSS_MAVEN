@@ -158,6 +158,9 @@ public class ConfigBackupManager {
             added += addEntry(zos, rf.resolve("baseline.txt"), "rover_files/baseline.txt");
             added += addEntry(zos, rf.resolve("rover_avg.txt"), "rover_files/rover_avg.txt");
             added += addEntry(zos, rf.resolve("rover_liveBuffer.txt"), "rover_files/rover_liveBuffer.txt");
+            added += addEntry(zos, rf.resolve("temp_avg.txt"), "rover_files/temp_avg.txt");
+            added += addEntry(zos, rf.resolve("temp_liveBuffer.txt"), "rover_files/temp_liveBuffer.txt");
+            added += addEntry(zos, rf.resolve("baseline_temp.txt"), "rover_files/baseline_temp.txt");
         }
         if (added == 0) {
             try {

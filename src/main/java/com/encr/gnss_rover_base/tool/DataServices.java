@@ -76,9 +76,19 @@ public class DataServices {
                     + ",ALTITUDE(m)"
                     + ",SATELLITES"
                     + ",BATTERY(V)"
-                    + ",TEMPERATURE(DEG)";
+                    + ",TEMPERATURE(DEG)"
+                    + ",AVG_TEMPERATURE(DEG)";
         } else {
-            return "DATE/TIME" + ",dNORTHING(" + Variable.reporting_unit + ")" + ",dEASTING(" + Variable.reporting_unit + ")" + ",dALTITUDE(" + Variable.reporting_unit + ")" + ",SATELLITES";
+            // Every data row always ends with battery, temperature and averaged temperature,
+            // so the non-geodetic header must list them too (it previously stopped at SATELLITES).
+            return "DATE/TIME"
+                    + "," + c1 + "(" + Variable.reporting_unit + ")"
+                    + "," + c2 + "(" + Variable.reporting_unit + ")"
+                    + ",dALTITUDE(" + Variable.reporting_unit + ")"
+                    + ",SATELLITES"
+                    + ",BATTERY(V)"
+                    + ",TEMPERATURE(DEG)"
+                    + ",AVG_TEMPERATURE(DEG)";
         }
     }
 

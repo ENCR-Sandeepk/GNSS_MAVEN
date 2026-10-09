@@ -38,6 +38,7 @@
                         <div class="user-menu">
                             <a id="receiver_server_logsLink">Server Logs</a>
                             <a id="receiver_logsLink">Normal Logs</a>
+                            <a id="downloadDataLink">Download Data</a>
                             <a id="logoutLink">Logout</a>
                         </div>
                     </div>
@@ -340,8 +341,35 @@
                             </div>
 
                             <div class="form-group">
+                                <label for="tempDirection">Direction from Fixed Bearing to Rover (&deg;, 0&ndash;360)
+                                    <span onclick="openTempInfo()" style="color:#667eea;cursor:pointer;font-size:12px;">(what is this?)</span>
+                                </label>
+                                <input type="number" id="tempDirection" min="0" max="360" step="0.1" placeholder="e.g. 90" />
+                            </div>
+
+                            <div class="form-group">
+                                <label for="tempRefMode">Reference Temperature Source</label>
+                                <select id="tempRefMode">
+                                    <option value="manual">Manual &ndash; enter a value</option>
+                                    <option value="auto">Automatic &ndash; average temperature during Base Reading</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group" id="tempRefManualGroup">
                                 <label for="tempRefTemp">Reference Temperature (&deg;C)</label>
                                 <input type="number" id="tempRefTemp" step="0.1" placeholder="e.g. 25" />
+                            </div>
+
+                            <div class="form-group" id="tempRefAutoGroup" style="display:none;">
+                                <div style="background:#eef0ff;border-left:4px solid #667eea;padding:10px 12px;border-radius:6px;font-size:13px;color:#3a4653;line-height:1.5;">
+                                    The average temperature recorded when the baseline (Base Reading) is established is used
+                                    as the reference.<br>
+                                    Recorded value: <b id="tempBaselineDisplay">not recorded yet</b>
+                                    <div style="color:#6b7684;font-size:12px;margin-top:4px;">
+                                        It is recorded the next time the baseline is established. Use <b>Reset Base Reading</b>
+                                        to record a fresh one.
+                                    </div>
+                                </div>
                             </div>
 
                             <div class="form-group">
@@ -668,6 +696,34 @@
                         <li><b>Survey coordinates:</b> horizontal distance between the fixed bearing and the antenna,
                             measured along the deck axis.</li>
                     </ul>
+
+                    <div style="font-weight:700;margin:10px 0 4px;">Direction from Fixed Bearing to Rover</div>
+                    The distance gives the <b>size</b> of the thermal movement; the direction tells which
+                    <b>way</b> it pushes the rover. Enter the compass bearing you would face <b>standing at the
+                    fixed bearing, looking toward the rover</b>, measured <b>clockwise from TRUE North</b>
+                    (0&deg; = North, 90&deg; = East, 180&deg; = South, 270&deg; = West).
+                    <div style="font-family:Consolas,monospace;font-size:12px;background:#f6f7fb;border-radius:6px;padding:8px 10px;margin:6px 0;white-space:pre;overflow:auto;color:#1f2937;">[FIXED]======(rover)======[free]   rover is EAST of fixed bearing &rarr; enter 90
+[free]======(rover)======[FIXED]   rover is WEST of fixed bearing &rarr; enter 270</div>
+                    Getting this the wrong way round reverses the correction and <b>doubles</b> the thermal
+                    error instead of removing it. Read it from the site plan the same way as the Reference Axis
+                    angle.
+
+                    <div style="font-weight:700;margin:10px 0 4px;">Reference Temperature Source</div>
+                    <ul style="margin:0 0 4px 18px;padding:0;">
+                        <li><b>Manual</b> &mdash; you enter T<sub>ref</sub>. For correct results this should be the
+                            average temperature while the <b>Base Reading</b> (baseline) was being taken; any
+                            difference appears as a constant offset of &alpha; &times; L &times; (T<sub>ref</sub>
+                            &minus; baseline temperature).</li>
+                        <li><b>Automatic</b> &mdash; the average temperature over the baseline period is recorded
+                            when the baseline is established and used as T<sub>ref</sub>, so the corrected
+                            deviation starts at zero with no offset.</li>
+                    </ul>
+
+                    <div style="font-weight:700;margin:10px 0 4px;">What gets corrected</div>
+                    Only the <b>horizontal</b> deviation, along the bridge: it is split into North and East using
+                    the direction above (or applied to <b>Along</b> when the Deviation Reporting Axis is on). The
+                    <b>Altitude / Up</b> value is not corrected &mdash; this model describes the deck lengthening,
+                    not vertical movement. The averaged temperature (AVG_TEMPERATURE) is used.
 
                     <div style="font-weight:700;margin:10px 0 4px;">Example</div>
                     Steel/concrete deck, &alpha; = 12 PPM/&deg;C, rover <b>40 m</b> from the fixed bearing,
